@@ -722,47 +722,54 @@
                 <button class="btn" onclick="updateAdminPin()">🔒 Update Admin PIN</button>
             </div>
 
-            <!-- MANUAL HISTORICAL RECORD ENTRY -->
-            <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
-                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add Historical Club Record (Pre-League)</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Bow Style</label>
-                        <select id="hist-bow">
-                            <option value="Recurve">Recurve</option>
-                            <option value="Compound">Compound</option>
-                            <option value="Barebow">Barebow</option>
-                            <option value="Longbow">Longbow</option>
-                            <option value="Asiatic">Asiatic</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Age / Category</label>
-                        <select id="hist-cat">
-                            <option value="Senior">Senior</option>
-                            <option value="50+">50+</option>
-                            <option value="Under 18">Under 18</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Archer Name</label>
-                        <input type="text" id="hist-name" placeholder="e.g. John Smith">
-                    </div>
-                    <div class="form-group">
-                        <label>Score</label>
-                        <input type="number" id="hist-score" min="0" max="600" placeholder="e.g. 540">
-                    </div>
-                    <div class="form-group">
-                        <label>10s Count</label>
-                        <input type="number" id="hist-tens" min="0" max="60" placeholder="e.g. 20">
-                    </div>
-                    <div class="form-group">
-                        <label>Date / Year Shot</label>
-                        <input type="text" id="hist-date" placeholder="e.g. 2024 or 2024-05-12">
-                    </div>
-                </div>
-                <button class="btn" onclick="submitHistoricalRecord()">📜 Save Historical Record</button>
+<!-- MANUAL HISTORICAL RECORD ENTRY -->
+    <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add Historical Club Record (Pre-League)</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Bow Style</label>
+                <select id="hist-bow">
+                    <option value="Recurve">Recurve</option>
+                    <option value="Compound">Compound</option>
+                    <option value="Barebow">Barebow</option>
+                    <option value="Longbow">Longbow</option>
+                    <option value="Asiatic">Asiatic</option>
+                </select>
             </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <select id="hist-gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Age / Category</label>
+                <select id="hist-cat">
+                    <option value="Senior">Senior</option>
+                    <option value="50+">50+</option>
+                    <option value="Under 18">Under 18</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Archer Name</label>
+                <input type="text" id="hist-name" placeholder="e.g. John Smith">
+            </div>
+            <div class="form-group">
+                <label>Score</label>
+                <input type="number" id="hist-score" min="0" max="600" placeholder="e.g. 540">
+            </div>
+            <div class="form-group">
+                <label>10s Count</label>
+                <input type="number" id="hist-tens" min="0" max="60" placeholder="e.g. 20">
+            </div>
+            <div class="form-group">
+                <label>Date / Year Shot</label>
+                <input type="text" id="hist-date" placeholder="e.g. 2024 or 2024-05-12">
+            </div>
+        </div>
+        <button class="btn" onclick="submitHistoricalRecord()">📜 Save Historical Record</button>
+    </div>
 
             <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
                 <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Club Branding & Logo</h3>
@@ -1425,39 +1432,38 @@
                 tbody.innerHTML = htmlRows.join('');
             }
         }
-
-        async function submitHistoricalRecord() {
-            const record = {
-                action: "addHistoricalRecord",
-                bow: document.getElementById('hist-bow').value,
-                category: document.getElementById('hist-cat').value,
-                archerName: document.getElementById('hist-name').value.trim(),
-                score: parseInt(document.getElementById('hist-score').value),
-                tens: parseInt(document.getElementById('hist-tens').value) || 0,
-                date: document.getElementById('hist-date').value.trim()
-            };
-            if (!record.archerName || isNaN(record.score)) {
-                alert("Please enter a valid archer name and score.");
-                return;
-            }
-            try {
-                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
-                const json = await res.json();
-                if (json.result === 'success') {
-                    alert("Historical record added successfully!");
-                    document.getElementById('hist-name').value = '';
-                    document.getElementById('hist-score').value = '';
-                    document.getElementById('hist-tens').value = '';
-                    document.getElementById('hist-date').value = '';
-                    renderRecords();
-                } else {
-                    alert("Error saving record.");
-                }
-            } catch(e) {
-                alert("Network error saving historical record.");
-            }
+async function submitHistoricalRecord() {
+        const record = {
+            action: "addHistoricalRecord",
+            bow: document.getElementById('hist-bow').value,
+            gender: document.getElementById('hist-gender').value,
+            category: document.getElementById('hist-cat').value,
+            archerName: document.getElementById('hist-name').value.trim(),
+            score: parseInt(document.getElementById('hist-score').value),
+            tens: parseInt(document.getElementById('hist-tens').value) || 0,
+            date: document.getElementById('hist-date').value.trim()
+        };
+        if (!record.archerName || isNaN(record.score)) {
+            alert("Please enter a valid archer name and score.");
+            return;
         }
-
+        try {
+            const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
+            const json = await res.json();
+            if (json.result === 'success') {
+                alert("Historical record added successfully!");
+                document.getElementById('hist-name').value = '';
+                document.getElementById('hist-score').value = '';
+                document.getElementById('hist-tens').value = '';
+                document.getElementById('hist-date').value = '';
+                renderRecords();
+            } else {
+                alert("Error saving record.");
+            }
+        } catch(e) {
+            alert("Network error saving historical record.");
+        }
+    }
         function renderHistory() {
             const tbody = document.getElementById('history-body');
             const sortedHistory = [...db.history].sort((a, b) => new Date(b.date) - new Date(a.date));
