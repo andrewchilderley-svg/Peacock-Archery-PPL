@@ -1335,12 +1335,20 @@
                         }
                     }
                 });
+
+                // Safe date formatting that handles both "YYYY-MM-DDTHH:mm:ss" and simple years like "2024"
+                let formattedDate = "-";
+                if (best && best.date) {
+                    const dateStr = String(best.date);
+                    formattedDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+                }
+
                 return `<tr>
                     <td><span class="badge badge-gold">${style}</span></td>
                     <td><strong>${best ? best.archerName : "No Record"}</strong></td>
                     <td>${best ? best.score : "-"}</td>
                     <td>${best ? best.tens : "-"}</td>
-                    <td>${best && best.date ? String(best.date).split('T')[0] : "-"}</td>
+                    <td>${formattedDate}</td>
                 </tr>`;
             }).join('');
         }
