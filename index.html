@@ -628,28 +628,61 @@
             </div>
         </div>
 
-       <!-- 4. RECORDS TAB -->
-        <div id="tab-records" class="tab-content">
-            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Records & Personal Bests</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Bow Style</th>
-                            <th>Sex</th>
-                            <th>Category</th>
-                            <th>Record Holder</th>
-                            <th>Top Score</th>
-                            <th>10s</th>
-                            <th>Date Set</th>
-                        </tr>
-                    </thead>
-                    <tbody id="records-body">
-                        <!-- Populated dynamically -->
-                    </tbody>
-                </table>
-            </div>
+    <!-- 4. RECORDS TAB -->
+<div id="tab-records" class="tab-content">
+    <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Records & Personal Bests</h2>
+    
+    <!-- Filter Controls -->
+    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+        <div class="form-group" style="flex: 1; min-width: 150px;">
+            <label>Filter Bow Style</label>
+            <select id="rec-bow-filter" onchange="renderRecords()">
+                <option value="All">All Bow Styles</option>
+                <option value="Recurve">Recurve</option>
+                <option value="Compound">Compound</option>
+                <option value="Barebow">Barebow</option>
+                <option value="Longbow">Longbow</option>
+                <option value="Asiatic">Asiatic</option>
+            </select>
         </div>
+        <div class="form-group" style="flex: 1; min-width: 130px;">
+            <label>Filter Sex</label>
+            <select id="rec-sex-filter" onchange="renderRecords()">
+                <option value="All">All Sexes</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+        <div class="form-group" style="flex: 1; min-width: 130px;">
+            <label>Filter Category</label>
+            <select id="rec-cat-filter" onchange="renderRecords()">
+                <option value="All">All Categories</option>
+                <option value="Senior">Senior</option>
+                <option value="50+">50+</option>
+                <option value="Under 18">Under 18</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Bow Style</th>
+                    <th>Sex</th>
+                    <th>Category</th>
+                    <th>Record Holder</th>
+                    <th>Top Score</th>
+                    <th>10s</th>
+                    <th>Date Set</th>
+                </tr>
+            </thead>
+            <tbody id="records-body">
+                <!-- Populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+</div>
 
         <!-- 5. HISTORY TAB -->
         <div id="tab-history" class="tab-content">
@@ -1300,90 +1333,98 @@
             `).join('');
         }
 
-      async function renderRecords() {
-            try {
-                const res = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
-                const text = await res.text();
-                db.historicalRecords = text ? JSON.parse(text) : [];
-            } catch(e) { 
-                console.error("Failed to load historical records", e);
-                db.historicalRecords = []; 
-            }
+     async function renderRecords() {
+    try {
+        const res = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
+        const text = await res.text();
+        db.historicalRecords = text ? JSON.parse(text) : [];
+    } catch(e) { 
+        console.error("Failed to load historical records", e);
+        db.historicalRecords = []; 
+    }
 
-            const tbody = document.getElementById('records-body');
-            let allRecords = [...db.historicalRecords];
-            
-            // Map regular league history scores. 
-            // We look up the archer in db.archers to pull their actual gender and category, 
-            // falling back to "Senior" and "Male" if not found.
-            if (Array.isArray(db.history)) {
-                db.history.forEach(h => {
-                    const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                    const gender = archer ? archer.gender : "Male";
-                    const category = archer ? archer.category : "Senior";
+    const tbody = document.getElementById('records-body');
+    
+    // Grab filter values safely
+    const bowFilter = document.getElementById('rec-bow-filter')?.value || 'All';
+    const sexFilter = document.getElementById('rec-sex-filter')?.value || 'All';
+    const catFilter = document.getElementById('rec-cat-filter')?.value || 'All';
 
-                    allRecords.push({ 
-                        bow: h.bow, 
-                        category: category, 
-                        gender: gender,
-                        archerName: h.archerName, 
-                        score: parseInt(h.score) || 0, 
-                        tens: parseInt(h.tens) || 0, 
-                        date: h.date 
-                    });
-                });
-            }
+    let allRecords = [...db.historicalRecords];
+    
+    if (Array.isArray(db.history)) {
+        db.history.forEach(h => {
+            const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+            const gender = archer ? archer.gender : "Male";
+            const category = archer ? archer.category : "Senior";
 
-            const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
-            const genders = ["Male", "Female"];
-            const categories = ["Senior", "50+", "Under 18"];
-
-            let htmlRows = [];
-
-            // Generate records matrix for every combination of Style, Gender, and Category
-            styles.forEach(style => {
-                genders.forEach(gender => {
-                    categories.forEach(category => {
-                        let best = null;
-                        
-                        allRecords.forEach(r => {
-                            // Match bow style
-                            const matchBow = r && r.bow && r.bow.toLowerCase() === style.toLowerCase();
-                            
-                            // Match gender & category if present in the record (defaulting historical records to Senior/Male if unassigned)
-                            const rGender = r.gender || "Male";
-                            const rCat = r.category || "Senior";
-                            const matchDemographics = rGender.toLowerCase() === gender.toLowerCase() && rCat.toLowerCase() === category.toLowerCase();
-
-                            if (matchBow && matchDemographics) {
-                                if (!best || parseInt(r.score) > parseInt(best.score)) {
-                                    best = r;
-                                }
-                            }
-                        });
-
-                        // Only show rows that have a record or show them as placeholders
-                        let formattedDate = "-";
-                        if (best && best.date) {
-                            const dateStr = String(best.date);
-                            formattedDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
-                        }
-
-                        htmlRows.push(`<tr>
-                            <td><span class="badge badge-gold">${style}</span></td>
-                            <td>${gender}</td>
-                            <td>${category}</td>
-                            <td><strong>${best ? best.archerName : "No Record"}</strong></td>
-                            <td>${best ? best.score : "-"}</td>
-                            <td>${best ? best.tens : "-"}</td>
-                            <td>${formattedDate}</td>
-                        </tr>`);
-                    });
-                });
+            allRecords.push({ 
+                bow: h.bow, 
+                category: category, 
+                gender: gender,
+                archerName: h.archerName, 
+                score: parseInt(h.score) || 0, 
+                tens: parseInt(h.tens) || 0, 
+                date: h.date 
             });
+        });
+    }
 
-            tbody.innerHTML = htmlRows.join('');
-        }
+    const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
+    const genders = ["Male", "Female"];
+    const categories = ["Senior", "50+", "Under 18"];
+
+    let htmlRows = [];
+
+    styles.forEach(style => {
+        if (bowFilter !== 'All' && style.toLowerCase() !== bowFilter.toLowerCase()) return;
+
+        genders.forEach(gender => {
+            if (sexFilter !== 'All' && gender.toLowerCase() !== sexFilter.toLowerCase()) return;
+
+            categories.forEach(category => {
+                if (catFilter !== 'All' && category.toLowerCase() !== catFilter.toLowerCase()) return;
+
+                let best = null;
+                
+                allRecords.forEach(r => {
+                    const matchBow = r && r.bow && r.bow.toLowerCase() === style.toLowerCase();
+                    const rGender = r.gender || "Male";
+                    const rCat = r.category || "Senior";
+                    const matchDemographics = rGender.toLowerCase() === gender.toLowerCase() && rCat.toLowerCase() === category.toLowerCase();
+
+                    if (matchBow && matchDemographics) {
+                        if (!best || parseInt(r.score) > parseInt(best.score)) {
+                            best = r;
+                        }
+                    }
+                });
+
+                let formattedDate = "-";
+                if (best && best.date) {
+                    const dateStr = String(best.date);
+                    formattedDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+                }
+
+                htmlRows.push(`<tr>
+                    <td><span class="badge badge-gold">${style}</span></td>
+                    <td>${gender}</td>
+                    <td>${category}</td>
+                    <td><strong>${best ? best.archerName : "No Record"}</strong></td>
+                    <td>${best ? best.score : "-"}</td>
+                    <td>${best ? best.tens : "-"}</td>
+                    <td>${formattedDate}</td>
+                </tr>`);
+            });
+        });
+    });
+
+    if (htmlRows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No records match this filter.</td></tr>`;
+    } else {
+        tbody.innerHTML = htmlRows.join('');
+    }
+}
 
         async function submitHistoricalRecord() {
             const record = {
