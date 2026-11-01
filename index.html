@@ -475,6 +475,11 @@
                     <label>10s Count</label>
                     <input type="number" id="up-tens" min="0" max="60" placeholder="e.g. 15" value="0">
                 </div>
+                <!-- Inside #tab-upload form grid -->
+<div class="form-group">
+    <label>Hits Count (Max 60)</label>
+    <input type="number" id="up-hits" min="0" max="60" placeholder="e.g. 60" value="60">
+</div>
                 <div class="form-group">
                     <label>Photo Proof (Optional)</label>
                     <input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;">
@@ -613,13 +618,14 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Pos</th>
-                            <th>Archer</th>
-                            <th>Bow Style</th>
-                            <th>Score / Sum</th>
-                            <th>10s</th>
-                            <th>Rnds</th>
-                        </tr>
+        <th>Pos</th>
+        <th>Archer</th>
+        <th>Bow Style</th>
+        <th>Score / Sum</th>
+        <th>Hits</th> <!-- Added Column -->
+        <th>10s</th>
+        <th>Rnds</th>
+    </tr>
                     </thead>
                     <tbody id="leaderboard-body">
                         <!-- Populated dynamically -->
@@ -1139,38 +1145,38 @@
             document.getElementById('up-avg-arrow').innerText = (score / 60).toFixed(2);
             document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, archer.gender, archer.category);
         }
+function processManualScore() {
+    const archerId = document.getElementById('up-archer').value;
+    const archer = db.archers.find(a => String(a.id) === String(archerId));
+    const bow = document.getElementById('up-bow').value;
+    const date = document.getElementById('up-date').value;
+    const score = parseInt(document.getElementById('up-score').value);
+    const tens = parseInt(document.getElementById('up-tens').value) || 0;
+    const hits = parseInt(document.getElementById('up-hits').value) || 60; // <--- Capture hits
 
-        function processManualScore() {
-            const archerId = document.getElementById('up-archer').value;
-            const archer = db.archers.find(a => String(a.id) === String(archerId));
-            const bow = document.getElementById('up-bow').value;
-            const date = document.getElementById('up-date').value;
-            const score = parseInt(document.getElementById('up-score').value);
-            const tens = parseInt(document.getElementById('up-tens').value) || 0;
+    if (!archer || isNaN(score) || score < 0 || score > 600) {
+        alert("Please enter a valid archer and score between 0 and 600.");
+        return;
+    }
 
-            if (!archer || isNaN(score) || score < 0 || score > 600) {
-                alert("Please enter a valid archer and score between 0 and 600.");
-                return;
-            }
+    const fileInput = document.getElementById('up-screenshot');
+    const file = fileInput.files[0];
 
-            const fileInput = document.getElementById('up-screenshot');
-            const file = fileInput.files[0];
+    // Build the record object with hits included
+    const recordPayload = {
+        id: Date.now(), 
+        archerId: archer.id, 
+        archerName: archer.name,
+        bow: bow, 
+        score: score, 
+        tens: tens, 
+        hits: hits, // <--- Add hits here
+        date: date || new Date().toISOString().split('T')[0], 
+        screenshot: file ? "" : "" // handle file reader as before
+    };
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    submitRecord({
-                        id: Date.now(), archerId: archer.id, archerName: archer.name,
-                        bow: bow, score: score, tens: tens, date: date || new Date().toISOString().split('T')[0], screenshot: e.target.result
-                    });
-                };
-                reader.readAsDataURL(file);
-            } else {
-                submitRecord({
-                    id: Date.now(), archerId: archer.id, archerName: archer.name,
-                    bow: bow, score: score, tens: tens, date: date || new Date().toISOString().split('T')[0], screenshot: ""
-                });
-            }
+    // (Keep your file reader wrapper logic as it is, passing recordPayload to submitRecord)
+
         }
 
         function submitRecord(record) {
@@ -1359,7 +1365,23 @@
 
            let allRecords = [...db.historicalRecords];
             
-            // NEW: Ensure any historical record missing a gender checks your archer database
+            // Inside renderLeaderboard() where monthly/overall rows are aggregated:
+// Make sure to sum up hits:
+totalHits += parseInt(h.hits) || 60; // Default to 60 if historical data lacks it
+
+// In your rows.map(...) HTML generator for the leaderboard table:
+tbody.innerHTML = rows.map((r, idx) => `
+    <tr>
+        <td><strong>#${idx + 1}</strong></td>
+        <td>${r.archerName}</td>
+        <td><span class="badge badge-gold">${r.bow}</span></td>
+        <td><strong>${r.score}</strong></td>
+        <td>${r.hits}</td> <!-- Render Hits -->
+        <td>${r.tens}</td>
+        <td>${monthFilter === 'overall' ? r.rounds : '1'}</td>
+    </tr>
+`).join('');
+          // NEW: Ensure any historical record missing a gender checks your archer database
             allRecords.forEach(r => {
                 if (!r.gender) {
                     const matchedArcher = db.archers.find(a => a.name.toLowerCase() === (r.archerName || "").toLowerCase());
