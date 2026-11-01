@@ -1537,23 +1537,27 @@
             alert(`Archer successfully added with starting baseline PB of ${defaultStartingPB}.`);
         }
 
-        function renderAdminTable() {
-            const tbody = document.getElementById('admin-archer-table');
-            const sorted = getSortedArchers();
-            if (sorted.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No archers in database.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = sorted.map(a => `
-                <tr>
-                    <td><strong>${a.name}</strong></td>
-                    <td>${a.gender}</td>
-                    <td>${a.category}</td>
-                    <td><span class="badge badge-gold">${a.defaultBow}</span></td>
-                    <td><strong>${a.startingPB || 250}</strong></td>
-                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteArcher('${a.id}')">Delete</button></td>
-                </tr>
-            `).join('');
+       function renderAdminTable() {
+    const tbody = document.getElementById('admin-archer-table');
+    const sorted = getSortedArchers();
+    if (sorted.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No archers in database.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = sorted.map(a => `
+        <tr>
+            <td><strong>${a.name}</strong></td>
+            <td>${a.gender}</td>
+            <td>${a.category}</td>
+            <td><span class="badge badge-gold">${a.defaultBow}</span></td>
+            <td>
+                <input type="number" value="${a.startingPB || 250}" min="0" max="600" 
+                       style="width: 80px; padding: 4px 8px; font-weight: bold;" 
+                       onchange="updateArcherPB('${a.id}', this.value)">
+            </td>
+            <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteArcher('${a.id}')">Delete</button></td>
+        </tr>
+    `).join('');
         }
 
         function promptDeleteArcher(id) {
