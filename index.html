@@ -1272,23 +1272,24 @@
         }
 
         function renderHistory() {
-            const tbody = document.getElementById('history-body');
-            const sortedHistory = [...db.history].sort((a, b) => new Date(b.date) - new Date(a.date));
-            if (sortedHistory.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No history found.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = sortedHistory.map(h => `
-                <tr>
-                    <td>${h.date}</td>
-                    <td>${h.archerName}</td>
-                    <td><span class="badge badge-gold">${h.bow}</span></td>
-                    <td><strong>${h.score}</strong></td>
-                    <td>${h.tens}</td>
-                    <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
-                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
-                </tr>
-            `).join('');
+    const tbody = document.getElementById('history-body');
+    const sortedHistory = [...db.history].sort((a, b) => new Date(b.date) - new Date(a.date));
+    if (sortedHistory.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No history found.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = sortedHistory.map(h => `
+        <tr>
+            <td>${h.date ? h.date.split('T')[0] : ''}</td>
+            <td>${h.archerName}</td>
+            <td><span class="badge badge-gold">${h.bow}</span></td>
+            <td><strong>${h.score}</strong></td>
+            <td>${h.tens}</td>
+            <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
+            <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
+        </tr>
+    `).join('');
+}
         }
 
         function viewProof(historyId) {
