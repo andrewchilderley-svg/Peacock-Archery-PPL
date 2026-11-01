@@ -457,6 +457,21 @@
                     <select id="up-archer" onchange="onUploadArcherChange()"></select>
                 </div>
                 <div class="form-group">
+                    <label>Gender (Pre-filled)</label>
+                    <select id="up-gender" onchange="updateUploadStats()">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Age Category (Pre-filled)</label>
+                    <select id="up-cat" onchange="updateUploadStats()">
+                        <option value="Senior">Senior</option>
+                        <option value="50+">50+</option>
+                        <option value="Under 18">Under 18</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Bow Style</label>
                     <select id="up-bow" onchange="updateUploadStats()">
                         <option value="Recurve">Recurve</option>
@@ -613,6 +628,23 @@
                         <option value="Barebow">Barebow</option>
                         <option value="Longbow">Longbow</option>
                         <option value="Asiatic">Asiatic</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 130px;">
+                    <label>Gender Filter</label>
+                    <select id="lb-gender-filter" onchange="renderLeaderboard()">
+                        <option value="All">All Genders</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 130px;">
+                    <label>Age Group Filter</label>
+                    <select id="lb-cat-filter" onchange="renderLeaderboard()">
+                        <option value="All">All Categories</option>
+                        <option value="Senior">Senior</option>
+                        <option value="50+">50+</option>
+                        <option value="Under 18">Under 18</option>
                     </select>
                 </div>
             </div>
@@ -1082,8 +1114,10 @@
         function onUploadArcherChange() {
             const archerId = document.getElementById('up-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
-            if (archer && archer.defaultBow) {
-                document.getElementById('up-bow').value = archer.defaultBow;
+            if (archer) {
+                if (archer.defaultBow) document.getElementById('up-bow').value = archer.defaultBow;
+                if (archer.gender) document.getElementById('up-gender').value = archer.gender;
+                if (archer.category) document.getElementById('up-cat').value = archer.category;
             }
             updateUploadStats();
         }
@@ -1142,19 +1176,21 @@
         }
 
         function updateUploadStats() {
-            const archerId = document.getElementById('up-archer').value;
-            const archer = db.archers.find(a => String(a.id) === String(archerId));
-            if (!archer) return;
             const score = parseInt(document.getElementById('up-score').value) || 0;
             const bow = document.getElementById('up-bow').value;
+            const gender = document.getElementById('up-gender').value;
+            const category = document.getElementById('up-cat').value;
+
             document.getElementById('up-avg-arrow').innerText = (score / 60).toFixed(2);
-            document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, archer.gender, archer.category);
+            document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, gender, category);
         }
 
         function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
             const bow = document.getElementById('up-bow').value;
+            const gender = document.getElementById('up-gender').value;
+            const category = document.getElementById('up-cat').value;
             const date = document.getElementById('up-date').value;
             const score = parseInt(document.getElementById('up-score').value);
             const tens = parseInt(document.getElementById('up-tens').value) || 0;
@@ -1175,7 +1211,9 @@
                         id: Date.now(), 
                         archerId: archer.id, 
                         archerName: archer.name,
-                        bow: bow, 
+                        bow: bow,
+                        gender: gender,
+                        category: category,
                         score: score, 
                         tens: tens, 
                         hits: hits,
@@ -1189,7 +1227,9 @@
                     id: Date.now(), 
                     archerId: archer.id, 
                     archerName: archer.name,
-                    bow: bow, 
+                    bow: bow,
+                    gender: gender,
+                    category: category,
                     score: score, 
                     tens: tens, 
                     hits: hits,
@@ -1299,7 +1339,10 @@
 
             submitRecord({
                 id: Date.now(), archerId: archer.id, archerName: archer.name,
-                bow: document.getElementById('shoot-bow').value, score: total, tens: tens, hits: hits,
+                bow: document.getElementById('shoot-bow').value, 
+                gender: archer.gender || "Male", 
+                category: archer.category || "Senior",
+                score: total, tens: tens, hits: hits,
                 date: document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0], screenshot: ""
             });
             resetLiveRound(true);
@@ -1308,14 +1351,27 @@
         function renderLeaderboard() {
             const monthFilter = document.getElementById('lb-month-filter')?.value || 'overall';
             const bowFilter = document.getElementById('lb-bow-filter')?.value || 'All';
+            const genderFilter = document.getElementById('lb-gender-filter')?.value || 'All';
+            const catFilter = document.getElementById('lb-cat-filter')?.value || 'All';
+
             const tbody = document.getElementById('leaderboard-body');
             const theadHeaders = document.getElementById('leaderboard-headers');
+
+            // Helper to match archer demographics from history records or database registry
+            function getRecordDemographics(h) {
+                const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                const gender = h.gender || (archer ? archer.gender : "Male");
+                const category = h.category || (archer ? archer.category : "Senior");
+                return { gender, category };
+            }
 
             if (monthFilter === 'most-improved') {
                 theadHeaders.innerHTML = `
                     <th>Pos</th>
                     <th>Archer</th>
                     <th>Bow Style</th>
+                    <th>Gender</th>
+                    <th>Category</th>
                     <th>Best Score</th>
                     <th>Starting PB</th>
                     <th>PB Improvement (+ / -)</th>
@@ -1327,12 +1383,18 @@
                     const startingPB = archer ? (archer.startingPB || 250) : 250;
                     const score = parseInt(h.score) || 0;
                     const diff = score - startingPB;
+                    const demos = getRecordDemographics(h);
+
+                    if (genderFilter !== 'All' && demos.gender.toLowerCase() !== genderFilter.toLowerCase()) return;
+                    if (catFilter !== 'All' && demos.category.toLowerCase() !== catFilter.toLowerCase()) return;
 
                     const key = `${h.archerId}_${h.bow}`;
                     if (!improvementMap[key] || diff > improvementMap[key].diff) {
                         improvementMap[key] = {
                             archerName: h.archerName,
                             bow: h.bow,
+                            gender: demos.gender,
+                            category: demos.category,
                             bestScore: score,
                             startingPB: startingPB,
                             diff: diff
@@ -1345,7 +1407,7 @@
                 rows.sort((a, b) => b.diff - a.diff);
 
                 if (rows.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No score history available to calculate improvements.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No score history available matching these filters.</td></tr>`;
                     return;
                 }
 
@@ -1357,6 +1419,8 @@
                             <td><strong>#${idx + 1}</strong></td>
                             <td>${r.archerName}</td>
                             <td><span class="badge badge-gold">${r.bow}</span></td>
+                            <td>${r.gender}</td>
+                            <td>${r.category}</td>
                             <td><strong>${r.bestScore}</strong></td>
                             <td>${r.startingPB}</td>
                             <td><span class="badge ${badgeClass}">${diffText} vs PB</span></td>
@@ -1387,6 +1451,10 @@
                     let seasonYear = mNum >= 10 ? yNum : (mNum <= 3 ? yNum - 1 : null);
                     if (!seasonYear) return;
 
+                    const demos = getRecordDemographics(h);
+                    if (genderFilter !== 'All' && demos.gender.toLowerCase() !== genderFilter.toLowerCase()) return;
+                    if (catFilter !== 'All' && demos.category.toLowerCase() !== catFilter.toLowerCase()) return;
+
                     const monthKey = `${seasonYear}-${month}`;
                     const key = `${h.archerId}_${h.bow}`;
                     if (!standingsMap[key]) standingsMap[key] = { archerName: h.archerName, bow: h.bow, monthlyBests: {} };
@@ -1410,6 +1478,10 @@
                 let monthMap = {};
                 db.history.forEach(h => {
                     if (!h.date || !h.date.startsWith(monthFilter)) return;
+                    const demos = getRecordDemographics(h);
+                    if (genderFilter !== 'All' && demos.gender.toLowerCase() !== genderFilter.toLowerCase()) return;
+                    if (catFilter !== 'All' && demos.category.toLowerCase() !== catFilter.toLowerCase()) return;
+
                     const key = `${h.archerId}_${h.bow}`;
                     if (!monthMap[key] || parseInt(h.score) > monthMap[key].score) {
                         monthMap[key] = { archerName: h.archerName, bow: h.bow, score: parseInt(h.score), hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, rounds: 1 };
@@ -1422,7 +1494,7 @@
             rows.sort((a, b) => b.score - a.score);
 
             if (rows.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No scores recorded for this filter.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No scores recorded matching these filters.</td></tr>`;
                 return;
             }
 
@@ -1471,8 +1543,8 @@
             if (Array.isArray(db.history)) {
                 db.history.forEach(h => {
                     const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                    const gender = archer ? archer.gender : "Male";
-                    const category = archer ? archer.category : "Senior";
+                    const gender = h.gender || (archer ? archer.gender : "Male");
+                    const category = h.category || (archer ? archer.category : "Senior");
 
                     allRecords.push({ 
                         bow: h.bow, 
