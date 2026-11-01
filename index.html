@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peacock Portsmouth Archery League</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #d97706;
+            --primary-hover: #b45309;
+            --accent: #38bdf8;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --success: #22c55e;
+            --border: #475569;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-logo {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 6px;
+            background: var(--bg-input);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .header-text h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-text p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .admin-btn {
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .admin-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Nav Tabs */
+        .nav-tabs {
+            display: flex;
+            background: #111827;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            white-space: nowrap;
+            text-align: center;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: rgba(217, 119, 6, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 24px;
+            flex: 1;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Forms & Inputs */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input, button {
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary);
+        }
+
+        input[type="date"] {
+            cursor: pointer;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+        .btn-danger:hover {
+            background: var(--danger-hover);
+        }
+
+        /* Tables & Lists */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: #111827;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Keypad Shoot Area */
+        .shoot-header-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+            background: #111827;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-box .stat-val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-box .stat-lbl {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .end-display {
+            background: #111827;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .arrows-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .arrow-slot {
+            width: 50px;
+            height: 50px;
+            background: var(--bg-input);
+            border: 2px dashed var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .arrow-slot.filled {
+            border-style: solid;
+            border-color: var(--primary);
+            background: rgba(217, 119, 6, 0.1);
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .key-btn {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 16px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .key-btn:hover {
+            background: var(--border);
+        }
+
+        .key-btn.gold {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        .key-btn.gold:hover {
+            background: var(--primary-hover);
+        }
+
+        .key-btn.action {
+            background: #374151;
+            font-size: 1rem;
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            padding: 24px;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        /* Badges & Tags */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-gold { background: rgba(217, 119, 6, 0.2); color: #fbbf24; border: 1px solid rgba(217, 119, 6, 0.4); }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-title">
+                <div id="header-logo-container">
+                    <div class="header-logo" id="header-logo-display">🎯</div>
+                </div>
+                <div class="header-text">
+                    <h1 id="brand-title">Peacock Portsmouth League (PPL)</h1>
+                    <p>Portsmouth Round (60 Arrows @ 20y | 20 ends of 3 Arrows)</p>
+                </div>
+            </div>
+            <button class="admin-btn" onclick="openAdminModal()">🔒 Admin</button>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('upload')">📤 Upload</button>
+            <button class="tab-btn" onclick="switchTab('shoot')">🎯 Shoot</button>
+            <button class="tab-btn" onclick="switchTab('board')">🏆 Leaderboard</button>
+            <button class="tab-btn" onclick="switchTab('records')">🎖️ Records</button>
+            <button class="tab-btn" onclick="switchTab('history')">📜 History</button>
+            <button class="tab-btn" onclick="openAdminModal()">⚙️ Settings</button>
+        </nav>
+
+        <!-- 1. UPLOAD TAB -->
+        <div id="tab-upload" class="tab-content active">
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Manual Score Submission</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Archer</label>
+                    <select id="up-archer" onchange="onUploadArcherChange()"></select>
+                </div>
+                <div class="form-group">
+                    <label>Bow Style</label>
+                    <select id="up-bow" onchange="updateUploadStats()">
+                        <option value="Recurve">Recurve</option>
+                        <option value="Compound">Compound</option>
+                        <option value="Barebow">Barebow</option>
+                        <option value="Longbow">Longbow</option>
+                        <option value="Asiatic">Asiatic</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date Shot</label>
+                    <input type="date" id="up-date" onclick="safeOpenPicker(this)">
+                </div>
+                <div class="form-group">
+                    <label>Total Score (Max 600)</label>
+                    <input type="number" id="up-score" min="0" max="600" placeholder="e.g. 520" oninput="updateUploadStats()">
+                </div>
+                <div class="form-group">
+                    <label>10s Count</label>
+                    <input type="number" id="up-tens" min="0" max="60" placeholder="e.g. 15" value="0">
+                </div>
+                <!-- PHOTO PROOF FIELD -->
+                <div class="form-group">
+                    <label>Photo Proof (Optional)</label>
+                    <input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;">
+                </div>
+            </div>
+            
+            <div style="background: #111827; padding: 16px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">AVG. ARROW VALUE</span>
+                    <span id="up-avg-arrow" style="font-size: 1.3rem; font-weight: 700; color: var(--primary);">0.00</span>
+                </div>
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">EST. CLASSIFICATION GRADE</span>
+                    <span id="up-est-grade" style="font-size: 1.3rem; font-weight: 700; color: var(--accent);">Unclassified</span>
+                </div>
+            </div>
+
+            <button class="btn" onclick="processManualScore()">💾 Save & Submit Score</button>
+        </div>
+
+        <!-- 2. SHOOT TAB (LIVE KEYPAD) -->
+        <div id="tab-shoot" class="tab-content">
+            <div class="form-grid" style="margin-bottom: 12px;">
+                <div class="form-group">
+                    <label>Archer</label>
+                    <select id="shoot-archer" onchange="onShootArcherChange()"></select>
+                </div>
+                <div class="form-group">
+                    <label>Bow Style</label>
+                    <select id="shoot-bow" onchange="updateLiveStats()">
+                        <option value="Recurve">Recurve</option>
+                        <option value="Compound">Compound</option>
+                        <option value="Barebow">Barebow</option>
+                        <option value="Longbow">Longbow</option>
+                        <option value="Asiatic">Asiatic</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date Shot</label>
+                    <input type="date" id="shoot-date" onclick="safeOpenPicker(this)">
+                </div>
+            </div>
+
+            <div class="shoot-header-stats">
+                <div class="stat-box">
+                    <div class="stat-val" id="live-total">0</div>
+                    <div class="stat-lbl">Total / 600</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-val" id="live-tens">0</div>
+                    <div class="stat-lbl">10s Count</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-val" id="live-arrows">0</div>
+                    <div class="stat-lbl">Arrows / 60</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                <div style="background: #111827; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                    <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">AVG. ARROW</span>
+                    <span id="live-avg-arrow" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">0.00</span>
+                </div>
+                <div style="background: #111827; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                    <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">PROJECTED GRADE</span>
+                    <span id="live-est-grade" style="font-size: 1.1rem; font-weight: 700; color: var(--accent);">Unclassified</span>
+                </div>
+            </div>
+
+            <div class="end-display">
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted);">
+                    <span id="live-end-label">End 1 of 20</span>
+                    <span>3 Arrows Per End</span>
+                </div>
+                <div class="arrows-row" id="live-arrow-slots">
+                    <div class="arrow-slot">-</div>
+                    <div class="arrow-slot">-</div>
+                    <div class="arrow-slot">-</div>
+                </div>
+            </div>
+
+            <div class="keypad">
+                <button class="key-btn gold" onclick="pressScore(10)">10</button>
+                <button class="key-btn gold" onclick="pressScore(9)">9</button>
+                <button class="key-btn action" onclick="undoArrow()">⌫ Undo</button>
+                <button class="key-btn" style="background:#7f1d1d; border-color:#991b1b;" onclick="pressScore(8)">8</button>
+                <button class="key-btn" style="background:#7f1d1d; border-color:#991b1b;" onclick="pressScore(7)">7</button>
+                <button class="key-btn" style="background:#1e3a8a; border-color:#1d4ed8;" onclick="pressScore(6)">6</button>
+                <button class="key-btn" style="background:#1e3a8a; border-color:#1d4ed8;" onclick="pressScore(5)">5</button>
+                <button class="key-btn" style="background:#451a03; border-color:#78350f;" onclick="pressScore(4)">4</button>
+                <button class="key-btn" style="background:#451a03; border-color:#78350f;" onclick="pressScore(3)">3</button>
+                <button class="key-btn" style="background:#1f2937;" onclick="pressScore(2)">2</button>
+                <button class="key-btn" style="background:#1f2937;" onclick="pressScore(1)">1</button>
+                <button class="key-btn" style="background:#111827;" onclick="pressScore(0)">M</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <button class="btn btn-secondary" onclick="resetLiveRound()">Reset Round</button>
+                <button class="btn" id="confirm-end-btn" onclick="confirmEnd()" disabled>Confirm End</button>
+            </div>
+
+            <div id="submit-league-container" class="hidden" style="margin-top: 16px;">
+                <button class="btn gold" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="submitLiveRoundToLeague()">🏆 Submit Live Round to League</button>
+            </div>
+        </div>
+
+        <!-- 3. LEADERBOARD TAB -->
+        <div id="tab-board" class="tab-content">
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 180px;">
+                    <label>Period / Season View</label>
+                    <select id="lb-month-filter" onchange="renderLeaderboard()">
+                        <option value="overall">🏆 Overall Season (Oct - Mar Sum)</option>
+                        <option value="2025-10">October 2025</option>
+                        <option value="2025-11">November 2025</option>
+                        <option value="2025-12">December 2025</option>
+                        <option value="2026-01">January 2026</option>
+                        <option value="2026-02">February 2026</option>
+                        <option value="2026-03">March 2026</option>
+                        <option value="2026-10">October 2026</option>
+                        <option value="2026-11">November 2026</option>
+                        <option value="2026-12">December 2026</option>
+                        <option value="2027-01">January 2027</option>
+                        <option value="2027-02">February 2027</option>
+                        <option value="2027-03">March 2027</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Bow Category</label>
+                    <select id="lb-bow-filter" onchange="renderLeaderboard()">
+                        <option value="All">All Bow Styles</option>
+                        <option value="Recurve">Recurve</option>
+                        <option value="Compound">Compound</option>
+                        <option value="Barebow">Barebow</option>
+                        <option value="Longbow">Longbow</option>
+                        <option value="Asiatic">Asiatic</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Archer</th>
+                            <th>Bow Style</th>
+                            <th>Score / Sum</th>
+                            <th>10s</th>
+                            <th>Rnds</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. RECORDS TAB -->
+        <div id="tab-records" class="tab-content">
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Records & Personal Bests</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bow Style</th>
+                            <th>Record Holder</th>
+                            <th>Top Score</th>
+                            <th>10s</th>
+                            <th>Date Set</th>
+                        </tr>
+                    </thead>
+                    <tbody id="records-body">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 5. HISTORY TAB -->
+        <div id="tab-history" class="tab-content">
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Submitted Score History</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Archer</th>
+                            <th>Bow</th>
+                            <th>Score</th>
+                            <th>10s</th>
+                            <th>Proof</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 6. ADMIN TAB -->
+        <div id="tab-admin" class="tab-content">
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">League Administration & Security</h2>
+            
+            <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
+                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Change Master Admin PIN</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>New 4-Digit PIN</label>
+                        <input type="password" id="new-admin-pin" placeholder="Enter new PIN" maxlength="6">
+                    </div>
+                </div>
+                <button class="btn" onclick="updateAdminPin()">🔒 Update Admin PIN</button>
+            </div>
+
+            <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
+                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Club Branding & Logo</h3>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>Upload League Logo Image</label>
+                    <input type="file" id="logo-file-input" accept="image/*" onchange="handleLogoUpload(event)">
+                </div>
+                <button class="btn btn-secondary" onclick="resetLeagueLogo()">Reset to Default Icon</button>
+            </div>
+
+            <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
+                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add New Archer</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="new-archer-name" placeholder="e.g. Jane Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select id="new-archer-gender">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Age Group</label>
+                        <select id="new-archer-cat">
+                            <option value="Senior">Senior</option>
+                            <option value="50+">50+</option>
+                            <option value="Under 18">Under 18</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Default Bow</label>
+                        <select id="new-archer-bow">
+                            <option value="Recurve">Recurve</option>
+                            <option value="Compound">Compound</option>
+                            <option value="Barebow">Barebow</option>
+                            <option value="Longbow">Longbow</option>
+                            <option value="Asiatic">Asiatic</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn" onclick="addNewArcherRegistry()">➕ Add Archer to Database</button>
+            </div>
+
+            <h3 style="font-size: 1rem; margin-bottom: 12px;">Registered Archers Database</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Gender</th>
+                            <th>Age Group</th>
+                            <th>Default Bow</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-archer-table">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- ADMIN PIN LOGIN MODAL -->
+    <div class="modal" id="admin-modal">
+        <div class="modal-content">
+            <div class="modal-title">🔐 Master Admin Access</div>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">Enter Master PIN (Default is 1010) to access settings and restricted actions.</p>
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label>PIN Code</label>
+                <input type="password" id="admin-pin-input" placeholder="Enter PIN">
+            </div>
+            <div style="margin-bottom: 16px;">
+                <a href="#" onclick="triggerPinReset(event)" style="font-size: 0.85rem; color: var(--accent); text-decoration: underline;">Forgot PIN? Reset to default (1010)</a>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeAdminModal()">Cancel</button>
+                <button class="btn" onclick="verifyAdminPin()">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE AUTHORIZATION MODAL -->
+    <div class="modal" id="delete-pin-modal">
+        <div class="modal-content">
+            <div class="modal-title">🔒 Authorize Deletion</div>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">Enter Admin PIN to confirm deletion.</p>
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label>Admin PIN</label>
+                <input type="password" id="del-auth-pin" placeholder="Enter PIN">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeDeletePinModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmAuthorizedDelete()">Confirm Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHOTO PROOF VIEWER MODAL -->
+    <div class="modal" id="proof-modal">
+        <div class="modal-content" style="max-width: 600px; text-align: center;">
+            <div class="modal-title">📷 Scorecard Proof</div>
+            <img id="proof-image-display" src="" alt="Scorecard Proof" style="max-width: 100%; max-height: 60vh; border-radius: 8px; margin-bottom: 16px; object-fit: contain;">
+            <div class="modal-actions" style="justify-content: center;">
+                <button class="btn btn-secondary" onclick="closeProofModal()">Close Image</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- GOOGLE SHEETS CLOUD SYNC CONFIGURATION ---
+        const APPS_SCRIPT_URL ='https://script.google.com/macros/s/AKfycbwRnOF7mRyD1WxWDeQ9dCdHPNf6QsxYdMvdqZocr_H35v8uwWrHnxhBSe0c9OJ7bbHIsA/exec'; // <-- PASTE YOUR WEB APP URL HERE
+
+        let db = {
+            archers: JSON.parse(localStorage.getItem('ppl_archers')) || [
+                { id: 1, name: "Alex Thompson", gender: "Male", category: "Senior", defaultBow: "Recurve" },
+                { id: 2, name: "Sarah Jenkins", gender: "Female", category: "Senior", defaultBow: "Compound" },
+                { id: 3, name: "David Clarke", gender: "Male", category: "50+", defaultBow: "Barebow" }
+            ],
+            history: [], // Fetched live from Google Sheet
+            settings: JSON.parse(localStorage.getItem('ppl_settings')) || {
+                pin: "1010",
+                title: "Peacock Portsmouth League (PPL)",
+                logo: ""
+            }
+        };
+
+        function saveDBLocally() {
+            localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
+            localStorage.setItem('ppl_settings', JSON.stringify(db.settings));
+        }
+
+        async function fetchCloudHistory(callback) {
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_URL')) {
+                // Fallback to local storage if URL hasn't been added yet
+                db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
+                if (callback) callback();
+                return;
+            }
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL);
+                const data = await response.json();
+                db.history = data;
+                if (callback) callback();
+            } catch (e) {
+                console.error("Could not sync with Google Sheet. Using local cache.", e);
+                db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
+                if (callback) callback();
+            }
+        }
+
+        async function syncRecordToCloud(record) {
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_URL')) {
+                // Fallback local save
+                db.history.push(record);
+                localStorage.setItem('ppl_history', JSON.stringify(db.history));
+                alert("Score saved locally (Google Apps Script URL not configured yet).");
+                switchTab('board');
+                return;
+            }
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(record)
+                });
+                const result = await response.json();
+                if (result.result === 'success') {
+                    alert("Score successfully submitted and synced to club cloud!");
+                    fetchCloudHistory(() => {
+                        switchTab('board');
+                    });
+                } else {
+                    alert("Error saving score to cloud.");
+                }
+            } catch (e) {
+                console.error("Cloud sync failed", e);
+                alert("Network error connecting to cloud database.");
+            }
+        }
+
+        // Automatic DB Upgrade for Legacy Data
+        db.archers.forEach(a => {
+            if (!a.gender) a.gender = "Male";
+            if (a.category === "Junior") a.category = "Under 18";
+        });
+        saveDBLocally();
+
+        // --- BRANDING & LOGO HANDLING ---
+        function applyBranding() {
+            if (db.settings.logo) {
+                document.getElementById('header-logo-container').innerHTML = `<img src="${db.settings.logo}" class="header-logo" alt="Logo">`;
+            } else {
+                document.getElementById('header-logo-container').innerHTML = `<div class="header-logo" id="header-logo-display">🎯</div>`;
+            }
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                db.settings.logo = e.target.result;
+                saveDBLocally();
+                applyBranding();
+                alert("Logo successfully uploaded and updated!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetLeagueLogo() {
+            db.settings.logo = "";
+            saveDBLocally();
+            applyBranding();
+            document.getElementById('logo-file-input').value = "";
+            alert("Logo reset to default icon.");
+        }
+
+        // --- SORT ARCHERS ALPHABETICALLY ---
+        function getSortedArchers() {
+            return [...db.archers].sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        // --- SAFE CALENDAR PICKER HELPER ---
+        function safeOpenPicker(input) {
+            try {
+                if (typeof input.showPicker === 'function') {
+                    input.showPicker();
+                } else {
+                    input.focus();
+                    input.click();
+                }
+            } catch (e) {
+                input.focus();
+            }
+        }
+
+        // --- TAB NAVIGATION ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            
+            const buttons = document.querySelectorAll('.tab-btn');
+            const map = { 'upload': 0, 'shoot': 1, 'board': 2, 'records': 3, 'history': 4 };
+            if (map[tabId] !== undefined) {
+                buttons[map[tabId]].classList.add('active');
+            }
+
+            if (tabId === 'board' || tabId === 'records' || tabId === 'history') {
+                fetchCloudHistory(() => {
+                    if (tabId === 'board') renderLeaderboard();
+                    if (tabId === 'records') renderRecords();
+                    if (tabId === 'history') renderHistory();
+                });
+            }
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            if(document.getElementById('up-date')) document.getElementById('up-date').value = today;
+            if(document.getElementById('shoot-date')) document.getElementById('shoot-date').value = today;
+
+            applyBranding();
+            populateDropdowns();
+            fetchCloudHistory(() => {
+                renderLeaderboard();
+            });
+        };
+
+        function populateDropdowns() {
+            const sorted = getSortedArchers();
+            
+            const upSelect = document.getElementById('up-archer');
+            upSelect.innerHTML = sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+            onUploadArcherChange();
+
+            const shootSelect = document.getElementById('shoot-archer');
+            shootSelect.innerHTML = sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+            onShootArcherChange();
+        }
+
+        function onUploadArcherChange() {
+            const archerId = document.getElementById('up-archer').value;
+            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            if (archer && archer.defaultBow) {
+                document.getElementById('up-bow').value = archer.defaultBow;
+            }
+            updateUploadStats();
+        }
+
+        function onShootArcherChange() {
+            const archerId = document.getElementById('shoot-archer').value;
+            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            if (archer && archer.defaultBow) {
+                document.getElementById('shoot-bow').value = archer.defaultBow;
+            }
+            updateLiveStats();
+        }
+
+        // --- MULTI-VARIABLE ARCHERY GB GRADING ENGINE ---
+        function getArcheryGBGrade(score, bow, gender, category) {
+            if (!score || score === 0) return "Unclassified";
+            
+            const labels = ["Indoor Archer 3rd", "Indoor Archer 2nd", "Indoor Archer 1st", "Indoor Bowman 3rd", "Indoor Bowman 2nd", "Indoor Bowman 1st", "Indoor Master Bowman", "Indoor Grand Master"];
+            
+            const key = `${bow}_${gender}_${category}`;
+            
+            const gradeMatrix = {
+                "Recurve_Male_Senior": [378, 437, 483, 518, 546, 566, 582, 593],
+                "Recurve_Male_50+": [316, 387, 444, 488, 522, 549, 569, 583],
+                "Recurve_Male_Under 18": [316, 387, 444, 488, 522, 549, 569, 583],
+                "Recurve_Female_Senior": [331, 399, 454, 496, 528, 553, 572, 586],
+                "Recurve_Female_50+": [265, 341, 407, 460, 501, 532, 556, 574],
+                "Recurve_Female_Under 18": [201, 276, 350, 415, 466, 505, 536, 559],
+                
+                "Compound_Male_Senior": [472, 508, 532, 549, 560, 571, 583, 594],
+                "Compound_Male_50+": [437, 482, 515, 537, 552, 563, 574, 586],
+                "Compound_Male_Under 18": [393, 449, 491, 521, 541, 555, 566, 577],
+                "Compound_Female_Senior": [449, 491, 521, 541, 555, 566, 577, 589],
+                "Compound_Female_50+": [408, 461, 500, 527, 545, 558, 568, 580],
+                "Compound_Female_Under 18": [358, 423, 472, 508, 532, 549, 560, 571],
+                
+                "Barebow_Male_Senior": [331, 387, 433, 472, 503, 528, 549, 565],
+                "Barebow_Male_50+": [276, 336, 391, 437, 475, 505, 530, 550],
+                "Barebow_Male_Under 18": [220, 281, 341, 395, 440, 477, 508, 532],
+                "Barebow_Female_Senior": [276, 336, 391, 437, 475, 505, 530, 550],
+                "Barebow_Female_50+": [220, 281, 341, 395, 440, 477, 508, 532],
+                "Barebow_Female_Under 18": [170, 225, 286, 346, 399, 444, 480, 510],
+                
+                "Longbow_Male_Senior": [127, 178, 240, 306, 369, 423, 466, 501],
+                "Longbow_Male_50+": [90, 130, 183, 245, 311, 373, 426, 469],
+                "Longbow_Male_Under 18": [62, 92, 134, 187, 250, 316, 378, 430],
+                "Longbow_Female_Senior": [84, 123, 174, 235, 301, 364, 419, 463],
+                "Longbow_Female_50+": [58, 87, 127, 178, 240, 306, 369, 423],
+                "Longbow_Female_Under 18": [40, 60, 90, 130, 183, 245, 311, 373],
+                
+                "Asiatic_Male_Senior": [331, 387, 433, 472, 503, 528, 549, 565], 
+                "Asiatic_Male_50+": [276, 336, 391, 437, 475, 505, 530, 550],
+                "Asiatic_Male_Under 18": [220, 281, 341, 395, 440, 477, 508, 532],
+                "Asiatic_Female_Senior": [276, 336, 391, 437, 475, 505, 530, 550],
+                "Asiatic_Female_50+": [220, 281, 341, 395, 440, 477, 508, 532],
+                "Asiatic_Female_Under 18": [170, 225, 286, 346, 399, 444, 480, 510]
+            };
+
+            const thresholds = gradeMatrix[key] || gradeMatrix[`${bow}_Male_Senior`];
+            
+            let achieved = "Unclassified";
+            for (let i = 0; i < thresholds.length; i++) {
+                if (score >= thresholds[i]) {
+                    achieved = labels[i];
+                }
+            }
+            return achieved;
+        }
+
+        function updateUploadStats() {
+            const archerId = document.getElementById('up-archer').value;
+            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            if (!archer) return;
+
+            const score = parseInt(document.getElementById('up-score').value) || 0;
+            const bow = document.getElementById('up-bow').value;
+            const avg = (score / 60).toFixed(2);
+            
+            document.getElementById('up-avg-arrow').innerText = avg;
+            document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, archer.gender, archer.category);
+        }
+
+        function processManualScore() {
+            const archerId = document.getElementById('up-archer').value;
+            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            const bow = document.getElementById('up-bow').value;
+            const date = document.getElementById('up-date').value;
+            const score = parseInt(document.getElementById('up-score').value);
+            const tens = parseInt(document.getElementById('up-tens').value) || 0;
+
+            if (!archer || isNaN(score) || score < 0 || score > 600) {
+                alert("Please enter a valid archer and score between 0 and 600.");
+                return;
+            }
+
+            const fileInput = document.getElementById('up-screenshot');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    submitRecord({
+                        id: Date.now(),
+                        archerId: archer.id,
+                        archerName: archer.name,
+                        bow: bow,
+                        score: score,
+                        tens: tens,
+                        date: date || new Date().toISOString().split('T')[0],
+                        screenshot: e.target.result
+                    });
+                };
+                reader.readAsDataURL(file);
+            } else {
+                submitRecord({
+                    id: Date.now(),
+                    archerId: archer.id,
+                    archerName: archer.name,
+                    bow: bow,
+                    score: score,
+                    tens: tens,
+                    date: date || new Date().toISOString().split('T')[0],
+                    screenshot: ""
+                });
+            }
+        }
+
+        function submitRecord(record) {
+            syncRecordToCloud(record);
+            document.getElementById('up-score').value = '';
+            document.getElementById('up-tens').value = '';
+            document.getElementById('up-screenshot').value = '';
+        }
+
+        // --- LIVE KEYPAD LOGIC ---
+        let currentEnd = 1;
+        let currentArrowIndex = 0;
+        let endsMatrix = Array(20).fill(null).map(() => []);
+        let liveScores = [];
+
+        function pressScore(val) {
+            if (currentEnd > 20) return;
+            if (endsMatrix[currentEnd - 1].length >= 3) return;
+
+            endsMatrix[currentEnd - 1].push(val);
+            liveScores.push(val);
+            currentArrowIndex++;
+            renderLiveRoundUI();
+
+            if (endsMatrix[currentEnd - 1].length === 3 && currentEnd < 20) {
+                document.getElementById('confirm-end-btn').disabled = false;
+            } else if (currentEnd === 20 && endsMatrix[19].length === 3) {
+                document.getElementById('confirm-end-btn').disabled = false;
+            }
+        }
+
+        function undoArrow() {
+            if (liveScores.length === 0) return;
+            liveScores.pop();
+            currentEnd = Math.floor(liveScores.length / 3) + 1;
+            if (currentEnd > 20) currentEnd = 20;
+            
+            endsMatrix = Array(20).fill(null).map(() => []);
+            liveScores.forEach((s, idx) => {
+                const eIdx = Math.floor(idx / 3);
+                if (eIdx < 20) endsMatrix[eIdx].push(s);
+            });
+            currentEnd = Math.min(20, Math.floor(liveScores.length / 3) + (liveScores.length % 3 === 0 && liveScores.length > 0 ? 0 : 1));
+            if (currentEnd < 1) currentEnd = 1;
+
+            renderLiveRoundUI();
+            document.getElementById('confirm-end-btn').disabled = true;
+        }
+
+        function confirmEnd() {
+            if (currentEnd < 20) {
+                currentEnd++;
+                renderLiveRoundUI();
+                document.getElementById('confirm-end-btn').disabled = true;
+            } else {
+                document.getElementById('confirm-end-btn').disabled = true;
+                document.getElementById('submit-league-container').classList.remove('hidden');
+                document.getElementById('submit-league-container').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function resetLiveRound(forceSilent = false) {
+            if (forceSilent || confirm("Are you sure you want to reset the live round?")) {
+                currentEnd = 1;
+                endsMatrix = Array(20).fill(null).map(() => []);
+                liveScores = [];
+                document.getElementById('submit-league-container').classList.add('hidden');
+                renderLiveRoundUI();
+            }
+        }
+
+        function renderLiveRoundUI() {
+            const archerId = document.getElementById('shoot-archer').value;
+            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            if (!archer) return;
+
+            const total = liveScores.reduce((a, b) => a + b, 0);
+            const tens = liveScores.filter(s => s === 10).length;
+            const arrowsShot = liveScores.length;
+
+            document.getElementById('live-total').innerText = total;
+            document.getElementById('live-tens').innerText = tens;
+            document.getElementById('live-arrows').innerText = arrowsShot;
+
+            const avg = arrowsShot > 0 ? (total / arrowsShot).toFixed(2) : "0.00";
+            document.getElementById('live-avg-arrow').innerText = avg;
+            
+            const bow = document.getElementById('shoot-bow').value;
+            const projectedScore = Math.round((total / Math.max(1, arrowsShot)) * 60);
+            
+            document.getElementById('live-est-grade').innerText = getArcheryGBGrade(projectedScore, bow, archer.gender, archer.category);
+
+            document.getElementById('live-end-label').innerText = `End ${currentEnd} of 20`;
+
+            const activeEndValues = endsMatrix[currentEnd - 1] || [];
+            const slotsHtml = [0, 1, 2].map(i => {
+                const val = activeEndValues[i];
+                return `<div class="arrow-slot ${val !== undefined ? 'filled' : ''}">${val !== undefined ? val : '-'}</div>`;
+            }).join('');
+            document.getElementById('live-arrow-slots').innerHTML = slotsHtml;
+        }
+
+        function updateLiveStats() {
+            renderLiveRoundUI();
+        }
+
+        function submitLiveRoundToLeague() {
+            if (!confirm("Are you sure you want to submit this score?")) {
+                return;
+            }
+
+            const total = liveScores.reduce((a, b) => a + b, 0);
+            const tens = liveScores.filter(s => s === 10).length;
+            const archerId = document.getElementById('shoot-archer').value;
+            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            const bow = document.getElementById('shoot-bow').value;
+            const date = document.getElementById('shoot-date').value;
+
+            if (!archer) {
+                alert("Please select an archer.");
+                return;
+            }
+
+            submitRecord({
+                id: Date.now(),
+                archerId: archer.id,
+                archerName: archer.name,
+                bow: bow,
+                score: total,
+                tens: tens,
+                date: date || new Date().toISOString().split('T')[0],
+                screenshot: ""
+            });
+
+            resetLiveRound(true);
+        }
+
+        // --- LEADERBOARD LOGIC ---
+        function renderLeaderboard() {
+            const monthFilter = document.getElementById('lb-month-filter')?.value || 'overall';
+            const bowFilter = document.getElementById('lb-bow-filter')?.value || 'All';
+            const tbody = document.getElementById('leaderboard-body');
+            
+            let standingsMap = {};
+
+            if (monthFilter === 'overall') {
+                db.history.forEach(h => {
+                    if (!h.date) return;
+                    const [year, month] = h.date.split('-');
+                    const mNum = parseInt(month);
+                    const yNum = parseInt(year);
+                    
+                    let seasonYear = yNum;
+                    if (mNum >= 10) seasonYear = yNum;
+                    else if (mNum <= 3) seasonYear = yNum - 1;
+                    else return;
+
+                    const monthKey = `${seasonYear}-${month}`;
+                    const key = `${h.archerId}_${h.bow}`;
+
+                    if (!standingsMap[key]) {
+                        standingsMap[key] = {
+                            archerName: h.archerName,
+                            bow: h.bow,
+                            monthlyBests: {},
+                            totalTens: 0
+                        };
+                    }
+
+                    if (!standingsMap[key].monthlyBests[monthKey] || parseInt(h.score) > standingsMap[key].monthlyBests[monthKey].score) {
+                        standingsMap[key].monthlyBests[monthKey] = { score: parseInt(h.score), tens: parseInt(h.tens) || 0 };
+                    }
+                });
+
+                var rows = [];
+                for (let key in standingsMap) {
+                    let item = standingsMap[key];
+                    let totalScore = 0;
+                    let totalTens = 0;
+                    let monthsCount = 0;
+
+                    for (let mKey in item.monthlyBests) {
+                        totalScore += item.monthlyBests[mKey].score;
+                        totalTens += item.monthlyBests[mKey].tens;
+                        monthsCount++;
+                    }
+
+                    rows.push({
+                        archerName: item.archerName,
+                        bow: item.bow,
+                        score: totalScore,
+                        tens: totalTens,
+                        rounds: monthsCount
+                    });
+                }
+
+            } else {
+                let monthMap = {};
+                db.history.forEach(h => {
+                    if (!h.date || !h.date.startsWith(monthFilter)) return;
+                    const key = `${h.archerId}_${h.bow}`;
+                    if (!monthMap[key] || parseInt(h.score) > monthMap[key].score) {
+                        monthMap[key] = {
+                            archerName: h.archerName,
+                            bow: h.bow,
+                            score: parseInt(h.score),
+                            tens: parseInt(h.tens) || 0,
+                            rounds: 1
+                        };
+                    }
+                });
+                var rows = Object.values(monthMap);
+            }
+
+            if (bowFilter !== 'All') {
+                rows = rows.filter(r => r.bow === bowFilter);
+            }
+
+            rows.sort((a, b) => b.score - a.score);
+
+            if (rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No scores recorded for this filter.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = rows.map((r, idx) => `
+                <tr>
+                    <td><strong>#${idx + 1}</strong></td>
+                    <td>${r.archerName}</td>
+                    <td><span class="badge badge-gold">${r.bow}</span></td>
+                    <td><strong>${r.score}</strong></td>
+                    <td>${r.tens}</td>
+                    <td>${monthFilter === 'overall' ? r.rounds : '1'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // --- RECORDS & HISTORY ---
+        function renderRecords() {
+            const tbody = document.getElementById('records-body');
+            const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
+            
+            let records = styles.map(style => {
+                let best = null;
+                db.history.forEach(h => {
+                    if (h.bow === style && (!best || parseInt(h.score) > best.score)) {
+                        best = h;
+                    }
+                });
+                return {
+                    style,
+                    holder: best ? best.archerName : "No Record",
+                    score: best ? best.score : "-",
+                    tens: best ? best.tens : "-",
+                    date: best ? best.date : "-"
+                };
+            });
+
+            tbody.innerHTML = records.map(r => `
+                <tr>
+                    <td><span class="badge badge-gold">${r.style}</span></td>
+                    <td><strong>${r.holder}</strong></td>
+                    <td>${r.score}</td>
+                    <td>${r.tens}</td>
+                    <td>${r.date}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('history-body');
+            const sortedHistory = [...db.history].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (sortedHistory.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No history found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = sortedHistory.map(h => `
+                <tr>
+                    <td>${h.date}</td>
+                    <td>${h.archerName}</td>
+                    <td><span class="badge badge-gold">${h.bow}</span></td>
+                    <td><strong>${h.score}</strong></td>
+                    <td>${h.tens}</td>
+                    <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
+                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // --- PHOTO PROOF VIEWER ---
+        function viewProof(historyId) {
+            const record = db.history.find(h => String(h.id) === String(historyId));
+            if (record && record.screenshot) {
+                document.getElementById('proof-image-display').src = record.screenshot;
+                document.getElementById('proof-modal').classList.add('open');
+            }
+        }
+
+        function closeProofModal() {
+            document.getElementById('proof-modal').classList.remove('open');
+            document.getElementById('proof-image-display').src = '';
+        }
+
+        // --- ADMIN & SECURITY ---
+        let pendingDeleteHistoryId = null;
+
+        function openAdminModal() {
+            document.getElementById('admin-modal').classList.add('open');
+            document.getElementById('admin-pin-input').value = '';
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.remove('open');
+        }
+
+        function verifyAdminPin() {
+            const pin = document.getElementById('admin-pin-input').value;
+            if (pin === db.settings.pin) {
+                closeAdminModal();
+                switchTab('admin');
+                
+                document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+                const buttons = document.querySelectorAll('.tab-btn');
+                buttons[buttons.length - 1].classList.add('active');
+            } else {
+                alert("Incorrect PIN code.");
+            }
+        }
+
+        function triggerPinReset(e) {
+            e.preventDefault();
+            const confirmReset = prompt("Type 'RESET' to restore the Master Admin PIN back to default (1010):");
+            if (confirmReset === "RESET") {
+                db.settings.pin = "1010";
+                saveDBLocally();
+                alert("Admin PIN has been successfully reset to default: 1010");
+                closeAdminModal();
+            } else if (confirmReset !== null) {
+                alert("Incorrect verification keyword. Reset cancelled.");
+            }
+        }
+
+        function updateAdminPin() {
+            const newPin = document.getElementById('new-admin-pin').value.trim();
+            if (!newPin || newPin.length < 4) {
+                alert("Please enter a valid PIN of at least 4 digits.");
+                return;
+            }
+            db.settings.pin = newPin;
+            saveDBLocally();
+            document.getElementById('new-admin-pin').value = '';
+            alert("Master Admin PIN successfully updated!");
+        }
+
+        function addNewArcherRegistry() {
+            const name = document.getElementById('new-archer-name').value.trim();
+            const gender = document.getElementById('new-archer-gender').value;
+            const cat = document.getElementById('new-archer-cat').value;
+            const bow = document.getElementById('new-archer-bow').value;
+
+            if (!name) {
+                alert("Please enter a valid archer name.");
+                return;
+            }
+
+            db.archers.push({
+                id: Date.now(),
+                name: name,
+                gender: gender,
+                category: cat,
+                defaultBow: bow
+            });
+
+            saveDBLocally();
+            document.getElementById('new-archer-name').value = '';
+            populateDropdowns();
+            renderAdminTable();
+            alert("Archer successfully added.");
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-archer-table');
+            const sorted = getSortedArchers();
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No archers in database.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = sorted.map(a => `
+                <tr>
+                    <td><strong>${a.name}</strong></td>
+                    <td>${a.gender}</td>
+                    <td>${a.category}</td>
+                    <td><span class="badge badge-gold">${a.defaultBow}</span></td>
+                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteArcher('${a.id}')">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function promptDeleteArcher(id) {
+            pendingDeleteHistoryId = { type: 'archer', id: id };
+            document.getElementById('delete-pin-modal').classList.add('open');
+            document.getElementById('del-auth-pin').value = '';
+        }
+
+        function promptDeleteHistory(id) {
+            pendingDeleteHistoryId = { type: 'history', id: id };
+            document.getElementById('delete-pin-modal').classList.add('open');
+            document.getElementById('del-auth-pin').value = '';
+        }
+
+        function closeDeletePinModal() {
+            document.getElementById('delete-pin-modal').classList.remove('open');
+            pendingDeleteHistoryId = null;
+        }
+
+        function confirmAuthorizedDelete() {
+            const pin = document.getElementById('del-auth-pin').value;
+            if (pin !== db.settings.pin) {
+                alert("Incorrect Admin PIN.");
+                return;
+            }
+
+            if (!pendingDeleteHistoryId) return;
+
+            if (pendingDeleteHistoryId.type === 'archer') {
+                db.archers = db.archers.filter(a => String(a.id) !== String(pendingDeleteHistoryId.id));
+                saveDBLocally();
+                populateDropdowns();
+                renderAdminTable();
+            } else if (pendingDeleteHistoryId.type === 'history') {
+                // Note: For cloud sheets, deletion from history can be done directly in your Google Sheet!
+                alert("To delete historical scores, please open your Google Sheet and delete the corresponding row.");
+            }
+
+            closeDeletePinModal();
+            alert("Action processed successfully.");
+        }
+    </script>
+</body>
+</html>
