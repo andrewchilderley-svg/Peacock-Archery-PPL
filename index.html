@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peacock Archery PPL</title>
+    <title>Peacock Portsmouth Archery League</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <style>
         :root {
@@ -588,7 +588,6 @@
                     <label>Period / Season View</label>
                     <select id="lb-month-filter" onchange="renderLeaderboard()">
                         <option value="overall">🏆 Overall Season (Oct - Mar Sum)</option>
-                        <option value="2026-4">Last season best score</option>
                         <option value="2026-10">October 2026</option>
                         <option value="2026-11">November 2026</option>
                         <option value="2026-12">December 2026</option>
@@ -688,6 +687,48 @@
                 <button class="btn" onclick="updateAdminPin()">🔒 Update Admin PIN</button>
             </div>
 
+            <!-- MANUAL HISTORICAL RECORD ENTRY -->
+            <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
+                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add Historical Club Record (Pre-League)</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Bow Style</label>
+                        <select id="hist-bow">
+                            <option value="Recurve">Recurve</option>
+                            <option value="Compound">Compound</option>
+                            <option value="Barebow">Barebow</option>
+                            <option value="Longbow">Longbow</option>
+                            <option value="Asiatic">Asiatic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Age / Category</label>
+                        <select id="hist-cat">
+                            <option value="Senior">Senior</option>
+                            <option value="50+">50+</option>
+                            <option value="Under 18">Under 18</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Archer Name</label>
+                        <input type="text" id="hist-name" placeholder="e.g. John Smith">
+                    </div>
+                    <div class="form-group">
+                        <label>Score</label>
+                        <input type="number" id="hist-score" min="0" max="600" placeholder="e.g. 540">
+                    </div>
+                    <div class="form-group">
+                        <label>10s Count</label>
+                        <input type="number" id="hist-tens" min="0" max="60" placeholder="e.g. 20">
+                    </div>
+                    <div class="form-group">
+                        <label>Date / Year Shot</label>
+                        <input type="text" id="hist-date" placeholder="e.g. 2024 or 2024-05-12">
+                    </div>
+                </div>
+                <button class="btn" onclick="submitHistoricalRecord()">📜 Save Historical Record</button>
+            </div>
+
             <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
                 <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Club Branding & Logo</h3>
                 <div class="form-group" style="margin-bottom: 12px;">
@@ -742,6 +783,7 @@
                             <th>Gender</th>
                             <th>Age Group</th>
                             <th>Default Bow</th>
+                            <th>Starting PB</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -804,17 +846,18 @@
 
     <script>
         // --- GOOGLE SHEETS CLOUD SYNC CONFIGURATION ---
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRnOF7mRyD1WxWDeQ9dCdHPNf6QsxYdMvdqZocr_H35v8uwWrHnxhBSe0c9OJ7bbHIsA/exec'; // <-- PASTE YOUR WEB APP URL HERE
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRnOF7mRyD1WxWDeQ9dCdHPNf6QsxYdMvdqZocr_H35v8uwWrHnxhBSe0c9OJ7bbHIsA/exec';
 
         let db = {
             archers: JSON.parse(localStorage.getItem('ppl_archers')) || [
-                { id: 1, name: "Alex Thompson", gender: "Male", category: "Senior", defaultBow: "Recurve" },
-                { id: 2, name: "Sarah Jenkins", gender: "Female", category: "Senior", defaultBow: "Compound" },
-                { id: 3, name: "David Clarke", gender: "Male", category: "50+", defaultBow: "Barebow" }
+                { id: 1, name: "Alex Thompson", gender: "Male", category: "Senior", defaultBow: "Recurve", startingPB: 378 },
+                { id: 2, name: "Sarah Jenkins", gender: "Female", category: "Senior", defaultBow: "Compound", startingPB: 449 },
+                { id: 3, name: "David Clarke", gender: "Male", category: "50+", defaultBow: "Barebow", startingPB: 276 }
             ],
             history: [], 
+            historicalRecords: [],
             settings: {
-                pin: "1010", // Cached server pin
+                pin: "1010",
                 title: "Peacock Portsmouth League (PPL)",
                 logo: localStorage.getItem('ppl_logo') || ""
             }
@@ -825,7 +868,6 @@
             localStorage.setItem('ppl_logo', db.settings.logo);
         }
 
-        // Fetch Server PIN on Load
         async function fetchServerPin() {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) return;
             try {
@@ -885,14 +927,13 @@
             }
         }
 
-        // Automatic DB Upgrade for Legacy Data
         db.archers.forEach(a => {
             if (!a.gender) a.gender = "Male";
             if (a.category === "Junior") a.category = "Under 18";
+            if (!a.startingPB) a.startingPB = 250;
         });
         saveLocalSettings();
 
-        // --- BRANDING & LOGO HANDLING ---
         function applyBranding() {
             if (db.settings.logo) {
                 document.getElementById('header-logo-container').innerHTML = `<img src="${db.settings.logo}" class="header-logo" alt="Logo">`;
@@ -951,11 +992,12 @@
                 buttons[map[tabId]].classList.add('active');
             }
 
-            if (tabId === 'board' || tabId === 'records' || tabId === 'history') {
+            if (tabId === 'board' || tabId === 'records' || tabId === 'history' || tabId === 'admin') {
                 fetchCloudHistory(() => {
                     if (tabId === 'board') renderLeaderboard();
                     if (tabId === 'records') renderRecords();
                     if (tabId === 'history') renderHistory();
+                    if (tabId === 'admin') renderAdminTable();
                 });
             }
         }
@@ -1256,40 +1298,85 @@
             `).join('');
         }
 
-        function renderRecords() {
+        async function renderRecords() {
+            try {
+                const res = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
+                db.historicalRecords = await res.json();
+            } catch(e) { db.historicalRecords = []; }
+
             const tbody = document.getElementById('records-body');
-            tbody.innerHTML = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"].map(style => {
+            let allRecords = [...db.historicalRecords];
+            
+            db.history.forEach(h => {
+                allRecords.push({ bow: h.bow, category: "Senior", archerName: h.archerName, score: parseInt(h.score), tens: h.tens, date: h.date });
+            });
+
+            const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
+            tbody.innerHTML = styles.map(style => {
                 let best = null;
-                db.history.forEach(h => { if (h.bow === style && (!best || parseInt(h.score) > best.score)) best = h; });
+                allRecords.forEach(r => {
+                    if (r.bow === style && (!best || parseInt(r.score) > parseInt(best.score))) best = r;
+                });
                 return `<tr>
                     <td><span class="badge badge-gold">${style}</span></td>
                     <td><strong>${best ? best.archerName : "No Record"}</strong></td>
                     <td>${best ? best.score : "-"}</td>
                     <td>${best ? best.tens : "-"}</td>
-                    <td>${best ? best.date : "-"}</td>
+                    <td>${best && best.date ? best.date.split('T')[0] : "-"}</td>
                 </tr>`;
             }).join('');
         }
 
+        async function submitHistoricalRecord() {
+            const record = {
+                action: "addHistoricalRecord",
+                bow: document.getElementById('hist-bow').value,
+                category: document.getElementById('hist-cat').value,
+                archerName: document.getElementById('hist-name').value.trim(),
+                score: parseInt(document.getElementById('hist-score').value),
+                tens: parseInt(document.getElementById('hist-tens').value) || 0,
+                date: document.getElementById('hist-date').value.trim()
+            };
+            if (!record.archerName || isNaN(record.score)) {
+                alert("Please enter a valid archer name and score.");
+                return;
+            }
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
+                const json = await res.json();
+                if (json.result === 'success') {
+                    alert("Historical record added successfully!");
+                    document.getElementById('hist-name').value = '';
+                    document.getElementById('hist-score').value = '';
+                    document.getElementById('hist-tens').value = '';
+                    document.getElementById('hist-date').value = '';
+                    renderRecords();
+                } else {
+                    alert("Error saving record.");
+                }
+            } catch(e) {
+                alert("Network error saving historical record.");
+            }
+        }
+
         function renderHistory() {
-    const tbody = document.getElementById('history-body');
-    const sortedHistory = [...db.history].sort((a, b) => new Date(b.date) - new Date(a.date));
-    if (sortedHistory.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No history found.</td></tr>`;
-        return;
-    }
-    tbody.innerHTML = sortedHistory.map(h => `
-        <tr>
-            <td>${h.date ? h.date.split('T')[0] : ''}</td>
-            <td>${h.archerName}</td>
-            <td><span class="badge badge-gold">${h.bow}</span></td>
-            <td><strong>${h.score}</strong></td>
-            <td>${h.tens}</td>
-            <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
-            <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
-        </tr>
-    `).join('');
-}
+            const tbody = document.getElementById('history-body');
+            const sortedHistory = [...db.history].sort((a, b) => new Date(b.date) - new Date(a.date));
+            if (sortedHistory.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No history found.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = sortedHistory.map(h => `
+                <tr>
+                    <td>${h.date ? h.date.split('T')[0] : ''}</td>
+                    <td>${h.archerName}</td>
+                    <td><span class="badge badge-gold">${h.bow}</span></td>
+                    <td><strong>${h.score}</strong></td>
+                    <td>${h.tens}</td>
+                    <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
+                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
+                </tr>
+            `).join('');
         }
 
         function viewProof(historyId) {
@@ -1389,26 +1476,46 @@
             const name = document.getElementById('new-archer-name').value.trim();
             if (!name) { alert("Please enter a valid archer name."); return; }
 
+            const bow = document.getElementById('new-archer-bow').value;
+            const gender = document.getElementById('new-archer-gender').value;
+            const category = document.getElementById('new-archer-cat').value;
+
+            const defaultLowestGrades = {
+                "Recurve_Male_Senior": 378, "Recurve_Male_50+": 316, "Recurve_Male_Under 18": 316,
+                "Recurve_Female_Senior": 331, "Recurve_Female_50+": 265, "Recurve_Female_Under 18": 201,
+                "Compound_Male_Senior": 472, "Compound_Male_50+": 437, "Compound_Male_Under 18": 393,
+                "Compound_Female_Senior": 449, "Compound_Female_50+": 408, "Compound_Female_Under 18": 358,
+                "Barebow_Male_Senior": 331, "Barebow_Male_50+": 276, "Barebow_Male_Under 18": 220,
+                "Barebow_Female_Senior": 276, "Barebow_Female_50+": 220, "Barebow_Female_Under 18": 170,
+                "Longbow_Male_Senior": 127, "Longbow_Male_50+": 90, "Longbow_Male_Under 18": 62,
+                "Longbow_Female_Senior": 84, "Longbow_Female_50+": 58, "Longbow_Female_Under 18": 40,
+                "Asiatic_Male_Senior": 331, "Asiatic_Male_50+": 276, "Asiatic_Male_Under 18": 220,
+                "Asiatic_Female_Senior": 276, "Asiatic_Female_50+": 220, "Asiatic_Female_Under 18": 170
+            };
+            const baselineKey = `${bow}_${gender}_${category}`;
+            const defaultStartingPB = defaultLowestGrades[baselineKey] || 250;
+
             db.archers.push({
                 id: Date.now(),
                 name: name,
-                gender: document.getElementById('new-archer-gender').value,
-                category: document.getElementById('new-archer-cat').value,
-                defaultBow: document.getElementById('new-archer-bow').value
+                gender: gender,
+                category: category,
+                defaultBow: bow,
+                startingPB: defaultStartingPB
             });
 
             saveLocalSettings();
             document.getElementById('new-archer-name').value = '';
             populateDropdowns();
             renderAdminTable();
-            alert("Archer successfully added.");
+            alert(`Archer successfully added with starting baseline PB of ${defaultStartingPB}.`);
         }
 
         function renderAdminTable() {
             const tbody = document.getElementById('admin-archer-table');
             const sorted = getSortedArchers();
             if (sorted.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No archers in database.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No archers in database.</td></tr>`;
                 return;
             }
             tbody.innerHTML = sorted.map(a => `
@@ -1417,6 +1524,7 @@
                     <td>${a.gender}</td>
                     <td>${a.category}</td>
                     <td><span class="badge badge-gold">${a.defaultBow}</span></td>
+                    <td><strong>${a.startingPB || 250}</strong></td>
                     <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteArcher('${a.id}')">Delete</button></td>
                 </tr>
             `).join('');
