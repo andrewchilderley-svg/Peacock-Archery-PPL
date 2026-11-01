@@ -1559,7 +1559,12 @@
         </tr>
     `).join('');
         }
-
+function updateArcherPB(id, newPb) {
+    const archer = db.archers.find(a => String(a.id) === String(id));
+    if (archer) {
+        archer.startingPB = parseInt(newPb) || 250;
+        saveLocalSettings();
+    }
         function promptDeleteArcher(id) {
             pendingDeleteHistoryId = { type: 'archer', id: id };
             document.getElementById('delete-pin-modal').classList.add('open');
