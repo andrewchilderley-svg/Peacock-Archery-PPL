@@ -475,11 +475,10 @@
                     <label>10s Count</label>
                     <input type="number" id="up-tens" min="0" max="60" placeholder="e.g. 15" value="0">
                 </div>
-                <!-- Inside #tab-upload form grid -->
-<div class="form-group">
-    <label>Hits Count (Max 60)</label>
-    <input type="number" id="up-hits" min="0" max="60" placeholder="e.g. 60" value="60">
-</div>
+                <div class="form-group">
+                    <label>Hits Count (Max 60)</label>
+                    <input type="number" id="up-hits" min="0" max="60" placeholder="e.g. 60" value="60">
+                </div>
                 <div class="form-group">
                     <label>Photo Proof (Optional)</label>
                     <input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;">
@@ -524,19 +523,19 @@
             </div>
 
             <div class="shoot-header-stats">
-    <div class="stat-box">
-        <div class="stat-val" id="live-total">0</div>
-        <div class="stat-lbl">Total / 600</div>
-    </div>
-    <div class="stat-box">
-        <div class="stat-val" id="live-hits">0</div>
-        <div class="stat-lbl">Hits / 60</div>
-    </div>
-    <div class="stat-box">
-        <div class="stat-val" id="live-tens">0</div>
-        <div class="stat-lbl">10s Count</div>
-    </div>
-</div>
+                <div class="stat-box">
+                    <div class="stat-val" id="live-total">0</div>
+                    <div class="stat-lbl">Total / 600</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-val" id="live-hits">0</div>
+                    <div class="stat-lbl">Hits / 60</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-val" id="live-tens">0</div>
+                    <div class="stat-lbl">10s Count</div>
+                </div>
+            </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
                 <div style="background: #111827; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
@@ -618,14 +617,14 @@
                 <table>
                     <thead>
                         <tr>
-        <th>Pos</th>
-        <th>Archer</th>
-        <th>Bow Style</th>
-        <th>Score / Sum</th>
-        <th>Hits</th> <!-- Added Column -->
-        <th>10s</th>
-        <th>Rnds</th>
-    </tr>
+                            <th>Pos</th>
+                            <th>Archer</th>
+                            <th>Bow Style</th>
+                            <th>Score / Sum</th>
+                            <th>Hits</th>
+                            <th>10s</th>
+                            <th>Rnds</th>
+                        </tr>
                     </thead>
                     <tbody id="leaderboard-body">
                         <!-- Populated dynamically -->
@@ -634,61 +633,61 @@
             </div>
         </div>
 
-    <!-- 4. RECORDS TAB -->
-<div id="tab-records" class="tab-content">
-    <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Records & Personal Bests</h2>
-    
-    <!-- Filter Controls -->
-    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
-        <div class="form-group" style="flex: 1; min-width: 150px;">
-            <label>Filter Bow Style</label>
-            <select id="rec-bow-filter" onchange="renderRecords()">
-                <option value="All">All Bow Styles</option>
-                <option value="Recurve">Recurve</option>
-                <option value="Compound">Compound</option>
-                <option value="Barebow">Barebow</option>
-                <option value="Longbow">Longbow</option>
-                <option value="Asiatic">Asiatic</option>
-            </select>
-        </div>
-        <div class="form-group" style="flex: 1; min-width: 130px;">
-            <label>Filter Gender</label>
-            <select id="rec-gender-filter" onchange="renderRecords()">
-                <option value="All">All Genders</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-            </select>
-        </div>
-        <div class="form-group" style="flex: 1; min-width: 130px;">
-            <label>Filter Category</label>
-            <select id="rec-cat-filter" onchange="renderRecords()">
-                <option value="All">All Categories</option>
-                <option value="Senior">Senior</option>
-                <option value="50+">50+</option>
-                <option value="Under 18">Under 18</option>
-            </select>
-        </div>
-    </div>
+        <!-- 4. RECORDS TAB -->
+        <div id="tab-records" class="tab-content">
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Records & Personal Bests</h2>
+            
+            <!-- Filter Controls -->
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Filter Bow Style</label>
+                    <select id="rec-bow-filter" onchange="renderRecords()">
+                        <option value="All">All Bow Styles</option>
+                        <option value="Recurve">Recurve</option>
+                        <option value="Compound">Compound</option>
+                        <option value="Barebow">Barebow</option>
+                        <option value="Longbow">Longbow</option>
+                        <option value="Asiatic">Asiatic</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 130px;">
+                    <label>Filter Gender</label>
+                    <select id="rec-gender-filter" onchange="renderRecords()">
+                        <option value="All">All Genders</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 130px;">
+                    <label>Filter Category</label>
+                    <select id="rec-cat-filter" onchange="renderRecords()">
+                        <option value="All">All Categories</option>
+                        <option value="Senior">Senior</option>
+                        <option value="50+">50+</option>
+                        <option value="Under 18">Under 18</option>
+                    </select>
+                </div>
+            </div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Bow Style</th>
-                    <th>gender</th>
-                    <th>Category</th>
-                    <th>Record Holder</th>
-                    <th>Top Score</th>
-                    <th>10s</th>
-                    <th>Date Set</th>
-                </tr>
-            </thead>
-            <tbody id="records-body">
-                <!-- Populated dynamically -->
-            </tbody>
-        </table>
-    </div>
-</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bow Style</th>
+                            <th>Gender</th>
+                            <th>Category</th>
+                            <th>Record Holder</th>
+                            <th>Top Score</th>
+                            <th>10s</th>
+                            <th>Date Set</th>
+                        </tr>
+                    </thead>
+                    <tbody id="records-body">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
         <!-- 5. HISTORY TAB -->
         <div id="tab-history" class="tab-content">
@@ -701,6 +700,7 @@
                             <th>Archer</th>
                             <th>Bow</th>
                             <th>Score</th>
+                            <th>Hits</th>
                             <th>10s</th>
                             <th>Proof</th>
                             <th>Action</th>
@@ -728,54 +728,54 @@
                 <button class="btn" onclick="updateAdminPin()">🔒 Update Admin PIN</button>
             </div>
 
-<!-- MANUAL HISTORICAL RECORD ENTRY -->
-    <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
-        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add Historical Club Record (Pre-League)</h3>
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Bow Style</label>
-                <select id="hist-bow">
-                    <option value="Recurve">Recurve</option>
-                    <option value="Compound">Compound</option>
-                    <option value="Barebow">Barebow</option>
-                    <option value="Longbow">Longbow</option>
-                    <option value="Asiatic">Asiatic</option>
-                </select>
+            <!-- MANUAL HISTORICAL RECORD ENTRY -->
+            <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
+                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add Historical Club Record (Pre-League)</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Bow Style</label>
+                        <select id="hist-bow">
+                            <option value="Recurve">Recurve</option>
+                            <option value="Compound">Compound</option>
+                            <option value="Barebow">Barebow</option>
+                            <option value="Longbow">Longbow</option>
+                            <option value="Asiatic">Asiatic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select id="hist-gender">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Age / Category</label>
+                        <select id="hist-cat">
+                            <option value="Senior">Senior</option>
+                            <option value="50+">50+</option>
+                            <option value="Under 18">Under 18</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Archer Name</label>
+                        <input type="text" id="hist-name" placeholder="e.g. John Smith">
+                    </div>
+                    <div class="form-group">
+                        <label>Score</label>
+                        <input type="number" id="hist-score" min="0" max="600" placeholder="e.g. 540">
+                    </div>
+                    <div class="form-group">
+                        <label>10s Count</label>
+                        <input type="number" id="hist-tens" min="0" max="60" placeholder="e.g. 20">
+                    </div>
+                    <div class="form-group">
+                        <label>Date / Year Shot</label>
+                        <input type="text" id="hist-date" placeholder="e.g. 2024 or 2024-05-12">
+                    </div>
+                </div>
+                <button class="btn" onclick="submitHistoricalRecord()">📜 Save Historical Record</button>
             </div>
-            <div class="form-group">
-                <label>Gender</label>
-                <select id="hist-gender">
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Age / Category</label>
-                <select id="hist-cat">
-                    <option value="Senior">Senior</option>
-                    <option value="50+">50+</option>
-                    <option value="Under 18">Under 18</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Archer Name</label>
-                <input type="text" id="hist-name" placeholder="e.g. John Smith">
-            </div>
-            <div class="form-group">
-                <label>Score</label>
-                <input type="number" id="hist-score" min="0" max="600" placeholder="e.g. 540">
-            </div>
-            <div class="form-group">
-                <label>10s Count</label>
-                <input type="number" id="hist-tens" min="0" max="60" placeholder="e.g. 20">
-            </div>
-            <div class="form-group">
-                <label>Date / Year Shot</label>
-                <input type="text" id="hist-date" placeholder="e.g. 2024 or 2024-05-12">
-            </div>
-        </div>
-        <button class="btn" onclick="submitHistoricalRecord()">📜 Save Historical Record</button>
-    </div>
 
             <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
                 <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Club Branding & Logo</h3>
@@ -794,7 +794,7 @@
                         <input type="text" id="new-archer-name" placeholder="e.g. Jane Doe">
                     </div>
                     <div class="form-group">
-                        <label>gender</label>
+                        <label>Gender</label>
                         <select id="new-archer-gender">
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
@@ -828,7 +828,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>gender</th>
+                            <th>Gender</th>
                             <th>Age Group</th>
                             <th>Default Bow</th>
                             <th>Starting PB</th>
@@ -1145,14 +1145,15 @@
             document.getElementById('up-avg-arrow').innerText = (score / 60).toFixed(2);
             document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, archer.gender, archer.category);
         }
-function processManualScore() {
+
+        function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
             const bow = document.getElementById('up-bow').value;
             const date = document.getElementById('up-date').value;
             const score = parseInt(document.getElementById('up-score').value);
             const tens = parseInt(document.getElementById('up-tens').value) || 0;
-            const hits = parseInt(document.getElementById('up-hits').value) || 60; // <--- Captures hits from your new input field
+            const hits = parseInt(document.getElementById('up-hits').value) || 60;
 
             if (!archer || isNaN(score) || score < 0 || score > 600) {
                 alert("Please enter a valid archer and score between 0 and 600.");
@@ -1172,7 +1173,7 @@ function processManualScore() {
                         bow: bow, 
                         score: score, 
                         tens: tens, 
-                        hits: hits, // <--- Passes hits to the cloud submission
+                        hits: hits,
                         date: date || new Date().toISOString().split('T')[0], 
                         screenshot: e.target.result
                     });
@@ -1186,16 +1187,18 @@ function processManualScore() {
                     bow: bow, 
                     score: score, 
                     tens: tens, 
-                    hits: hits, // <--- Passes hits to the cloud submission
+                    hits: hits,
                     date: date || new Date().toISOString().split('T')[0], 
                     screenshot: ""
                 });
             }
+        }
 
         function submitRecord(record) {
             syncRecordToCloud(record);
             document.getElementById('up-score').value = '';
             document.getElementById('up-tens').value = '';
+            document.getElementById('up-hits').value = '60';
             document.getElementById('up-screenshot').value = '';
         }
 
@@ -1257,11 +1260,12 @@ function processManualScore() {
 
             const total = liveScores.reduce((a, b) => a + b, 0);
             const tens = liveScores.filter(s => s === 10).length;
+            const hits = liveScores.filter(s => s > 0).length;
             const arrowsShot = liveScores.length;
 
             document.getElementById('live-total').innerText = total;
+            document.getElementById('live-hits').innerText = hits;
             document.getElementById('live-tens').innerText = tens;
-            document.getElementById('live-arrows').innerText = arrowsShot;
             document.getElementById('live-avg-arrow').innerText = arrowsShot > 0 ? (total / arrowsShot).toFixed(2) : "0.00";
             
             const bow = document.getElementById('shoot-bow').value;
@@ -1272,7 +1276,7 @@ function processManualScore() {
             const activeEndValues = endsMatrix[currentEnd - 1] || [];
             document.getElementById('live-arrow-slots').innerHTML = [0, 1, 2].map(i => {
                 const val = activeEndValues[i];
-                return `<div class="arrow-slot ${val !== undefined ? 'filled' : ''}">${val !== undefined ? val : '-'}</div>`;
+                return `<div class="arrow-slot ${val !== undefined ? 'filled' : ''}">${val !== undefined ? (val === 0 ? 'M' : val) : '-'}</div>`;
             }).join('');
         }
 
@@ -1282,6 +1286,7 @@ function processManualScore() {
             if (!confirm("Are you sure you want to submit this score?")) return;
             const total = liveScores.reduce((a, b) => a + b, 0);
             const tens = liveScores.filter(s => s === 10).length;
+            const hits = liveScores.filter(s => s > 0).length;
             const archerId = document.getElementById('shoot-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
             
@@ -1289,7 +1294,7 @@ function processManualScore() {
 
             submitRecord({
                 id: Date.now(), archerId: archer.id, archerName: archer.name,
-                bow: document.getElementById('shoot-bow').value, score: total, tens: tens,
+                bow: document.getElementById('shoot-bow').value, score: total, tens: tens, hits: hits,
                 date: document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0], screenshot: ""
             });
             resetLiveRound(true);
@@ -1313,19 +1318,20 @@ function processManualScore() {
                     const key = `${h.archerId}_${h.bow}`;
                     if (!standingsMap[key]) standingsMap[key] = { archerName: h.archerName, bow: h.bow, monthlyBests: {} };
                     if (!standingsMap[key].monthlyBests[monthKey] || parseInt(h.score) > standingsMap[key].monthlyBests[monthKey].score) {
-                        standingsMap[key].monthlyBests[monthKey] = { score: parseInt(h.score), tens: parseInt(h.tens) || 0 };
+                        standingsMap[key].monthlyBests[monthKey] = { score: parseInt(h.score), tens: parseInt(h.tens) || 0, hits: parseInt(h.hits) || 60 };
                     }
                 });
 
                 var rows = [];
                 for (let key in standingsMap) {
-                    let item = standingsMap[key], totalScore = 0, totalTens = 0, monthsCount = 0;
+                    let item = standingsMap[key], totalScore = 0, totalTens = 0, totalHits = 0, monthsCount = 0;
                     for (let mKey in item.monthlyBests) {
                         totalScore += item.monthlyBests[mKey].score;
                         totalTens += item.monthlyBests[mKey].tens;
+                        totalHits += item.monthlyBests[mKey].hits;
                         monthsCount++;
                     }
-                    rows.push({ archerName: item.archerName, bow: item.bow, score: totalScore, tens: totalTens, rounds: monthsCount });
+                    rows.push({ archerName: item.archerName, bow: item.bow, score: totalScore, hits: totalHits, tens: totalTens, rounds: monthsCount });
                 }
             } else {
                 let monthMap = {};
@@ -1333,7 +1339,7 @@ function processManualScore() {
                     if (!h.date || !h.date.startsWith(monthFilter)) return;
                     const key = `${h.archerId}_${h.bow}`;
                     if (!monthMap[key] || parseInt(h.score) > monthMap[key].score) {
-                        monthMap[key] = { archerName: h.archerName, bow: h.bow, score: parseInt(h.score), tens: parseInt(h.tens) || 0, rounds: 1 };
+                        monthMap[key] = { archerName: h.archerName, bow: h.bow, score: parseInt(h.score), hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, rounds: 1 };
                     }
                 });
                 var rows = Object.values(monthMap);
@@ -1343,7 +1349,7 @@ function processManualScore() {
             rows.sort((a, b) => b.score - a.score);
 
             if (rows.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No scores recorded for this filter.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No scores recorded for this filter.</td></tr>`;
                 return;
             }
 
@@ -1353,13 +1359,14 @@ function processManualScore() {
                     <td>${r.archerName}</td>
                     <td><span class="badge badge-gold">${r.bow}</span></td>
                     <td><strong>${r.score}</strong></td>
+                    <td>${r.hits}</td>
                     <td>${r.tens}</td>
                     <td>${monthFilter === 'overall' ? r.rounds : '1'}</td>
                 </tr>
             `).join('');
         }
 
-     async function renderRecords() {
+        async function renderRecords() {
             try {
                 const res = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
                 const text = await res.text();
@@ -1371,30 +1378,12 @@ function processManualScore() {
 
             const tbody = document.getElementById('records-body');
             
-            // Grab filter values safely
             const bowFilter = document.getElementById('rec-bow-filter')?.value || 'All';
             const genderFilter = document.getElementById('rec-gender-filter')?.value || 'All';
             const catFilter = document.getElementById('rec-cat-filter')?.value || 'All';
 
-           let allRecords = [...db.historicalRecords];
+            let allRecords = [...db.historicalRecords];
             
-            // Inside renderLeaderboard() where monthly/overall rows are aggregated:
-// Make sure to sum up hits:
-totalHits += parseInt(h.hits) || 60; // Default to 60 if historical data lacks it
-
-// In your rows.map(...) HTML generator for the leaderboard table:
-tbody.innerHTML = rows.map((r, idx) => `
-    <tr>
-        <td><strong>#${idx + 1}</strong></td>
-        <td>${r.archerName}</td>
-        <td><span class="badge badge-gold">${r.bow}</span></td>
-        <td><strong>${r.score}</strong></td>
-        <td>${r.hits}</td> <!-- Render Hits -->
-        <td>${r.tens}</td>
-        <td>${monthFilter === 'overall' ? r.rounds : '1'}</td>
-    </tr>
-`).join('');
-          // NEW: Ensure any historical record missing a gender checks your archer database
             allRecords.forEach(r => {
                 if (!r.gender) {
                     const matchedArcher = db.archers.find(a => a.name.toLowerCase() === (r.archerName || "").toLowerCase());
@@ -1419,6 +1408,7 @@ tbody.innerHTML = rows.map((r, idx) => `
                         archerName: h.archerName, 
                         score: parseInt(h.score) || 0, 
                         tens: parseInt(h.tens) || 0, 
+                        hits: parseInt(h.hits) || 60,
                         date: h.date 
                     });
                 });
@@ -1479,43 +1469,45 @@ tbody.innerHTML = rows.map((r, idx) => `
                 tbody.innerHTML = htmlRows.join('');
             }
         }
-async function submitHistoricalRecord() {
-        const record = {
-            action: "addHistoricalRecord",
-            bow: document.getElementById('hist-bow').value,
-            gender: document.getElementById('hist-gender').value,
-            category: document.getElementById('hist-cat').value,
-            archerName: document.getElementById('hist-name').value.trim(),
-            score: parseInt(document.getElementById('hist-score').value),
-            tens: parseInt(document.getElementById('hist-tens').value) || 0,
-            date: document.getElementById('hist-date').value.trim()
-        };
-        if (!record.archerName || isNaN(record.score)) {
-            alert("Please enter a valid archer name and score.");
-            return;
-        }
-        try {
-            const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
-            const json = await res.json();
-            if (json.result === 'success') {
-                alert("Historical record added successfully!");
-                document.getElementById('hist-name').value = '';
-                document.getElementById('hist-score').value = '';
-                document.getElementById('hist-tens').value = '';
-                document.getElementById('hist-date').value = '';
-                renderRecords();
-            } else {
-                alert("Error saving record.");
+
+        async function submitHistoricalRecord() {
+            const record = {
+                action: "addHistoricalRecord",
+                bow: document.getElementById('hist-bow').value,
+                gender: document.getElementById('hist-gender').value,
+                category: document.getElementById('hist-cat').value,
+                archerName: document.getElementById('hist-name').value.trim(),
+                score: parseInt(document.getElementById('hist-score').value),
+                tens: parseInt(document.getElementById('hist-tens').value) || 0,
+                date: document.getElementById('hist-date').value.trim()
+            };
+            if (!record.archerName || isNaN(record.score)) {
+                alert("Please enter a valid archer name and score.");
+                return;
             }
-        } catch(e) {
-            alert("Network error saving historical record.");
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
+                const json = await res.json();
+                if (json.result === 'success') {
+                    alert("Historical record added successfully!");
+                    document.getElementById('hist-name').value = '';
+                    document.getElementById('hist-score').value = '';
+                    document.getElementById('hist-tens').value = '';
+                    document.getElementById('hist-date').value = '';
+                    renderRecords();
+                } else {
+                    alert("Error saving record.");
+                }
+            } catch(e) {
+                alert("Network error saving historical record.");
+            }
         }
-    }
+
         function renderHistory() {
             const tbody = document.getElementById('history-body');
             const sortedHistory = [...db.history].sort((a, b) => new Date(b.date) - new Date(a.date));
             if (sortedHistory.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No history found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No history found.</td></tr>`;
                 return;
             }
             tbody.innerHTML = sortedHistory.map(h => `
@@ -1524,6 +1516,7 @@ async function submitHistoricalRecord() {
                     <td>${h.archerName}</td>
                     <td><span class="badge badge-gold">${h.bow}</span></td>
                     <td><strong>${h.score}</strong></td>
+                    <td>${h.hits !== undefined ? h.hits : 60}</td>
                     <td>${h.tens}</td>
                     <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
                     <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
@@ -1662,7 +1655,8 @@ async function submitHistoricalRecord() {
             renderAdminTable();
             alert(`Archer successfully added with starting baseline PB of ${defaultStartingPB}.`);
         }
-function renderAdminTable() {
+
+        function renderAdminTable() {
             const tbody = document.getElementById('admin-archer-table');
             const sorted = getSortedArchers();
             if (sorted.length === 0) {
