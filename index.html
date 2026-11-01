@@ -475,7 +475,6 @@
                     <label>10s Count</label>
                     <input type="number" id="up-tens" min="0" max="60" placeholder="e.g. 15" value="0">
                 </div>
-                <!-- PHOTO PROOF FIELD -->
                 <div class="form-group">
                     <label>Photo Proof (Optional)</label>
                     <input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;">
@@ -766,13 +765,13 @@
     <div class="modal" id="admin-modal">
         <div class="modal-content">
             <div class="modal-title">🔐 Master Admin Access</div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">Enter Master PIN (Default is 1010) to access settings and restricted actions.</p>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">Enter Master PIN to access settings and restricted actions.</p>
             <div class="form-group" style="margin-bottom: 16px;">
                 <label>PIN Code</label>
                 <input type="password" id="admin-pin-input" placeholder="Enter PIN">
             </div>
             <div style="margin-bottom: 16px;">
-                <a href="#" onclick="triggerPinReset(event)" style="font-size: 0.85rem; color: var(--accent); text-decoration: underline;">Forgot PIN? Reset to default (1010)</a>
+                <a href="#" onclick="triggerServerPinReset(event)" style="font-size: 0.85rem; color: var(--accent); text-decoration: underline;">Forgot PIN? Use Recovery Key</a>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeAdminModal()">Cancel</button>
@@ -810,7 +809,7 @@
 
     <script>
         // --- GOOGLE SHEETS CLOUD SYNC CONFIGURATION ---
-        const APPS_SCRIPT_URL ='https://script.google.com/macros/s/AKfycbwRnOF7mRyD1WxWDeQ9dCdHPNf6QsxYdMvdqZocr_H35v8uwWrHnxhBSe0c9OJ7bbHIsA/exec'; // <-- PASTE YOUR WEB APP URL HERE
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/library/d/1lmXlXy5QKOQHPWO2CIygyTaglumtgQp4slM6s4EzrhMelpoWNMfmMs2H/2'; // <-- PASTE YOUR WEB APP URL HERE
 
         let db = {
             archers: JSON.parse(localStorage.getItem('ppl_archers')) || [
@@ -818,22 +817,33 @@
                 { id: 2, name: "Sarah Jenkins", gender: "Female", category: "Senior", defaultBow: "Compound" },
                 { id: 3, name: "David Clarke", gender: "Male", category: "50+", defaultBow: "Barebow" }
             ],
-            history: [], // Fetched live from Google Sheet
-            settings: JSON.parse(localStorage.getItem('ppl_settings')) || {
-                pin: "1010",
+            history: [], 
+            settings: {
+                pin: "1010", // Cached server pin
                 title: "Peacock Portsmouth League (PPL)",
-                logo: ""
+                logo: localStorage.getItem('ppl_logo') || ""
             }
         };
 
-        function saveDBLocally() {
+        function saveLocalSettings() {
             localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
-            localStorage.setItem('ppl_settings', JSON.stringify(db.settings));
+            localStorage.setItem('ppl_logo', db.settings.logo);
+        }
+
+        // Fetch Server PIN on Load
+        async function fetchServerPin() {
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) return;
+            try {
+                const response = await fetch(APPS_SCRIPT_URL + "?action=getPin");
+                const data = await response.json();
+                if (data.pin) db.settings.pin = data.pin;
+            } catch (e) {
+                console.error("Could not fetch server PIN", e);
+            }
         }
 
         async function fetchCloudHistory(callback) {
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_URL')) {
-                // Fallback to local storage if URL hasn't been added yet
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
                 db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
                 if (callback) callback();
                 return;
@@ -845,18 +855,17 @@
                 db.history = data;
                 if (callback) callback();
             } catch (e) {
-                console.error("Could not sync with Google Sheet. Using local cache.", e);
+                console.error("Could not sync with Google Sheet.", e);
                 db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
                 if (callback) callback();
             }
         }
 
         async function syncRecordToCloud(record) {
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT_URL')) {
-                // Fallback local save
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
                 db.history.push(record);
                 localStorage.setItem('ppl_history', JSON.stringify(db.history));
-                alert("Score saved locally (Google Apps Script URL not configured yet).");
+                alert("Score saved locally (Apps Script URL not set).");
                 switchTab('board');
                 return;
             }
@@ -886,7 +895,7 @@
             if (!a.gender) a.gender = "Male";
             if (a.category === "Junior") a.category = "Under 18";
         });
-        saveDBLocally();
+        saveLocalSettings();
 
         // --- BRANDING & LOGO HANDLING ---
         function applyBranding() {
@@ -903,7 +912,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 db.settings.logo = e.target.result;
-                saveDBLocally();
+                saveLocalSettings();
                 applyBranding();
                 alert("Logo successfully uploaded and updated!");
             };
@@ -912,18 +921,16 @@
 
         function resetLeagueLogo() {
             db.settings.logo = "";
-            saveDBLocally();
+            saveLocalSettings();
             applyBranding();
             document.getElementById('logo-file-input').value = "";
             alert("Logo reset to default icon.");
         }
 
-        // --- SORT ARCHERS ALPHABETICALLY ---
         function getSortedArchers() {
             return [...db.archers].sort((a, b) => a.name.localeCompare(b.name));
         }
 
-        // --- SAFE CALENDAR PICKER HELPER ---
         function safeOpenPicker(input) {
             try {
                 if (typeof input.showPicker === 'function') {
@@ -937,7 +944,6 @@
             }
         }
 
-        // --- TAB NAVIGATION ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -959,7 +965,6 @@
             }
         }
 
-        // --- INITIALIZATION ---
         window.onload = function() {
             const today = new Date().toISOString().split('T')[0];
             if(document.getElementById('up-date')) document.getElementById('up-date').value = today;
@@ -967,6 +972,7 @@
 
             applyBranding();
             populateDropdowns();
+            fetchServerPin();
             fetchCloudHistory(() => {
                 renderLeaderboard();
             });
@@ -974,7 +980,6 @@
 
         function populateDropdowns() {
             const sorted = getSortedArchers();
-            
             const upSelect = document.getElementById('up-archer');
             upSelect.innerHTML = sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
             onUploadArcherChange();
@@ -1002,14 +1007,10 @@
             updateLiveStats();
         }
 
-        // --- MULTI-VARIABLE ARCHERY GB GRADING ENGINE ---
         function getArcheryGBGrade(score, bow, gender, category) {
             if (!score || score === 0) return "Unclassified";
-            
             const labels = ["Indoor Archer 3rd", "Indoor Archer 2nd", "Indoor Archer 1st", "Indoor Bowman 3rd", "Indoor Bowman 2nd", "Indoor Bowman 1st", "Indoor Master Bowman", "Indoor Grand Master"];
-            
             const key = `${bow}_${gender}_${category}`;
-            
             const gradeMatrix = {
                 "Recurve_Male_Senior": [378, 437, 483, 518, 546, 566, 582, 593],
                 "Recurve_Male_50+": [316, 387, 444, 488, 522, 549, 569, 583],
@@ -1017,28 +1018,24 @@
                 "Recurve_Female_Senior": [331, 399, 454, 496, 528, 553, 572, 586],
                 "Recurve_Female_50+": [265, 341, 407, 460, 501, 532, 556, 574],
                 "Recurve_Female_Under 18": [201, 276, 350, 415, 466, 505, 536, 559],
-                
                 "Compound_Male_Senior": [472, 508, 532, 549, 560, 571, 583, 594],
                 "Compound_Male_50+": [437, 482, 515, 537, 552, 563, 574, 586],
                 "Compound_Male_Under 18": [393, 449, 491, 521, 541, 555, 566, 577],
                 "Compound_Female_Senior": [449, 491, 521, 541, 555, 566, 577, 589],
                 "Compound_Female_50+": [408, 461, 500, 527, 545, 558, 568, 580],
                 "Compound_Female_Under 18": [358, 423, 472, 508, 532, 549, 560, 571],
-                
                 "Barebow_Male_Senior": [331, 387, 433, 472, 503, 528, 549, 565],
                 "Barebow_Male_50+": [276, 336, 391, 437, 475, 505, 530, 550],
                 "Barebow_Male_Under 18": [220, 281, 341, 395, 440, 477, 508, 532],
                 "Barebow_Female_Senior": [276, 336, 391, 437, 475, 505, 530, 550],
                 "Barebow_Female_50+": [220, 281, 341, 395, 440, 477, 508, 532],
                 "Barebow_Female_Under 18": [170, 225, 286, 346, 399, 444, 480, 510],
-                
                 "Longbow_Male_Senior": [127, 178, 240, 306, 369, 423, 466, 501],
                 "Longbow_Male_50+": [90, 130, 183, 245, 311, 373, 426, 469],
                 "Longbow_Male_Under 18": [62, 92, 134, 187, 250, 316, 378, 430],
                 "Longbow_Female_Senior": [84, 123, 174, 235, 301, 364, 419, 463],
                 "Longbow_Female_50+": [58, 87, 127, 178, 240, 306, 369, 423],
                 "Longbow_Female_Under 18": [40, 60, 90, 130, 183, 245, 311, 373],
-                
                 "Asiatic_Male_Senior": [331, 387, 433, 472, 503, 528, 549, 565], 
                 "Asiatic_Male_50+": [276, 336, 391, 437, 475, 505, 530, 550],
                 "Asiatic_Male_Under 18": [220, 281, 341, 395, 440, 477, 508, 532],
@@ -1046,14 +1043,10 @@
                 "Asiatic_Female_50+": [220, 281, 341, 395, 440, 477, 508, 532],
                 "Asiatic_Female_Under 18": [170, 225, 286, 346, 399, 444, 480, 510]
             };
-
             const thresholds = gradeMatrix[key] || gradeMatrix[`${bow}_Male_Senior`];
-            
             let achieved = "Unclassified";
             for (let i = 0; i < thresholds.length; i++) {
-                if (score >= thresholds[i]) {
-                    achieved = labels[i];
-                }
+                if (score >= thresholds[i]) achieved = labels[i];
             }
             return achieved;
         }
@@ -1062,12 +1055,9 @@
             const archerId = document.getElementById('up-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
             if (!archer) return;
-
             const score = parseInt(document.getElementById('up-score').value) || 0;
             const bow = document.getElementById('up-bow').value;
-            const avg = (score / 60).toFixed(2);
-            
-            document.getElementById('up-avg-arrow').innerText = avg;
+            document.getElementById('up-avg-arrow').innerText = (score / 60).toFixed(2);
             document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, archer.gender, archer.category);
         }
 
@@ -1091,27 +1081,15 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     submitRecord({
-                        id: Date.now(),
-                        archerId: archer.id,
-                        archerName: archer.name,
-                        bow: bow,
-                        score: score,
-                        tens: tens,
-                        date: date || new Date().toISOString().split('T')[0],
-                        screenshot: e.target.result
+                        id: Date.now(), archerId: archer.id, archerName: archer.name,
+                        bow: bow, score: score, tens: tens, date: date || new Date().toISOString().split('T')[0], screenshot: e.target.result
                     });
                 };
                 reader.readAsDataURL(file);
             } else {
                 submitRecord({
-                    id: Date.now(),
-                    archerId: archer.id,
-                    archerName: archer.name,
-                    bow: bow,
-                    score: score,
-                    tens: tens,
-                    date: date || new Date().toISOString().split('T')[0],
-                    screenshot: ""
+                    id: Date.now(), archerId: archer.id, archerName: archer.name,
+                    bow: bow, score: score, tens: tens, date: date || new Date().toISOString().split('T')[0], screenshot: ""
                 });
             }
         }
@@ -1123,24 +1101,17 @@
             document.getElementById('up-screenshot').value = '';
         }
 
-        // --- LIVE KEYPAD LOGIC ---
         let currentEnd = 1;
         let currentArrowIndex = 0;
         let endsMatrix = Array(20).fill(null).map(() => []);
         let liveScores = [];
 
         function pressScore(val) {
-            if (currentEnd > 20) return;
-            if (endsMatrix[currentEnd - 1].length >= 3) return;
-
+            if (currentEnd > 20 || endsMatrix[currentEnd - 1].length >= 3) return;
             endsMatrix[currentEnd - 1].push(val);
             liveScores.push(val);
-            currentArrowIndex++;
             renderLiveRoundUI();
-
-            if (endsMatrix[currentEnd - 1].length === 3 && currentEnd < 20) {
-                document.getElementById('confirm-end-btn').disabled = false;
-            } else if (currentEnd === 20 && endsMatrix[19].length === 3) {
+            if (endsMatrix[currentEnd - 1].length === 3 || currentEnd === 20 && endsMatrix[19].length === 3) {
                 document.getElementById('confirm-end-btn').disabled = false;
             }
         }
@@ -1148,9 +1119,6 @@
         function undoArrow() {
             if (liveScores.length === 0) return;
             liveScores.pop();
-            currentEnd = Math.floor(liveScores.length / 3) + 1;
-            if (currentEnd > 20) currentEnd = 20;
-            
             endsMatrix = Array(20).fill(null).map(() => []);
             liveScores.forEach((s, idx) => {
                 const eIdx = Math.floor(idx / 3);
@@ -1158,7 +1126,6 @@
             });
             currentEnd = Math.min(20, Math.floor(liveScores.length / 3) + (liveScores.length % 3 === 0 && liveScores.length > 0 ? 0 : 1));
             if (currentEnd < 1) currentEnd = 1;
-
             renderLiveRoundUI();
             document.getElementById('confirm-end-btn').disabled = true;
         }
@@ -1197,92 +1164,56 @@
             document.getElementById('live-total').innerText = total;
             document.getElementById('live-tens').innerText = tens;
             document.getElementById('live-arrows').innerText = arrowsShot;
-
-            const avg = arrowsShot > 0 ? (total / arrowsShot).toFixed(2) : "0.00";
-            document.getElementById('live-avg-arrow').innerText = avg;
+            document.getElementById('live-avg-arrow').innerText = arrowsShot > 0 ? (total / arrowsShot).toFixed(2) : "0.00";
             
             const bow = document.getElementById('shoot-bow').value;
             const projectedScore = Math.round((total / Math.max(1, arrowsShot)) * 60);
-            
             document.getElementById('live-est-grade').innerText = getArcheryGBGrade(projectedScore, bow, archer.gender, archer.category);
-
             document.getElementById('live-end-label').innerText = `End ${currentEnd} of 20`;
 
             const activeEndValues = endsMatrix[currentEnd - 1] || [];
-            const slotsHtml = [0, 1, 2].map(i => {
+            document.getElementById('live-arrow-slots').innerHTML = [0, 1, 2].map(i => {
                 const val = activeEndValues[i];
                 return `<div class="arrow-slot ${val !== undefined ? 'filled' : ''}">${val !== undefined ? val : '-'}</div>`;
             }).join('');
-            document.getElementById('live-arrow-slots').innerHTML = slotsHtml;
         }
 
-        function updateLiveStats() {
-            renderLiveRoundUI();
-        }
+        function updateLiveStats() { renderLiveRoundUI(); }
 
         function submitLiveRoundToLeague() {
-            if (!confirm("Are you sure you want to submit this score?")) {
-                return;
-            }
-
+            if (!confirm("Are you sure you want to submit this score?")) return;
             const total = liveScores.reduce((a, b) => a + b, 0);
             const tens = liveScores.filter(s => s === 10).length;
             const archerId = document.getElementById('shoot-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
-            const bow = document.getElementById('shoot-bow').value;
-            const date = document.getElementById('shoot-date').value;
-
-            if (!archer) {
-                alert("Please select an archer.");
-                return;
-            }
+            
+            if (!archer) { alert("Please select an archer."); return; }
 
             submitRecord({
-                id: Date.now(),
-                archerId: archer.id,
-                archerName: archer.name,
-                bow: bow,
-                score: total,
-                tens: tens,
-                date: date || new Date().toISOString().split('T')[0],
-                screenshot: ""
+                id: Date.now(), archerId: archer.id, archerName: archer.name,
+                bow: document.getElementById('shoot-bow').value, score: total, tens: tens,
+                date: document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0], screenshot: ""
             });
-
             resetLiveRound(true);
         }
 
-        // --- LEADERBOARD LOGIC ---
         function renderLeaderboard() {
             const monthFilter = document.getElementById('lb-month-filter')?.value || 'overall';
             const bowFilter = document.getElementById('lb-bow-filter')?.value || 'All';
             const tbody = document.getElementById('leaderboard-body');
-            
             let standingsMap = {};
 
             if (monthFilter === 'overall') {
                 db.history.forEach(h => {
                     if (!h.date) return;
                     const [year, month] = h.date.split('-');
-                    const mNum = parseInt(month);
-                    const yNum = parseInt(year);
-                    
-                    let seasonYear = yNum;
-                    if (mNum >= 10) seasonYear = yNum;
-                    else if (mNum <= 3) seasonYear = yNum - 1;
-                    else return;
+                    const mNum = parseInt(month), yNum = parseInt(year);
+                    let seasonYear = mNum >= 10 ? yNum : (mNum <= 3 ? yNum - 1 : null);
+                    if (!seasonYear) return;
 
                     const monthKey = `${seasonYear}-${month}`;
                     const key = `${h.archerId}_${h.bow}`;
-
-                    if (!standingsMap[key]) {
-                        standingsMap[key] = {
-                            archerName: h.archerName,
-                            bow: h.bow,
-                            monthlyBests: {},
-                            totalTens: 0
-                        };
-                    }
-
+                    if (!standingsMap[key]) standingsMap[key] = { archerName: h.archerName, bow: h.bow, monthlyBests: {} };
                     if (!standingsMap[key].monthlyBests[monthKey] || parseInt(h.score) > standingsMap[key].monthlyBests[monthKey].score) {
                         standingsMap[key].monthlyBests[monthKey] = { score: parseInt(h.score), tens: parseInt(h.tens) || 0 };
                     }
@@ -1290,48 +1221,27 @@
 
                 var rows = [];
                 for (let key in standingsMap) {
-                    let item = standingsMap[key];
-                    let totalScore = 0;
-                    let totalTens = 0;
-                    let monthsCount = 0;
-
+                    let item = standingsMap[key], totalScore = 0, totalTens = 0, monthsCount = 0;
                     for (let mKey in item.monthlyBests) {
                         totalScore += item.monthlyBests[mKey].score;
                         totalTens += item.monthlyBests[mKey].tens;
                         monthsCount++;
                     }
-
-                    rows.push({
-                        archerName: item.archerName,
-                        bow: item.bow,
-                        score: totalScore,
-                        tens: totalTens,
-                        rounds: monthsCount
-                    });
+                    rows.push({ archerName: item.archerName, bow: item.bow, score: totalScore, tens: totalTens, rounds: monthsCount });
                 }
-
             } else {
                 let monthMap = {};
                 db.history.forEach(h => {
                     if (!h.date || !h.date.startsWith(monthFilter)) return;
                     const key = `${h.archerId}_${h.bow}`;
                     if (!monthMap[key] || parseInt(h.score) > monthMap[key].score) {
-                        monthMap[key] = {
-                            archerName: h.archerName,
-                            bow: h.bow,
-                            score: parseInt(h.score),
-                            tens: parseInt(h.tens) || 0,
-                            rounds: 1
-                        };
+                        monthMap[key] = { archerName: h.archerName, bow: h.bow, score: parseInt(h.score), tens: parseInt(h.tens) || 0, rounds: 1 };
                     }
                 });
                 var rows = Object.values(monthMap);
             }
 
-            if (bowFilter !== 'All') {
-                rows = rows.filter(r => r.bow === bowFilter);
-            }
-
+            if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
             rows.sort((a, b) => b.score - a.score);
 
             if (rows.length === 0) {
@@ -1351,47 +1261,28 @@
             `).join('');
         }
 
-        // --- RECORDS & HISTORY ---
         function renderRecords() {
             const tbody = document.getElementById('records-body');
-            const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
-            
-            let records = styles.map(style => {
+            tbody.innerHTML = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"].map(style => {
                 let best = null;
-                db.history.forEach(h => {
-                    if (h.bow === style && (!best || parseInt(h.score) > best.score)) {
-                        best = h;
-                    }
-                });
-                return {
-                    style,
-                    holder: best ? best.archerName : "No Record",
-                    score: best ? best.score : "-",
-                    tens: best ? best.tens : "-",
-                    date: best ? best.date : "-"
-                };
-            });
-
-            tbody.innerHTML = records.map(r => `
-                <tr>
-                    <td><span class="badge badge-gold">${r.style}</span></td>
-                    <td><strong>${r.holder}</strong></td>
-                    <td>${r.score}</td>
-                    <td>${r.tens}</td>
-                    <td>${r.date}</td>
-                </tr>
-            `).join('');
+                db.history.forEach(h => { if (h.bow === style && (!best || parseInt(h.score) > best.score)) best = h; });
+                return `<tr>
+                    <td><span class="badge badge-gold">${style}</span></td>
+                    <td><strong>${best ? best.archerName : "No Record"}</strong></td>
+                    <td>${best ? best.score : "-"}</td>
+                    <td>${best ? best.tens : "-"}</td>
+                    <td>${best ? best.date : "-"}</td>
+                </tr>`;
+            }).join('');
         }
 
         function renderHistory() {
             const tbody = document.getElementById('history-body');
             const sortedHistory = [...db.history].sort((a, b) => new Date(b.date) - new Date(a.date));
-
             if (sortedHistory.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No history found.</td></tr>`;
                 return;
             }
-
             tbody.innerHTML = sortedHistory.map(h => `
                 <tr>
                     <td>${h.date}</td>
@@ -1405,7 +1296,6 @@
             `).join('');
         }
 
-        // --- PHOTO PROOF VIEWER ---
         function viewProof(historyId) {
             const record = db.history.find(h => String(h.id) === String(historyId));
             if (record && record.screenshot) {
@@ -1419,7 +1309,6 @@
             document.getElementById('proof-image-display').src = '';
         }
 
-        // --- ADMIN & SECURITY ---
         let pendingDeleteHistoryId = null;
 
         function openAdminModal() {
@@ -1427,16 +1316,13 @@
             document.getElementById('admin-pin-input').value = '';
         }
 
-        function closeAdminModal() {
-            document.getElementById('admin-modal').classList.remove('open');
-        }
+        function closeAdminModal() { document.getElementById('admin-modal').classList.remove('open'); }
 
         function verifyAdminPin() {
             const pin = document.getElementById('admin-pin-input').value;
             if (pin === db.settings.pin) {
                 closeAdminModal();
                 switchTab('admin');
-                
                 document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
                 const buttons = document.querySelectorAll('.tab-btn');
                 buttons[buttons.length - 1].classList.add('active');
@@ -1445,51 +1331,77 @@
             }
         }
 
-        function triggerPinReset(e) {
+        async function triggerServerPinReset(e) {
             e.preventDefault();
-            const confirmReset = prompt("Type 'RESET' to restore the Master Admin PIN back to default (1010):");
-            if (confirmReset === "RESET") {
-                db.settings.pin = "1010";
-                saveDBLocally();
-                alert("Admin PIN has been successfully reset to default: 1010");
-                closeAdminModal();
-            } else if (confirmReset !== null) {
-                alert("Incorrect verification keyword. Reset cancelled.");
+            const recoveryKeyInput = prompt("Enter the Secret Recovery Key to reset the Admin PIN back to 1010:");
+            if (!recoveryKeyInput) return;
+
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
+                alert("Apps Script URL not configured yet.");
+                return;
+            }
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "resetPin", recoveryKey: recoveryKeyInput })
+                });
+                const result = await response.json();
+                if (result.result === 'success') {
+                    alert("Admin PIN has been successfully reset back to default: 1010");
+                    db.settings.pin = "1010";
+                    closeAdminModal();
+                } else {
+                    alert("Incorrect recovery key. Reset failed.");
+                }
+            } catch (err) {
+                alert("Network error communicating with server.");
             }
         }
 
-        function updateAdminPin() {
+        async function updateAdminPin() {
             const newPin = document.getElementById('new-admin-pin').value.trim();
             if (!newPin || newPin.length < 4) {
                 alert("Please enter a valid PIN of at least 4 digits.");
                 return;
             }
-            db.settings.pin = newPin;
-            saveDBLocally();
-            document.getElementById('new-admin-pin').value = '';
-            alert("Master Admin PIN successfully updated!");
+
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
+                alert("Apps Script URL not configured yet.");
+                return;
+            }
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "updatePin", newPin: newPin })
+                });
+                const result = await response.json();
+                if (result.result === 'success') {
+                    db.settings.pin = newPin;
+                    document.getElementById('new-admin-pin').value = '';
+                    alert("Master Admin PIN successfully updated on cloud server!");
+                } else {
+                    alert("Error updating PIN.");
+                }
+            } catch (e) {
+                alert("Network error updating PIN.");
+            }
         }
 
         function addNewArcherRegistry() {
             const name = document.getElementById('new-archer-name').value.trim();
-            const gender = document.getElementById('new-archer-gender').value;
-            const cat = document.getElementById('new-archer-cat').value;
-            const bow = document.getElementById('new-archer-bow').value;
-
-            if (!name) {
-                alert("Please enter a valid archer name.");
-                return;
-            }
+            if (!name) { alert("Please enter a valid archer name."); return; }
 
             db.archers.push({
                 id: Date.now(),
                 name: name,
-                gender: gender,
-                category: cat,
-                defaultBow: bow
+                gender: document.getElementById('new-archer-gender').value,
+                category: document.getElementById('new-archer-cat').value,
+                defaultBow: document.getElementById('new-archer-bow').value
             });
 
-            saveDBLocally();
+            saveLocalSettings();
             document.getElementById('new-archer-name').value = '';
             populateDropdowns();
             renderAdminTable();
@@ -1499,12 +1411,10 @@
         function renderAdminTable() {
             const tbody = document.getElementById('admin-archer-table');
             const sorted = getSortedArchers();
-
             if (sorted.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No archers in database.</td></tr>`;
                 return;
             }
-
             tbody.innerHTML = sorted.map(a => `
                 <tr>
                     <td><strong>${a.name}</strong></td>
@@ -1544,11 +1454,10 @@
 
             if (pendingDeleteHistoryId.type === 'archer') {
                 db.archers = db.archers.filter(a => String(a.id) !== String(pendingDeleteHistoryId.id));
-                saveDBLocally();
+                saveLocalSettings();
                 populateDropdowns();
                 renderAdminTable();
             } else if (pendingDeleteHistoryId.type === 'history') {
-                // Note: For cloud sheets, deletion from history can be done directly in your Google Sheet!
                 alert("To delete historical scores, please open your Google Sheet and delete the corresponding row.");
             }
 
