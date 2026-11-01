@@ -18,7 +18,7 @@
             --danger: #ef4444;
             --danger-hover: #dc2626;
             --success: #22c55e;
-            --border: #475569;
+            --border: #6b21a8; /* Rich purple border accent */
         }
 
         * {
@@ -51,35 +51,36 @@
         }
 
         header {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            padding: 20px;
+            background: linear-gradient(135deg, #581c87, #3b0764); /* Rich purple background */
+            padding: 24px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 2px solid #7e22ce;
         }
 
         .header-title {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
         }
 
         .header-logo {
-            width: 48px;
-            height: 48px;
+            width: 96px;  /* Doubled size from 48px */
+            height: 96px; /* Doubled size from 48px */
             object-fit: contain;
-            border-radius: 6px;
-            background: var(--bg-input);
+            border-radius: 8px;
+            background: #1e1b4b;
+            border: 2px solid #a855f7;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 3rem; /* Doubled font size for emoji */
         }
 
         .header-text h1 {
             font-size: 1.5rem;
-            color: var(--primary);
+            color: #f3e8ff;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -87,15 +88,15 @@
 
         .header-text p {
             font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 2px;
+            color: #d8b4fe;
+            margin-top: 4px;
         }
 
         .admin-btn {
-            background: var(--bg-input);
+            background: #581c87;
             color: var(--text-main);
-            border: 1px solid var(--border);
-            padding: 8px 16px;
+            border: 1px solid #9333ea;
+            padding: 10px 18px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
@@ -103,8 +104,8 @@
         }
 
         .admin-btn:hover {
-            background: var(--primary);
-            border-color: var(--primary);
+            background: #7e22ce;
+            border-color: #a855f7;
         }
 
         /* Nav Tabs */
@@ -136,9 +137,9 @@
         }
 
         .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: rgba(217, 119, 6, 0.05);
+            color: #c084fc;
+            border-bottom-color: #a855f7;
+            background: rgba(147, 51, 234, 0.1);
         }
 
         .tab-content {
@@ -185,7 +186,7 @@
         }
 
         select:focus, input:focus {
-            border-color: var(--primary);
+            border-color: #a855f7;
         }
 
         input[type="date"] {
@@ -414,6 +415,8 @@
             text-transform: uppercase;
         }
         .badge-gold { background: rgba(217, 119, 6, 0.2); color: #fbbf24; border: 1px solid rgba(217, 119, 6, 0.4); }
+        .badge-success { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
+        .badge-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
 
         .hidden { display: none !important; }
     </style>
@@ -592,6 +595,7 @@
                     <label>Period / Season View</label>
                     <select id="lb-month-filter" onchange="renderLeaderboard()">
                         <option value="overall">🏆 Overall Season (Oct - Mar Sum)</option>
+                        <option value="most-improved">📈 Most Improved vs PB (Max Gain)</option>
                         <option value="2026-10">October 2026</option>
                         <option value="2026-11">November 2026</option>
                         <option value="2026-12">December 2026</option>
@@ -616,7 +620,7 @@
             <div class="table-container">
                 <table>
                     <thead>
-                        <tr>
+                        <tr id="leaderboard-headers">
                             <th>Pos</th>
                             <th>Archer</th>
                             <th>Bow Style</th>
@@ -700,6 +704,7 @@
                             <th>Archer</th>
                             <th>Bow</th>
                             <th>Score</th>
+                            <th>vs Baseline PB</th>
                             <th>Hits</th>
                             <th>10s</th>
                             <th>Proof</th>
@@ -1304,6 +1309,74 @@
             const monthFilter = document.getElementById('lb-month-filter')?.value || 'overall';
             const bowFilter = document.getElementById('lb-bow-filter')?.value || 'All';
             const tbody = document.getElementById('leaderboard-body');
+            const theadHeaders = document.getElementById('leaderboard-headers');
+
+            if (monthFilter === 'most-improved') {
+                theadHeaders.innerHTML = `
+                    <th>Pos</th>
+                    <th>Archer</th>
+                    <th>Bow Style</th>
+                    <th>Best Score</th>
+                    <th>Starting PB</th>
+                    <th>PB Improvement (+ / -)</th>
+                `;
+
+                let improvementMap = {};
+                db.history.forEach(h => {
+                    const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                    const startingPB = archer ? (archer.startingPB || 250) : 250;
+                    const score = parseInt(h.score) || 0;
+                    const diff = score - startingPB;
+
+                    const key = `${h.archerId}_${h.bow}`;
+                    if (!improvementMap[key] || diff > improvementMap[key].diff) {
+                        improvementMap[key] = {
+                            archerName: h.archerName,
+                            bow: h.bow,
+                            bestScore: score,
+                            startingPB: startingPB,
+                            diff: diff
+                        };
+                    }
+                });
+
+                let rows = Object.values(improvementMap);
+                if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
+                rows.sort((a, b) => b.diff - a.diff);
+
+                if (rows.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No score history available to calculate improvements.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = rows.map((r, idx) => {
+                    const diffText = r.diff >= 0 ? `+${r.diff}` : `${r.diff}`;
+                    const badgeClass = r.diff >= 0 ? 'badge-success' : 'badge-danger';
+                    return `
+                        <tr>
+                            <td><strong>#${idx + 1}</strong></td>
+                            <td>${r.archerName}</td>
+                            <td><span class="badge badge-gold">${r.bow}</span></td>
+                            <td><strong>${r.bestScore}</strong></td>
+                            <td>${r.startingPB}</td>
+                            <td><span class="badge ${badgeClass}">${diffText} vs PB</span></td>
+                        </tr>
+                    `;
+                }).join('');
+                return;
+            }
+
+            // Standard Leaderboard Views (Overall or Specific Month)
+            theadHeaders.innerHTML = `
+                <th>Pos</th>
+                <th>Archer</th>
+                <th>Bow Style</th>
+                <th>Score / Sum</th>
+                <th>Hits</th>
+                <th>10s</th>
+                <th>Rnds</th>
+            `;
+
             let standingsMap = {};
 
             if (monthFilter === 'overall') {
@@ -1507,21 +1580,31 @@
             const tbody = document.getElementById('history-body');
             const sortedHistory = [...db.history].sort((a, b) => new Date(b.date) - new Date(a.date));
             if (sortedHistory.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No history found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">No history found.</td></tr>`;
                 return;
             }
-            tbody.innerHTML = sortedHistory.map(h => `
-                <tr>
-                    <td>${h.date ? h.date.split('T')[0] : ''}</td>
-                    <td>${h.archerName}</td>
-                    <td><span class="badge badge-gold">${h.bow}</span></td>
-                    <td><strong>${h.score}</strong></td>
-                    <td>${h.hits !== undefined ? h.hits : 60}</td>
-                    <td>${h.tens}</td>
-                    <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
-                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = sortedHistory.map(h => {
+                const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                const startingPB = archer ? (archer.startingPB || 250) : 250;
+                const score = parseInt(h.score) || 0;
+                const diff = score - startingPB;
+                const diffText = diff >= 0 ? `+${diff}` : `${diff}`;
+                const badgeClass = diff >= 0 ? 'badge-success' : 'badge-danger';
+
+                return `
+                    <tr>
+                        <td>${h.date ? h.date.split('T')[0] : ''}</td>
+                        <td>${h.archerName}</td>
+                        <td><span class="badge badge-gold">${h.bow}</span></td>
+                        <td><strong>${score}</strong></td>
+                        <td><span class="badge ${badgeClass}">${diffText} vs PB</span></td>
+                        <td>${h.hits !== undefined ? h.hits : 60}</td>
+                        <td>${h.tens}</td>
+                        <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
+                        <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function viewProof(historyId) {
