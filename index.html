@@ -646,9 +646,9 @@
             </select>
         </div>
         <div class="form-group" style="flex: 1; min-width: 130px;">
-            <label>Filter Gender</label>
+            <label>Filter gender</label>
             <select id="rec-gender-filter" onchange="renderRecords()">
-                <option value="All">All Gender</option>
+                <option value="All">All gender</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
             </select>
@@ -669,7 +669,7 @@
             <thead>
                 <tr>
                     <th>Bow Style</th>
-                    <th>Gender</th>
+                    <th>gender</th>
                     <th>Category</th>
                     <th>Record Holder</th>
                     <th>Top Score</th>
@@ -781,7 +781,7 @@
                         <input type="text" id="new-archer-name" placeholder="e.g. Jane Doe">
                     </div>
                     <div class="form-group">
-                        <label>Gender</label>
+                        <label>gender</label>
                         <select id="new-archer-gender">
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
@@ -815,7 +815,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Gender</th>
+                            <th>gender</th>
                             <th>Age Group</th>
                             <th>Default Bow</th>
                             <th>Starting PB</th>
@@ -1347,7 +1347,7 @@
     
     // Grab filter values safely
     const bowFilter = document.getElementById('rec-bow-filter')?.value || 'All';
-    const GenderFilter = document.getElementById('rec-gender-filter')?.value || 'All';
+    const genderFilter = document.getElementById('rec-gender-filter')?.value || 'All';
     const catFilter = document.getElementById('rec-cat-filter')?.value || 'All';
 
     let allRecords = [...db.historicalRecords];
@@ -1380,7 +1380,7 @@
         if (bowFilter !== 'All' && style.toLowerCase() !== bowFilter.toLowerCase()) return;
 
         genders.forEach(gender => {
-            if (GenderFilter !== 'All' && gender.toLowerCase() !== genderFilter.toLowerCase()) return;
+            if (genderFilter !== 'All' && gender.toLowerCase() !== genderFilter.toLowerCase()) return;
 
             categories.forEach(category => {
                 if (catFilter !== 'All' && category.toLowerCase() !== catFilter.toLowerCase()) return;
@@ -1389,9 +1389,9 @@
                 
                 allRecords.forEach(r => {
                     const matchBow = r && r.bow && r.bow.toLowerCase() === style.toLowerCase();
-                    const rGender = r.gender || "Male";
+                    const rgender = r.gender || "Male";
                     const rCat = r.category || "Senior";
-                    const matchDemographics = rGender.toLowerCase() === gender.toLowerCase() && rCat.toLowerCase() === category.toLowerCase();
+                    const matchDemographics = rgender.toLowerCase() === gender.toLowerCase() && rCat.toLowerCase() === category.toLowerCase();
 
                     if (matchBow && matchDemographics) {
                         if (!best || parseInt(r.score) > parseInt(best.score)) {
