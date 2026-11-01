@@ -1298,31 +1298,49 @@
             `).join('');
         }
 
-        async function renderRecords() {
+      async function renderRecords() {
             try {
                 const res = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
-                db.historicalRecords = await res.json();
-            } catch(e) { db.historicalRecords = []; }
+                const text = await res.text();
+                db.historicalRecords = text ? JSON.parse(text) : [];
+            } catch(e) { 
+                console.error("Failed to load historical records", e);
+                db.historicalRecords = []; 
+            }
 
             const tbody = document.getElementById('records-body');
             let allRecords = [...db.historicalRecords];
             
-            db.history.forEach(h => {
-                allRecords.push({ bow: h.bow, category: "Senior", archerName: h.archerName, score: parseInt(h.score), tens: h.tens, date: h.date });
-            });
+            // Include regular league history scores into records comparison
+            if (Array.isArray(db.history)) {
+                db.history.forEach(h => {
+                    allRecords.push({ 
+                        bow: h.bow, 
+                        category: "Senior", 
+                        archerName: h.archerName, 
+                        score: parseInt(h.score) || 0, 
+                        tens: parseInt(h.tens) || 0, 
+                        date: h.date 
+                    });
+                });
+            }
 
             const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
             tbody.innerHTML = styles.map(style => {
                 let best = null;
                 allRecords.forEach(r => {
-                    if (r.bow === style && (!best || parseInt(r.score) > parseInt(best.score))) best = r;
+                    if (r && r.bow && r.bow.toLowerCase() === style.toLowerCase()) {
+                        if (!best || parseInt(r.score) > parseInt(best.score)) {
+                            best = r;
+                        }
+                    }
                 });
                 return `<tr>
                     <td><span class="badge badge-gold">${style}</span></td>
                     <td><strong>${best ? best.archerName : "No Record"}</strong></td>
                     <td>${best ? best.score : "-"}</td>
                     <td>${best ? best.tens : "-"}</td>
-                    <td>${best && best.date ? best.date.split('T')[0] : "-"}</td>
+                    <td>${best && best.date ? String(best.date).split('T')[0] : "-"}</td>
                 </tr>`;
             }).join('');
         }
