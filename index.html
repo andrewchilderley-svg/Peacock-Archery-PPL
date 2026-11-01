@@ -628,7 +628,7 @@
             </div>
         </div>
 
-        <!-- 4. RECORDS TAB -->
+       <!-- 4. RECORDS TAB -->
         <div id="tab-records" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Records & Personal Bests</h2>
             <div class="table-container">
@@ -636,6 +636,8 @@
                     <thead>
                         <tr>
                             <th>Bow Style</th>
+                            <th>Sex</th>
+                            <th>Category</th>
                             <th>Record Holder</th>
                             <th>Top Score</th>
                             <th>10s</th>
@@ -1311,12 +1313,19 @@
             const tbody = document.getElementById('records-body');
             let allRecords = [...db.historicalRecords];
             
-            // Include regular league history scores into records comparison
+            // Map regular league history scores. 
+            // We look up the archer in db.archers to pull their actual gender and category, 
+            // falling back to "Senior" and "Male" if not found.
             if (Array.isArray(db.history)) {
                 db.history.forEach(h => {
+                    const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                    const gender = archer ? archer.gender : "Male";
+                    const category = archer ? archer.category : "Senior";
+
                     allRecords.push({ 
                         bow: h.bow, 
-                        category: "Senior", 
+                        category: category, 
+                        gender: gender,
                         archerName: h.archerName, 
                         score: parseInt(h.score) || 0, 
                         tens: parseInt(h.tens) || 0, 
@@ -1326,31 +1335,54 @@
             }
 
             const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
-            tbody.innerHTML = styles.map(style => {
-                let best = null;
-                allRecords.forEach(r => {
-                    if (r && r.bow && r.bow.toLowerCase() === style.toLowerCase()) {
-                        if (!best || parseInt(r.score) > parseInt(best.score)) {
-                            best = r;
+            const genders = ["Male", "Female"];
+            const categories = ["Senior", "50+", "Under 18"];
+
+            let htmlRows = [];
+
+            // Generate records matrix for every combination of Style, Gender, and Category
+            styles.forEach(style => {
+                genders.forEach(gender => {
+                    categories.forEach(category => {
+                        let best = null;
+                        
+                        allRecords.forEach(r => {
+                            // Match bow style
+                            const matchBow = r && r.bow && r.bow.toLowerCase() === style.toLowerCase();
+                            
+                            // Match gender & category if present in the record (defaulting historical records to Senior/Male if unassigned)
+                            const rGender = r.gender || "Male";
+                            const rCat = r.category || "Senior";
+                            const matchDemographics = rGender.toLowerCase() === gender.toLowerCase() && rCat.toLowerCase() === category.toLowerCase();
+
+                            if (matchBow && matchDemographics) {
+                                if (!best || parseInt(r.score) > parseInt(best.score)) {
+                                    best = r;
+                                }
+                            }
+                        });
+
+                        // Only show rows that have a record or show them as placeholders
+                        let formattedDate = "-";
+                        if (best && best.date) {
+                            const dateStr = String(best.date);
+                            formattedDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
                         }
-                    }
+
+                        htmlRows.push(`<tr>
+                            <td><span class="badge badge-gold">${style}</span></td>
+                            <td>${gender}</td>
+                            <td>${category}</td>
+                            <td><strong>${best ? best.archerName : "No Record"}</strong></td>
+                            <td>${best ? best.score : "-"}</td>
+                            <td>${best ? best.tens : "-"}</td>
+                            <td>${formattedDate}</td>
+                        </tr>`);
+                    });
                 });
+            });
 
-                // Safe date formatting that handles both "YYYY-MM-DDTHH:mm:ss" and simple years like "2024"
-                let formattedDate = "-";
-                if (best && best.date) {
-                    const dateStr = String(best.date);
-                    formattedDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
-                }
-
-                return `<tr>
-                    <td><span class="badge badge-gold">${style}</span></td>
-                    <td><strong>${best ? best.archerName : "No Record"}</strong></td>
-                    <td>${best ? best.score : "-"}</td>
-                    <td>${best ? best.tens : "-"}</td>
-                    <td>${formattedDate}</td>
-                </tr>`;
-            }).join('');
+            tbody.innerHTML = htmlRows.join('');
         }
 
         async function submitHistoricalRecord() {
