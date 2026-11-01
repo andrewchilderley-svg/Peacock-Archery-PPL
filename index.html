@@ -1583,6 +1583,7 @@ function updateArcherField(id, field, value) {
         saveLocalSettings();
         populateDropdowns(); // Refreshes dropdowns across other tabs if names/bows update
        }
+}
         function promptDeleteArcher(id) {
             pendingDeleteHistoryId = { type: 'archer', id: id };
             document.getElementById('delete-pin-modal').classList.add('open');
