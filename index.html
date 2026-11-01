@@ -1357,7 +1357,19 @@
             const genderFilter = document.getElementById('rec-gender-filter')?.value || 'All';
             const catFilter = document.getElementById('rec-cat-filter')?.value || 'All';
 
-            let allRecords = [...db.historicalRecords];
+           let allRecords = [...db.historicalRecords];
+            
+            // NEW: Ensure any historical record missing a gender checks your archer database
+            allRecords.forEach(r => {
+                if (!r.gender) {
+                    const matchedArcher = db.archers.find(a => a.name.toLowerCase() === (r.archerName || "").toLowerCase());
+                    r.gender = matchedArcher ? matchedArcher.gender : "Male";
+                }
+                if (!r.category) {
+                    const matchedArcher = db.archers.find(a => a.name.toLowerCase() === (r.archerName || "").toLowerCase());
+                    r.category = matchedArcher ? matchedArcher.category : "Senior";
+                }
+            });
             
             if (Array.isArray(db.history)) {
                 db.history.forEach(h => {
