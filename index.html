@@ -646,9 +646,9 @@
             </select>
         </div>
         <div class="form-group" style="flex: 1; min-width: 130px;">
-            <label>Filter gender</label>
+            <label>Filter Gender</label>
             <select id="rec-gender-filter" onchange="renderRecords()">
-                <option value="All">All gender</option>
+                <option value="All">All Genders</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
             </select>
@@ -1334,97 +1334,97 @@
         }
 
      async function renderRecords() {
-    try {
-        const res = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
-        const text = await res.text();
-        db.historicalRecords = text ? JSON.parse(text) : [];
-    } catch(e) { 
-        console.error("Failed to load historical records", e);
-        db.historicalRecords = []; 
-    }
+            try {
+                const res = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
+                const text = await res.text();
+                db.historicalRecords = text ? JSON.parse(text) : [];
+            } catch(e) { 
+                console.error("Failed to load historical records", e);
+                db.historicalRecords = []; 
+            }
 
-    const tbody = document.getElementById('records-body');
-    
-    // Grab filter values safely
-    const bowFilter = document.getElementById('rec-bow-filter')?.value || 'All';
-    const genderFilter = document.getElementById('rec-gender-filter')?.value || 'All';
-    const catFilter = document.getElementById('rec-cat-filter')?.value || 'All';
+            const tbody = document.getElementById('records-body');
+            
+            // Grab filter values safely
+            const bowFilter = document.getElementById('rec-bow-filter')?.value || 'All';
+            const genderFilter = document.getElementById('rec-gender-filter')?.value || 'All';
+            const catFilter = document.getElementById('rec-cat-filter')?.value || 'All';
 
-    let allRecords = [...db.historicalRecords];
-    
-    if (Array.isArray(db.history)) {
-        db.history.forEach(h => {
-            const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-            const gender = archer ? archer.gender : "Male";
-            const category = archer ? archer.category : "Senior";
+            let allRecords = [...db.historicalRecords];
+            
+            if (Array.isArray(db.history)) {
+                db.history.forEach(h => {
+                    const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                    const gender = archer ? archer.gender : "Male";
+                    const category = archer ? archer.category : "Senior";
 
-            allRecords.push({ 
-                bow: h.bow, 
-                category: category, 
-                gender: gender,
-                archerName: h.archerName, 
-                score: parseInt(h.score) || 0, 
-                tens: parseInt(h.tens) || 0, 
-                date: h.date 
-            });
-        });
-    }
-
-    const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
-    const genders = ["Male", "Female"];
-    const categories = ["Senior", "50+", "Under 18"];
-
-    let htmlRows = [];
-
-    styles.forEach(style => {
-        if (bowFilter !== 'All' && style.toLowerCase() !== bowFilter.toLowerCase()) return;
-
-        genders.forEach(gender => {
-            if (genderFilter !== 'All' && gender.toLowerCase() !== genderFilter.toLowerCase()) return;
-
-            categories.forEach(category => {
-                if (catFilter !== 'All' && category.toLowerCase() !== catFilter.toLowerCase()) return;
-
-                let best = null;
-                
-                allRecords.forEach(r => {
-                    const matchBow = r && r.bow && r.bow.toLowerCase() === style.toLowerCase();
-                    const rgender = r.gender || "Male";
-                    const rCat = r.category || "Senior";
-                    const matchDemographics = rgender.toLowerCase() === gender.toLowerCase() && rCat.toLowerCase() === category.toLowerCase();
-
-                    if (matchBow && matchDemographics) {
-                        if (!best || parseInt(r.score) > parseInt(best.score)) {
-                            best = r;
-                        }
-                    }
+                    allRecords.push({ 
+                        bow: h.bow, 
+                        category: category, 
+                        gender: gender,
+                        archerName: h.archerName, 
+                        score: parseInt(h.score) || 0, 
+                        tens: parseInt(h.tens) || 0, 
+                        date: h.date 
+                    });
                 });
+            }
 
-                let formattedDate = "-";
-                if (best && best.date) {
-                    const dateStr = String(best.date);
-                    formattedDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
-                }
+            const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
+            const genders = ["Male", "Female"];
+            const categories = ["Senior", "50+", "Under 18"];
 
-                htmlRows.push(`<tr>
-                    <td><span class="badge badge-gold">${style}</span></td>
-                    <td>${gender}</td>
-                    <td>${category}</td>
-                    <td><strong>${best ? best.archerName : "No Record"}</strong></td>
-                    <td>${best ? best.score : "-"}</td>
-                    <td>${best ? best.tens : "-"}</td>
-                    <td>${formattedDate}</td>
-                </tr>`);
+            let htmlRows = [];
+
+            styles.forEach(style => {
+                if (bowFilter !== 'All' && style.toLowerCase() !== bowFilter.toLowerCase()) return;
+
+                genders.forEach(gender => {
+                    if (genderFilter !== 'All' && gender.toLowerCase() !== genderFilter.toLowerCase()) return;
+
+                    categories.forEach(category => {
+                        if (catFilter !== 'All' && category.toLowerCase() !== catFilter.toLowerCase()) return;
+
+                        let best = null;
+                        
+                        allRecords.forEach(r => {
+                            const matchBow = r && r.bow && r.bow.toLowerCase() === style.toLowerCase();
+                            const rGender = r.gender || "Male";
+                            const rCat = r.category || "Senior";
+                            const matchDemographics = rGender.toLowerCase() === gender.toLowerCase() && rCat.toLowerCase() === category.toLowerCase();
+
+                            if (matchBow && matchDemographics) {
+                                if (!best || parseInt(r.score) > parseInt(best.score)) {
+                                    best = r;
+                                }
+                            }
+                        });
+
+                        let formattedDate = "-";
+                        if (best && best.date) {
+                            const dateStr = String(best.date);
+                            formattedDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+                        }
+
+                        htmlRows.push(`<tr>
+                            <td><span class="badge badge-gold">${style}</span></td>
+                            <td>${gender}</td>
+                            <td>${category}</td>
+                            <td><strong>${best ? best.archerName : "No Record"}</strong></td>
+                            <td>${best ? best.score : "-"}</td>
+                            <td>${best ? best.tens : "-"}</td>
+                            <td>${formattedDate}</td>
+                        </tr>`);
+                    });
+                });
             });
-        });
-    });
 
-    if (htmlRows.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No records match this filter.</td></tr>`;
-    } else {
-        tbody.innerHTML = htmlRows.join('');
-    }
-}
+            if (htmlRows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No records match this filter.</td></tr>`;
+            } else {
+                tbody.innerHTML = htmlRows.join('');
+            }
+        }
 
         async function submitHistoricalRecord() {
             const record = {
@@ -1617,13 +1617,18 @@ function renderAdminTable() {
                 return;
             }
             
+            const genders = ["Male", "Female"];
             const categories = ["Senior", "50+", "Under 18"];
             const bows = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
 
             tbody.innerHTML = sorted.map(a => `
                 <tr>
                     <td><strong>${a.name}</strong></td>
-                    <td>${a.gender}</td>
+                    <td>
+                        <select style="padding: 4px 8px; font-size: 0.85rem;" onchange="updateArcherField('${a.id}', 'gender', this.value)">
+                            ${genders.map(g => `<option value="${g}" ${a.gender === g ? 'selected' : ''}>${g}</option>`).join('')}
+                        </select>
+                    </td>
                     <td>
                         <select style="padding: 4px 8px; font-size: 0.85rem;" onchange="updateArcherField('${a.id}', 'category', this.value)">
                             ${categories.map(c => `<option value="${c}" ${a.category === c ? 'selected' : ''}>${c}</option>`).join('')}
