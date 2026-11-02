@@ -793,10 +793,33 @@
             </div>
         </div>
 
-        <!-- 5. HISTORY TAB -->
-        <div id="tab-history" class="tab-content">
-            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Submitted Score History</h2>
-            <div class="table-container">
+       <!-- 5. HISTORY TAB -->
+<div id="tab-history" class="tab-content">
+    <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Submitted Score History</h2>
+    
+    <!-- History Filter Controls -->
+    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+        <div class="form-group" style="flex: 1; min-width: 150px;">
+            <label>Filter Archer</label>
+            <select id="hist-archer-filter" onchange="renderHistory()">
+                <option value="All">All Archers</option>
+                <!-- Populated dynamically -->
+            </select>
+        </div>
+        <div class="form-group" style="flex: 1; min-width: 150px;">
+            <label>Filter Bow Style</label>
+            <select id="hist-bow-filter" onchange="renderHistory()">
+                <option value="All">All Bow Styles</option>
+                <option value="Recurve">Recurve</option>
+                <option value="Compound">Compound</option>
+                <option value="Barebow">Barebow</option>
+                <option value="Longbow">Longbow</option>
+                <option value="Asiatic">Asiatic</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-container">
                 <table>
                     <thead>
                         <tr>
