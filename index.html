@@ -566,7 +566,7 @@
                     <input type="number" id="up-hits" min="0" max="60" placeholder="e.g. 60" value="60">
                 </div>
                 <div class="form-group">
-                    <label>Photo Proof (Mandatory)</label>
+                    <label>Photo Proof (Optional)</label>
                     <input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;">
                 </div>
             </div>
@@ -662,8 +662,26 @@
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
-                <button class="btn btn-secondary" onclick="resetLiveRound()">Reset Round</button>
+                <button class="btn btn-secondary" onclick="promptResetRound()">Reset Round</button>
                 <button class="btn" id="confirm-end-btn" onclick="confirmEnd()" disabled>Confirm End</button>
+            </div>
+
+            <!-- LIVE SCORESHEET TABLE (Expands as they shoot) -->
+            <div style="margin-top: 20px; background: #111827; border: 1px solid var(--border); border-radius: 8px; padding: 12px; max-height: 250px; overflow-y: auto;">
+                <h4 style="font-size: 0.9rem; color: var(--primary); margin-bottom: 8px; text-align: center;">Running Scoresheet</h4>
+                <table style="width: 100%; font-size: 0.85rem; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 4px; border-bottom: 1px solid #334155;">End</th>
+                            <th style="padding: 4px; border-bottom: 1px solid #334155;">Arrows</th>
+                            <th style="padding: 4px; border-bottom: 1px solid #334155;">Total</th>
+                            <th style="padding: 4px; border-bottom: 1px solid #334155;">Cum.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="live-scoresheet-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
             </div>
 
             <div id="submit-league-container" class="hidden" style="margin-top: 16px;">
@@ -987,6 +1005,18 @@
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeAdminModal()">Cancel</button>
                 <button class="btn" onclick="verifyAdminPin()">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESET ROUND CONFIRMATION MODAL -->
+    <div class="modal" id="reset-modal">
+        <div class="modal-content">
+            <div class="modal-title">⚠️ Reset Round?</div>
+            <p style="font-size: 0.95rem; margin-bottom: 16px;">Are you sure you want to completely clear your current round? <strong>All unsubmitted arrows will be lost.</strong></p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeResetModal()">Return to Scoring</button>
+                <button class="btn btn-danger" onclick="confirmResetRound()">Yes, Reset Round</button>
             </div>
         </div>
     </div>
@@ -1350,7 +1380,7 @@
         function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
             
-            // MANDATORY ARCHER CHECK: Exits immediately so inputs and uploaded photo are NOT wiped
+            // MANDATORY ARCHER CHECK
             if (!archerId || archerId === "") {
                 alert("Please select yourself under 'Archer' before submitting your score.");
                 return; 
@@ -1378,29 +1408,29 @@
             const fileInput = document.getElementById('up-screenshot');
             const file = fileInput.files[0];
 
-            // MANDATORY PHOTO CHECK
-            if (!file) {
-                alert("Please upload a photo or screenshot of your signed scorecard to submit.");
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            // OPTIONAL PHOTO UPLOAD LOGIC
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    submitRecord({
+                        id: Date.now(), archerId: archer.id, archerName: archer.name,
+                        bow: bow, gender: gender, category: category,
+                        score: score, tens: tens, hits: hits,
+                        date: date || new Date().toISOString().split('T')[0], 
+                        screenshot: e.target.result
+                    });
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // If no file uploaded, send empty string for screenshot
                 submitRecord({
-                    id: Date.now(), 
-                    archerId: archer.id, 
-                    archerName: archer.name,
-                    bow: bow,
-                    gender: gender,
-                    category: category,
-                    score: score, 
-                    tens: tens, 
-                    hits: hits,
+                    id: Date.now(), archerId: archer.id, archerName: archer.name,
+                    bow: bow, gender: gender, category: category,
+                    score: score, tens: tens, hits: hits,
                     date: date || new Date().toISOString().split('T')[0], 
-                    screenshot: e.target.result
+                    screenshot: ""
                 });
-            };
-            reader.readAsDataURL(file);
+            }
         }
 
         function submitRecord(record) {
@@ -1416,7 +1446,6 @@
         let endsMatrix = Array(20).fill(null).map(() => []);
         let liveScores = [];
 
-        // Save active live round to device storage (protects against phone sleep / tab reloads)
         function saveLiveState() {
             const state = {
                 archerId: document.getElementById('shoot-archer').value,
@@ -1429,7 +1458,6 @@
             localStorage.setItem('ppl_active_shoot_backup', JSON.stringify(state));
         }
 
-        // Restore active live round on wake/reload
         function restoreLiveState() {
             const saved = localStorage.getItem('ppl_active_shoot_backup');
             if (!saved) return;
@@ -1497,6 +1525,20 @@
             }
         }
 
+        // --- NEW RESET MODAL LOGIC ---
+        function promptResetRound() {
+            document.getElementById('reset-modal').classList.add('open');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-modal').classList.remove('open');
+        }
+
+        function confirmResetRound() {
+            closeResetModal();
+            resetLiveRound(true);
+        }
+
         function resetLiveRound(forceSilent = false) {
             if (forceSilent || confirm("Are you sure you want to reset the live round?")) {
                 currentEnd = 1;
@@ -1538,6 +1580,44 @@
                 const val = activeEndValues[i];
                 return `<div class="arrow-slot ${val !== undefined ? 'filled' : ''}">${val !== undefined ? (val === 0 ? 'M' : val) : '-'}</div>`;
             }).join('');
+
+            // --- BUILD RUNNING SCORESHEET TABLE ---
+            let sheetHtml = '';
+            let runningTotal = 0;
+            
+            for (let i = 0; i < currentEnd; i++) {
+                const arrs = endsMatrix[i] || [];
+                
+                if (arrs.length === 0 && i === currentEnd - 1) {
+                    // Blank row for the current un-shot end
+                    sheetHtml += `<tr>
+                        <td style="padding: 6px; color: var(--text-muted);">${i+1}</td>
+                        <td style="padding: 6px; color: var(--text-muted);">- | - | -</td>
+                        <td style="padding: 6px; color: var(--text-muted);">0</td>
+                        <td style="padding: 6px; color: var(--text-muted);">${runningTotal}</td>
+                    </tr>`;
+                } else if (arrs.length > 0) {
+                    const endSum = arrs.reduce((a, b) => a + b, 0);
+                    runningTotal += endSum;
+                    
+                    const arrStr = arrs.map(a => a === 0 ? 'M' : a).join(' | ');
+                    const displayStr = arrStr + (arrs.length < 3 ? (arrs.length === 1 ? ' | - | -' : ' | -') : '');
+                    
+                    sheetHtml += `<tr>
+                        <td style="padding: 6px; border-bottom: 1px solid #1e293b;">${i+1}</td>
+                        <td style="padding: 6px; border-bottom: 1px solid #1e293b;">${displayStr}</td>
+                        <td style="padding: 6px; color: var(--accent); border-bottom: 1px solid #1e293b;">${endSum}</td>
+                        <td style="padding: 6px; font-weight: bold; color: var(--primary); border-bottom: 1px solid #1e293b;">${runningTotal}</td>
+                    </tr>`;
+                }
+            }
+            
+            const tbody = document.getElementById('live-scoresheet-body');
+            tbody.innerHTML = sheetHtml;
+            
+            // Auto-scroll to the bottom of the scoresheet table
+            const tableContainer = tbody.parentElement.parentElement;
+            tableContainer.scrollTop = tableContainer.scrollHeight;
         }
 
         function updateLiveStats() { renderLiveRoundUI(); }
@@ -1638,7 +1718,6 @@
             const archerId = document.getElementById('shoot-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
             
-            // MANDATORY ARCHER CHECK: Exits immediately so live keypad round is NOT wiped
             if (!archerId || archerId === "" || !archer) { 
                 alert("Please select yourself under 'Archer' before submitting your score."); 
                 return; 
