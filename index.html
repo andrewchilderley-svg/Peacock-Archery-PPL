@@ -1236,7 +1236,7 @@
     if (histSelect) {
         histSelect.innerHTML = `<option value="All">All Archers</option>` + archerOptions;
     }
-
+  }
         function onUploadArcherChange() {
             const archerId = document.getElementById('up-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
