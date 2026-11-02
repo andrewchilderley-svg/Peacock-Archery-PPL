@@ -1364,7 +1364,11 @@ async function syncArchersToCloud() {
             const fileInput = document.getElementById('up-screenshot');
             const file = fileInput.files[0];
 
-            if (file) {
+          // MANDATORY PHOTO CHECK
+if (!file) {
+    alert("Please upload a photo or screenshot of your signed scorecard to submit.");
+    return;
+}
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     submitRecord({
@@ -1378,7 +1382,7 @@ async function syncArchersToCloud() {
                         tens: tens, 
                         hits: hits,
                         date: date || new Date().toISOString().split('T')[0], 
-                        screenshot: e.target.result
+                        screenshot: e.target.result // Passes Base64 photo string to submitRecord
                     });
                 };
                 reader.readAsDataURL(file);
