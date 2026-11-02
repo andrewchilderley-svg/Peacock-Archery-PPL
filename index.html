@@ -948,6 +948,7 @@
                     </div>
                 </div>
                 <button class="btn" onclick="addNewArcherRegistry()">➕ Add Archer to Database</button>
+                <button class="btn gold" style="margin-top: 10px;" onclick="syncArchersToCloud(); alert('Archers pushed to cloud!');">☁️ Force Sync Archers to Cloud</button>
             </div>
 
             <h3 style="font-size: 1rem; margin-bottom: 12px;">Registered Archers Database</h3>
@@ -1236,18 +1237,22 @@ async function syncArchersToCloud() {
             }
         }
 
-        window.onload = function() {
-            const today = new Date().toISOString().split('T')[0];
-            if(document.getElementById('up-date')) document.getElementById('up-date').value = today;
-            if(document.getElementById('shoot-date')) document.getElementById('shoot-date').value = today;
+       window.onload = function() {
+    const today = new Date().toISOString().split('T')[0];
+    if(document.getElementById('up-date')) document.getElementById('up-date').value = today;
+    if(document.getElementById('shoot-date')) document.getElementById('shoot-date').value = today;
 
-            applyBranding();
-            populateDropdowns();
-            fetchServerPin();
-            fetchCloudHistory(() => {
-                renderLeaderboard();
-            });
-        };
+    applyBranding();
+    fetchServerPin();
+    
+    // Fetch archers from the cloud BEFORE building the menus
+    fetchCloudArchers(() => {
+        populateDropdowns();
+        fetchCloudHistory(() => {
+            renderLeaderboard();
+        });
+    });
+};
 
      function populateDropdowns() {
     const sorted = getSortedArchers();
@@ -1971,6 +1976,7 @@ function renderHistory() {
             });
 
             saveLocalSettings();
+            syncArchersToCloud();
             document.getElementById('new-archer-name').value = '';
             populateDropdowns();
             renderAdminTable();
@@ -2059,6 +2065,7 @@ function renderHistory() {
             if (pendingDeleteHistoryId.type === 'archer') {
                 db.archers = db.archers.filter(a => String(a.id) !== String(pendingDeleteHistoryId.id));
                 saveLocalSettings();
+                syncArchersToCloud();
                 populateDropdowns();
                 renderAdminTable();
             } else if (pendingDeleteHistoryId.type === 'history') {
