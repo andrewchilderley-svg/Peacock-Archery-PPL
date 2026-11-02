@@ -1220,16 +1220,22 @@
             });
         };
 
-        function populateDropdowns() {
-            const sorted = getSortedArchers();
-            const upSelect = document.getElementById('up-archer');
-            upSelect.innerHTML = sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-            onUploadArcherChange();
+     function populateDropdowns() {
+    const sorted = getSortedArchers();
+    const archerOptions = sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
 
-            const shootSelect = document.getElementById('shoot-archer');
-            shootSelect.innerHTML = sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-            onShootArcherChange();
-        }
+    const upSelect = document.getElementById('up-archer');
+    upSelect.innerHTML = archerOptions;
+    onUploadArcherChange();
+
+    const shootSelect = document.getElementById('shoot-archer');
+    shootSelect.innerHTML = archerOptions;
+    onShootArcherChange();
+    
+    const histSelect = document.getElementById('hist-archer-filter');
+    if (histSelect) {
+        histSelect.innerHTML = `<option value="All">All Archers</option>` + archerOptions;
+    }
 
         function onUploadArcherChange() {
             const archerId = document.getElementById('up-archer').value;
@@ -1765,39 +1771,52 @@
                 alert("Network error saving historical record.");
             }
         }
+function renderHistory() {
+    const tbody = document.getElementById('history-body');
+    
+    const archerFilter = document.getElementById('hist-archer-filter')?.value || 'All';
+    const bowFilter = document.getElementById('hist-bow-filter')?.value || 'All';
 
-        function renderHistory() {
-            const tbody = document.getElementById('history-body');
-            const sortedHistory = [...db.history].sort((a, b) => new Date(b.date) - new Date(a.date));
-            if (sortedHistory.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">No history found.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = sortedHistory.map(h => {
-                const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                const startingPB = archer ? (archer.startingPB || 250) : 250;
-                const score = parseInt(h.score) || 0;
-                const diff = score - startingPB;
-                const diffText = diff >= 0 ? `+${diff}` : `${diff}`;
-                const badgeClass = diff >= 0 ? 'badge-success' : 'badge-danger';
+    let filteredHistory = [...db.history];
 
-                return `
-                    <tr>
-                        <td>${h.date ? h.date.split('T')[0] : ''}</td>
-                        <td>${h.archerName}</td>
-                        <td><span class="badge badge-gold">${h.bow}</span></td>
-                        <td><strong>${score}</strong></td>
-                        <td><span class="badge ${badgeClass}">${diffText} vs PB</span></td>
-                        <td>${h.hits !== undefined ? h.hits : 60}</td>
-                        <td>${h.tens}</td>
-                        <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
-                        <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
-                    </tr>
-                `;
-            }).join('');
-        }
+    if (archerFilter !== 'All') {
+        filteredHistory = filteredHistory.filter(h => String(h.archerId) === String(archerFilter));
+    }
+    if (bowFilter !== 'All') {
+        filteredHistory = filteredHistory.filter(h => h.bow.toLowerCase() === bowFilter.toLowerCase());
+    }
 
-        function viewProof(historyId) {
+    const sortedHistory = filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    if (sortedHistory.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">No history found matching these filters.</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = sortedHistory.map(h => {
+        const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+        const startingPB = archer ? (archer.startingPB || 250) : 250;
+        const score = parseInt(h.score) || 0;
+        const diff = score - startingPB;
+        const diffText = diff >= 0 ? `+${diff}` : `${diff}`;
+        const badgeClass = diff >= 0 ? 'badge-success' : 'badge-danger';
+
+        return `
+            <tr>
+                <td>${h.date ? h.date.split('T')[0] : ''}</td>
+                <td>${h.archerName}</td>
+                <td><span class="badge badge-gold">${h.bow}</span></td>
+                <td><strong>${score}</strong></td>
+                <td><span class="badge ${badgeClass}">${diffText} vs PB</span></td>
+                <td>${h.hits !== undefined ? h.hits : 60}</td>
+                <td>${h.tens}</td>
+                <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
+                <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
+            </tr>
+        `;
+    }).join('');
+}
+                function viewProof(historyId) {
             const record = db.history.find(h => String(h.id) === String(historyId));
             if (record && record.screenshot) {
                 document.getElementById('proof-image-display').src = record.screenshot;
