@@ -66,8 +66,8 @@
         }
 
         .header-logo {
-            width: 96px;  /* Doubled size from 48px */
-            height: 96px; /* Doubled size from 48px */
+            width: 144px;  /* Increased further by 50% from 96px */
+            height: 144px; /* Increased further by 50% from 96px */
             object-fit: contain;
             border-radius: 8px;
             background: #1e1b4b;
@@ -75,7 +75,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem; /* Doubled font size for emoji */
+            font-size: 4.5rem; /* Larger font size for emoji */
         }
 
         .header-text h1 {
@@ -1357,7 +1357,6 @@
             const tbody = document.getElementById('leaderboard-body');
             const theadHeaders = document.getElementById('leaderboard-headers');
 
-            // Helper to match archer demographics from history records or database registry
             function getRecordDemographics(h) {
                 const archer = db.archers.find(a => String(a.id) === String(h.archerId));
                 const gender = h.gender || (archer ? archer.gender : "Male");
@@ -1430,7 +1429,6 @@
                 return;
             }
 
-            // Standard Leaderboard Views (Overall or Specific Month)
             theadHeaders.innerHTML = `
                 <th>Pos</th>
                 <th>Archer</th>
