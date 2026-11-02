@@ -65,7 +65,6 @@
             gap: 20px;
         }
 
-        /* Enforce large sizing on both container and image/emoji element */
         .header-logo-box {
             width: 144px;
             height: 144px;
@@ -78,12 +77,14 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            flex-shrink: 0; /* Prevents the box from squishing */
         }
 
         .header-logo-box img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            display: block;
         }
 
         .header-logo-emoji {
@@ -96,6 +97,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .header-text p {
@@ -113,6 +115,7 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .admin-btn:hover {
@@ -431,6 +434,57 @@
         .badge-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
 
         .hidden { display: none !important; }
+
+        /* --- MOBILE RESPONSIVE FIXES --- */
+        @media (max-width: 650px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+                padding: 20px 16px;
+            }
+            .header-title {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .header-logo-box {
+                width: 96px;
+                height: 96px;
+                min-width: 96px;
+                min-height: 96px;
+            }
+            .header-logo-emoji {
+                font-size: 3.5rem;
+            }
+            .header-text h1 {
+                font-size: 1.25rem;
+                justify-content: center;
+                text-align: center;
+            }
+            .header-text p {
+                font-size: 0.8rem;
+            }
+            .admin-btn {
+                width: 100%;
+                padding: 12px;
+            }
+            .shoot-header-stats {
+                gap: 8px;
+                padding: 12px;
+            }
+            .stat-box .stat-val {
+                font-size: 1.25rem;
+            }
+            .keypad {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .key-btn.action {
+                grid-column: span 2;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1038,7 +1092,7 @@
             if (db.settings.logo) {
                 container.innerHTML = `
                     <div class="header-logo-box">
-                        <img src="${db.settings.logo}" alt="Logo">
+                        <img src="${db.settings.logo}" alt="League Logo">
                     </div>`;
             } else {
                 container.innerHTML = `
@@ -1053,10 +1107,32 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                db.settings.logo = e.target.result;
-                saveLocalSettings();
-                applyBranding();
-                alert("Logo successfully uploaded and updated!");
+                // Compress/resize image via canvas to prevent local storage quota overflow
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 300;
+                    if (width > height && width > maxDim) {
+                        height *= maxDim / width;
+                        width = maxDim;
+                    } else if (height > maxDim) {
+                        width *= maxDim / height;
+                        height = maxDim;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+                    db.settings.logo = compressedDataUrl;
+                    saveLocalSettings();
+                    applyBranding();
+                    alert("Logo successfully uploaded, resized, and updated!");
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -1252,7 +1328,7 @@
                     gender: gender,
                     category: category,
                     score: score, 
-                        tens: tens, 
+                    tens: tens, 
                     hits: hits,
                     date: date || new Date().toISOString().split('T')[0], 
                     screenshot: ""
