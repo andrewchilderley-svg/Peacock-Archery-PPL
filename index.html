@@ -77,7 +77,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            flex-shrink: 0; /* Prevents the box from squishing */
+            flex-shrink: 0;
         }
 
         .header-logo-box img {
@@ -435,7 +435,7 @@
 
         .hidden { display: none !important; }
 
-        /* --- MOBILE RESPONSIVE FIXES --- */
+        /* Mobile Responsive Fixes */
         @media (max-width: 650px) {
             header {
                 flex-direction: column;
@@ -566,7 +566,7 @@
                     <input type="number" id="up-hits" min="0" max="60" placeholder="e.g. 60" value="60">
                 </div>
                 <div class="form-group">
-                    <label>Photo Proof (Preferred)</label>
+                    <label>Photo Proof (Mandatory)</label>
                     <input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;">
                 </div>
             </div>
@@ -741,7 +741,6 @@
         <div id="tab-records" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Portsmouth Records (as per Golden Records)</h2>
             
-            <!-- Filter Controls -->
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                 <div class="form-group" style="flex: 1; min-width: 150px;">
                     <label>Filter Bow Style</label>
@@ -793,33 +792,31 @@
             </div>
         </div>
 
-       <!-- 5. HISTORY TAB -->
-<div id="tab-history" class="tab-content">
-    <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Submitted Score History</h2>
-    
-    <!-- History Filter Controls -->
-    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
-        <div class="form-group" style="flex: 1; min-width: 150px;">
-            <label>Filter Archer</label>
-            <select id="hist-archer-filter" onchange="renderHistory()">
-                <option value="All">All Archers</option>
-                <!-- Populated dynamically -->
-            </select>
-        </div>
-        <div class="form-group" style="flex: 1; min-width: 150px;">
-            <label>Filter Bow Style</label>
-            <select id="hist-bow-filter" onchange="renderHistory()">
-                <option value="All">All Bow Styles</option>
-                <option value="Recurve">Recurve</option>
-                <option value="Compound">Compound</option>
-                <option value="Barebow">Barebow</option>
-                <option value="Longbow">Longbow</option>
-                <option value="Asiatic">Asiatic</option>
-            </select>
-        </div>
-    </div>
+        <!-- 5. HISTORY TAB -->
+        <div id="tab-history" class="tab-content">
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Submitted Score History</h2>
+            
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Filter Archer</label>
+                    <select id="hist-archer-filter" onchange="renderHistory()">
+                        <option value="All">All Archers</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Filter Bow Style</label>
+                    <select id="hist-bow-filter" onchange="renderHistory()">
+                        <option value="All">All Bow Styles</option>
+                        <option value="Recurve">Recurve</option>
+                        <option value="Compound">Compound</option>
+                        <option value="Barebow">Barebow</option>
+                        <option value="Longbow">Longbow</option>
+                        <option value="Asiatic">Asiatic</option>
+                    </select>
+                </div>
+            </div>
 
-    <div class="table-container">
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr>
@@ -1039,36 +1036,37 @@
                 logo: localStorage.getItem('ppl_logo') || "https://raw.githubusercontent.com/andrewchilderley-svg/Peacock-Archery-PPL/main/logo.jpg"
             }
         };
-async function fetchCloudArchers(callback) {
-    if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
-        if (callback) callback(); return;
-    }
-    try {
-        const response = await fetch(APPS_SCRIPT_URL + "?action=getArchers");
-        const data = await response.json();
-        // Only overwrite local storage if the cloud actually has data
-        if (data && data.length > 0) {
-            db.archers = data;
-            saveLocalSettings();
-        }
-        if (callback) callback();
-    } catch (e) {
-        console.error("Could not fetch archers from cloud.", e);
-        if (callback) callback(); // Proceed with local data if offline
-    }
-}
 
-async function syncArchersToCloud() {
-    if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) return;
-    try {
-        await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: "syncArchers", archers: db.archers })
-        });
-    } catch(e) {
-        console.error("Failed to sync archers to cloud", e);
-    }
-}
+        async function fetchCloudArchers(callback) {
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
+                if (callback) callback(); return;
+            }
+            try {
+                const response = await fetch(APPS_SCRIPT_URL + "?action=getArchers");
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    db.archers = data;
+                    saveLocalSettings();
+                }
+                if (callback) callback();
+            } catch (e) {
+                console.error("Could not fetch archers from cloud.", e);
+                if (callback) callback();
+            }
+        }
+
+        async function syncArchersToCloud() {
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) return;
+            try {
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "syncArchers", archers: db.archers })
+                });
+            } catch(e) {
+                console.error("Failed to sync archers to cloud", e);
+            }
+        }
+
         function saveLocalSettings() {
             localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
             localStorage.setItem('ppl_logo', db.settings.logo);
@@ -1125,7 +1123,7 @@ async function syncArchersToCloud() {
                         switchTab('board');
                     });
                 } else {
-                    alert("Error saving score to cloud.");
+                    alert("Error saving score to cloud: " + (result.error || "Unknown error"));
                 }
             } catch (e) {
                 console.error("Cloud sync failed", e);
@@ -1160,7 +1158,6 @@ async function syncArchersToCloud() {
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Compress/resize image via canvas to prevent local storage quota overflow
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
@@ -1237,40 +1234,40 @@ async function syncArchersToCloud() {
             }
         }
 
-       window.onload = function() {
-    const today = new Date().toISOString().split('T')[0];
-    if(document.getElementById('up-date')) document.getElementById('up-date').value = today;
-    if(document.getElementById('shoot-date')) document.getElementById('shoot-date').value = today;
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            if(document.getElementById('up-date')) document.getElementById('up-date').value = today;
+            if(document.getElementById('shoot-date')) document.getElementById('shoot-date').value = today;
 
-    applyBranding();
-    fetchServerPin();
-    
-    // Fetch archers from the cloud BEFORE building the menus
-    fetchCloudArchers(() => {
-        populateDropdowns();
-        fetchCloudHistory(() => {
-            renderLeaderboard();
-        });
-    });
-};
+            applyBranding();
+            fetchServerPin();
+            
+            fetchCloudArchers(() => {
+                populateDropdowns();
+                fetchCloudHistory(() => {
+                    renderLeaderboard();
+                });
+            });
+        };
 
-     function populateDropdowns() {
-    const sorted = getSortedArchers();
-    const archerOptions = sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+        function populateDropdowns() {
+            const sorted = getSortedArchers();
+            const archerOptions = sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
 
-    const upSelect = document.getElementById('up-archer');
-    upSelect.innerHTML = archerOptions;
-    onUploadArcherChange();
+            const upSelect = document.getElementById('up-archer');
+            upSelect.innerHTML = archerOptions;
+            onUploadArcherChange();
 
-    const shootSelect = document.getElementById('shoot-archer');
-    shootSelect.innerHTML = archerOptions;
-    onShootArcherChange();
-    
-    const histSelect = document.getElementById('hist-archer-filter');
-    if (histSelect) {
-        histSelect.innerHTML = `<option value="All">All Archers</option>` + archerOptions;
-    }
-  }
+            const shootSelect = document.getElementById('shoot-archer');
+            shootSelect.innerHTML = archerOptions;
+            onShootArcherChange();
+            
+            const histSelect = document.getElementById('hist-archer-filter');
+            if (histSelect) {
+                histSelect.innerHTML = `<option value="All">All Archers</option>` + archerOptions;
+            }
+        }
+
         function onUploadArcherChange() {
             const archerId = document.getElementById('up-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
@@ -1364,29 +1361,14 @@ async function syncArchersToCloud() {
             const fileInput = document.getElementById('up-screenshot');
             const file = fileInput.files[0];
 
-          // MANDATORY PHOTO CHECK
-if (!file) {
-    alert("Please upload a photo or screenshot of your signed scorecard to submit.");
-    return;
-}
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    submitRecord({
-                        id: Date.now(), 
-                        archerId: archer.id, 
-                        archerName: archer.name,
-                        bow: bow,
-                        gender: gender,
-                        category: category,
-                        score: score, 
-                        tens: tens, 
-                        hits: hits,
-                        date: date || new Date().toISOString().split('T')[0], 
-                        screenshot: e.target.result // Passes Base64 photo string to submitRecord
-                    });
-                };
-                reader.readAsDataURL(file);
-            } else {
+            // MANDATORY PHOTO CHECK
+            if (!file) {
+                alert("Please upload a photo or screenshot of your signed scorecard to submit.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
                 submitRecord({
                     id: Date.now(), 
                     archerId: archer.id, 
@@ -1398,9 +1380,10 @@ if (!file) {
                     tens: tens, 
                     hits: hits,
                     date: date || new Date().toISOString().split('T')[0], 
-                    screenshot: ""
+                    screenshot: e.target.result // Passes Base64 photo string to submitRecord
                 });
-            }
+            };
+            reader.readAsDataURL(file);
         }
 
         function submitRecord(record) {
@@ -1809,52 +1792,54 @@ if (!file) {
                 alert("Network error saving historical record.");
             }
         }
-function renderHistory() {
-    const tbody = document.getElementById('history-body');
-    
-    const archerFilter = document.getElementById('hist-archer-filter')?.value || 'All';
-    const bowFilter = document.getElementById('hist-bow-filter')?.value || 'All';
 
-    let filteredHistory = [...db.history];
+        function renderHistory() {
+            const tbody = document.getElementById('history-body');
+            
+            const archerFilter = document.getElementById('hist-archer-filter')?.value || 'All';
+            const bowFilter = document.getElementById('hist-bow-filter')?.value || 'All';
 
-    if (archerFilter !== 'All') {
-        filteredHistory = filteredHistory.filter(h => String(h.archerId) === String(archerFilter));
-    }
-    if (bowFilter !== 'All') {
-        filteredHistory = filteredHistory.filter(h => h.bow.toLowerCase() === bowFilter.toLowerCase());
-    }
+            let filteredHistory = [...db.history];
 
-    const sortedHistory = filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
-    
-    if (sortedHistory.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">No history found matching these filters.</td></tr>`;
-        return;
-    }
-    
-    tbody.innerHTML = sortedHistory.map(h => {
-        const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-        const startingPB = archer ? (archer.startingPB || 250) : 250;
-        const score = parseInt(h.score) || 0;
-        const diff = score - startingPB;
-        const diffText = diff >= 0 ? `+${diff}` : `${diff}`;
-        const badgeClass = diff >= 0 ? 'badge-success' : 'badge-danger';
+            if (archerFilter !== 'All') {
+                filteredHistory = filteredHistory.filter(h => String(h.archerId) === String(archerFilter));
+            }
+            if (bowFilter !== 'All') {
+                filteredHistory = filteredHistory.filter(h => h.bow.toLowerCase() === bowFilter.toLowerCase());
+            }
 
-        return `
-            <tr>
-                <td>${h.date ? h.date.split('T')[0] : ''}</td>
-                <td>${h.archerName}</td>
-                <td><span class="badge badge-gold">${h.bow}</span></td>
-                <td><strong>${score}</strong></td>
-                <td><span class="badge ${badgeClass}">${diffText} vs PB</span></td>
-                <td>${h.hits !== undefined ? h.hits : 60}</td>
-                <td>${h.tens}</td>
-                <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
-                <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
-            </tr>
-        `;
-    }).join('');
-}
-                function viewProof(historyId) {
+            const sortedHistory = filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (sortedHistory.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">No history found matching these filters.</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = sortedHistory.map(h => {
+                const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                const startingPB = archer ? (archer.startingPB || 250) : 250;
+                const score = parseInt(h.score) || 0;
+                const diff = score - startingPB;
+                const diffText = diff >= 0 ? `+${diff}` : `${diff}`;
+                const badgeClass = diff >= 0 ? 'badge-success' : 'badge-danger';
+
+                return `
+                    <tr>
+                        <td>${h.date ? h.date.split('T')[0] : ''}</td>
+                        <td>${h.archerName}</td>
+                        <td><span class="badge badge-gold">${h.bow}</span></td>
+                        <td><strong>${score}</strong></td>
+                        <td><span class="badge ${badgeClass}">${diffText} vs PB</span></td>
+                        <td>${h.hits !== undefined ? h.hits : 60}</td>
+                        <td>${h.tens}</td>
+                        <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
+                        <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function viewProof(historyId) {
             const record = db.history.find(h => String(h.id) === String(historyId));
             if (record && record.screenshot) {
                 document.getElementById('proof-image-display').src = record.screenshot;
