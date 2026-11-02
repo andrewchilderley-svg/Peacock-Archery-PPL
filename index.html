@@ -1244,6 +1244,7 @@
             
             fetchCloudArchers(() => {
                 populateDropdowns();
+                restoreLiveState();
                 fetchCloudHistory(() => {
                     renderLeaderboard();
                 });
@@ -1252,19 +1253,22 @@
 
         function populateDropdowns() {
             const sorted = getSortedArchers();
-            const archerOptions = sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+            const defaultOption = `<option value="">-- Select Archer --</option>`;
+            const archerOptions = defaultOption + sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
 
             const upSelect = document.getElementById('up-archer');
             upSelect.innerHTML = archerOptions;
+            upSelect.value = "";
             onUploadArcherChange();
 
             const shootSelect = document.getElementById('shoot-archer');
             shootSelect.innerHTML = archerOptions;
+            shootSelect.value = "";
             onShootArcherChange();
             
             const histSelect = document.getElementById('hist-archer-filter');
             if (histSelect) {
-                histSelect.innerHTML = `<option value="All">All Archers</option>` + archerOptions;
+                histSelect.innerHTML = `<option value="All">All Archers</option>` + sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
             }
         }
 
@@ -1285,6 +1289,7 @@
             if (archer && archer.defaultBow) {
                 document.getElementById('shoot-bow').value = archer.defaultBow;
             }
+            saveLiveState();
             updateLiveStats();
         }
 
@@ -1344,7 +1349,19 @@
 
         function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
+            
+            // MANDATORY ARCHER CHECK: Exits immediately so inputs and uploaded photo are NOT wiped
+            if (!archerId || archerId === "") {
+                alert("Please select yourself under 'Archer' before submitting your score.");
+                return; 
+            }
+
             const archer = db.archers.find(a => String(a.id) === String(archerId));
+            if (!archer) {
+                alert("Selected archer not found. Please select an archer from the list.");
+                return;
+            }
+
             const bow = document.getElementById('up-bow').value;
             const gender = document.getElementById('up-gender').value;
             const category = document.getElementById('up-cat').value;
@@ -1353,8 +1370,8 @@
             const tens = parseInt(document.getElementById('up-tens').value) || 0;
             const hits = parseInt(document.getElementById('up-hits').value) || 60;
 
-            if (!archer || isNaN(score) || score < 0 || score > 600) {
-                alert("Please enter a valid archer and score between 0 and 600.");
+            if (isNaN(score) || score < 0 || score > 600) {
+                alert("Please enter a valid total score between 0 and 600.");
                 return;
             }
 
@@ -1380,7 +1397,7 @@
                     tens: tens, 
                     hits: hits,
                     date: date || new Date().toISOString().split('T')[0], 
-                    screenshot: e.target.result // Passes Base64 photo string to submitRecord
+                    screenshot: e.target.result
                 });
             };
             reader.readAsDataURL(file);
@@ -1399,12 +1416,55 @@
         let endsMatrix = Array(20).fill(null).map(() => []);
         let liveScores = [];
 
+        // Save active live round to device storage (protects against phone sleep / tab reloads)
+        function saveLiveState() {
+            const state = {
+                archerId: document.getElementById('shoot-archer').value,
+                bow: document.getElementById('shoot-bow').value,
+                date: document.getElementById('shoot-date').value,
+                currentEnd: currentEnd,
+                endsMatrix: endsMatrix,
+                liveScores: liveScores
+            };
+            localStorage.setItem('ppl_active_shoot_backup', JSON.stringify(state));
+        }
+
+        // Restore active live round on wake/reload
+        function restoreLiveState() {
+            const saved = localStorage.getItem('ppl_active_shoot_backup');
+            if (!saved) return;
+            try {
+                const state = JSON.parse(saved);
+                if (state.liveScores && state.liveScores.length > 0) {
+                    if (state.archerId) document.getElementById('shoot-archer').value = state.archerId;
+                    if (state.bow) document.getElementById('shoot-bow').value = state.bow;
+                    if (state.date) document.getElementById('shoot-date').value = state.date;
+                    
+                    currentEnd = state.currentEnd || 1;
+                    endsMatrix = state.endsMatrix || Array(20).fill(null).map(() => []);
+                    liveScores = state.liveScores || [];
+                    
+                    renderLiveRoundUI();
+                    if (liveScores.length >= 60) {
+                        document.getElementById('submit-league-container').classList.remove('hidden');
+                    }
+                }
+            } catch (e) {
+                console.error("Could not restore live state", e);
+            }
+        }
+
+        function clearLiveBackup() {
+            localStorage.removeItem('ppl_active_shoot_backup');
+        }
+
         function pressScore(val) {
             if (currentEnd > 20 || endsMatrix[currentEnd - 1].length >= 3) return;
             endsMatrix[currentEnd - 1].push(val);
             liveScores.push(val);
+            saveLiveState();
             renderLiveRoundUI();
-            if (endsMatrix[currentEnd - 1].length === 3 || currentEnd === 20 && endsMatrix[19].length === 3) {
+            if (endsMatrix[currentEnd - 1].length === 3 || (currentEnd === 20 && endsMatrix[19].length === 3)) {
                 document.getElementById('confirm-end-btn').disabled = false;
             }
         }
@@ -1419,6 +1479,7 @@
             });
             currentEnd = Math.min(20, Math.floor(liveScores.length / 3) + (liveScores.length % 3 === 0 && liveScores.length > 0 ? 0 : 1));
             if (currentEnd < 1) currentEnd = 1;
+            saveLiveState();
             renderLiveRoundUI();
             document.getElementById('confirm-end-btn').disabled = true;
         }
@@ -1426,6 +1487,7 @@
         function confirmEnd() {
             if (currentEnd < 20) {
                 currentEnd++;
+                saveLiveState();
                 renderLiveRoundUI();
                 document.getElementById('confirm-end-btn').disabled = true;
             } else {
@@ -1440,6 +1502,7 @@
                 currentEnd = 1;
                 endsMatrix = Array(20).fill(null).map(() => []);
                 liveScores = [];
+                clearLiveBackup();
                 document.getElementById('submit-league-container').classList.add('hidden');
                 renderLiveRoundUI();
             }
@@ -1448,7 +1511,6 @@
         function renderLiveRoundUI() {
             const archerId = document.getElementById('shoot-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
-            if (!archer) return;
 
             const total = liveScores.reduce((a, b) => a + b, 0);
             const tens = liveScores.filter(s => s === 10).length;
@@ -1462,7 +1524,13 @@
             
             const bow = document.getElementById('shoot-bow').value;
             const projectedScore = Math.round((total / Math.max(1, arrowsShot)) * 60);
-            document.getElementById('live-est-grade').innerText = getArcheryGBGrade(projectedScore, bow, archer.gender, archer.category);
+            
+            if (archer) {
+                document.getElementById('live-est-grade').innerText = getArcheryGBGrade(projectedScore, bow, archer.gender, archer.category);
+            } else {
+                document.getElementById('live-est-grade').innerText = "Select Archer";
+            }
+
             document.getElementById('live-end-label').innerText = `End ${currentEnd} of 20`;
 
             const activeEndValues = endsMatrix[currentEnd - 1] || [];
@@ -1473,146 +1541,143 @@
         }
 
         function updateLiveStats() { renderLiveRoundUI(); }
-function generateDigitalScorecardImage(archerName, bow, date, score, hits, tens, ends) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 600;
-    canvas.height = 750;
-    const ctx = canvas.getContext('2d');
 
-    // Canvas Background
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Digital Scorecard Generator Function
+        function generateDigitalScorecardImage(archerName, bow, date, score, hits, tens, ends) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 600;
+            canvas.height = 750;
+            const ctx = canvas.getContext('2d');
 
-    // Header Banner
-    ctx.fillStyle = '#581c87';
-    ctx.fillRect(0, 0, canvas.width, 100);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Header Title
-    ctx.fillStyle = '#f3e8ff';
-    ctx.font = 'bold 22px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Peacock Portsmouth League (PPL)', 300, 42);
-    ctx.font = '14px sans-serif';
-    ctx.fillStyle = '#d8b4fe';
-    ctx.fillText('VERIFIED LIVE KEYPAD SCORECARD', 300, 72);
+            ctx.fillStyle = '#581c87';
+            ctx.fillRect(0, 0, canvas.width, 100);
 
-    // Summary Card Outer Box
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(20, 115, 560, 110);
-    ctx.strokeStyle = '#6b21a8';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(20, 115, 560, 110);
+            ctx.fillStyle = '#f3e8ff';
+            ctx.font = 'bold 22px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Peacock Portsmouth League (PPL)', 300, 42);
+            ctx.font = '14px sans-serif';
+            ctx.fillStyle = '#d8b4fe';
+            ctx.fillText('VERIFIED LIVE KEYPAD SCORECARD', 300, 72);
 
-    // Archer Details
-    ctx.fillStyle = '#f8fafc';
-    ctx.font = 'bold 18px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(archerName, 35, 145);
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(20, 115, 560, 110);
+            ctx.strokeStyle = '#6b21a8';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(20, 115, 560, 110);
 
-    ctx.font = '14px sans-serif';
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillText(`Bow: ${bow}  |  Date: ${date}`, 35, 170);
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 18px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(archerName, 35, 145);
 
-    // Total Score & Hits
-    ctx.textAlign = 'right';
-    ctx.font = 'bold 30px sans-serif';
-    ctx.fillStyle = '#d97706';
-    ctx.fillText(`${score} / 600`, 560, 152);
+            ctx.font = '14px sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText(`Bow: ${bow}  |  Date: ${date}`, 35, 170);
 
-    ctx.font = '14px sans-serif';
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillText(`Hits: ${hits}  |  10s: ${tens}`, 560, 182);
+            ctx.textAlign = 'right';
+            ctx.font = 'bold 30px sans-serif';
+            ctx.fillStyle = '#d97706';
+            ctx.fillText(`${score} / 600`, 560, 152);
 
-    // End-by-End Section Title
-    ctx.font = 'bold 13px sans-serif';
-    ctx.fillStyle = '#38bdf8';
-    ctx.textAlign = 'left';
-    ctx.fillText('END BREAKDOWN (3 ARROWS PER END):', 20, 250);
+            ctx.font = '14px sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText(`Hits: ${hits}  |  10s: ${tens}`, 560, 182);
 
-    let y = 265;
-    let cumTotal = 0;
+            ctx.font = 'bold 13px sans-serif';
+            ctx.fillStyle = '#38bdf8';
+            ctx.textAlign = 'left';
+            ctx.fillText('END BREAKDOWN (3 ARROWS PER END):', 20, 250);
 
-    // Table Header
-    ctx.fillStyle = '#111827';
-    ctx.fillRect(20, y, 560, 22);
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = 'bold 11px sans-serif';
-    ctx.fillText('END', 30, y + 15);
-    ctx.fillText('ARROWS', 120, y + 15);
-    ctx.fillText('END TOTAL', 380, y + 15);
-    ctx.fillText('CUM. TOTAL', 480, y + 15);
+            let y = 265;
+            let cumTotal = 0;
 
-    y += 22;
+            ctx.fillStyle = '#111827';
+            ctx.fillRect(20, y, 560, 22);
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.fillText('END', 30, y + 15);
+            ctx.fillText('ARROWS', 120, y + 15);
+            ctx.fillText('END TOTAL', 380, y + 15);
+            ctx.fillText('CUM. TOTAL', 480, y + 15);
 
-    // Render All 20 Ends
-    for (let i = 0; y < 700 && i < 20; i++) {
-        const arrs = ends[i] || [];
-        const endSum = arrs.reduce((a, b) => a + b, 0);
-        cumTotal += endSum;
+            y += 22;
 
-        ctx.fillStyle = i % 2 === 0 ? '#1e293b' : '#0f172a';
-        ctx.fillRect(20, y, 560, 19);
+            for (let i = 0; y < 700 && i < 20; i++) {
+                const arrs = ends[i] || [];
+                const endSum = arrs.reduce((a, b) => a + b, 0);
+                cumTotal += endSum;
 
-        ctx.fillStyle = '#f8fafc';
-        ctx.font = '11px sans-serif';
-        ctx.fillText(`End ${i + 1}`, 30, y + 14);
+                ctx.fillStyle = i % 2 === 0 ? '#1e293b' : '#0f172a';
+                ctx.fillRect(20, y, 560, 19);
 
-        const arrStr = arrs.map(a => a === 0 ? 'M' : a).join(' - ') || '-';
-        ctx.fillText(arrStr, 120, y + 14);
-        ctx.fillText(`${endSum}`, 380, y + 14);
-        ctx.fillText(`${cumTotal}`, 480, y + 14);
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = '11px sans-serif';
+                ctx.fillText(`End ${i + 1}`, 30, y + 14);
 
-        y += 19;
-    }
+                const arrStr = arrs.map(a => a === 0 ? 'M' : a).join(' - ') || '-';
+                ctx.fillText(arrStr, 120, y + 14);
+                ctx.fillText(`${endSum}`, 380, y + 14);
+                ctx.fillText(`${cumTotal}`, 480, y + 14);
 
-    // Footer Tagline
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = 'italic 11px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Automatically generated & verified by PPL App Live Scoring System', 300, 732);
+                y += 19;
+            }
 
-    return canvas.toDataURL('image/jpeg', 0.85);
-}
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'italic 11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Automatically generated & verified by PPL App Live Scoring System', 300, 732);
+
+            return canvas.toDataURL('image/jpeg', 0.85);
+        }
+
         function submitLiveRoundToLeague() {
-    if (!confirm("Are you sure you want to submit this score?")) return;
-    const total = liveScores.reduce((a, b) => a + b, 0);
-    const tens = liveScores.filter(s => s === 10).length;
-    const hits = liveScores.filter(s => s > 0).length;
-    const archerId = document.getElementById('shoot-archer').value;
-    const archer = db.archers.find(a => String(a.id) === String(archerId));
-    
-    if (!archer) { alert("Please select an archer."); return; }
+            const archerId = document.getElementById('shoot-archer').value;
+            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            
+            // MANDATORY ARCHER CHECK: Exits immediately so live keypad round is NOT wiped
+            if (!archerId || archerId === "" || !archer) { 
+                alert("Please select yourself under 'Archer' before submitting your score."); 
+                return; 
+            }
 
-    const bowStyle = document.getElementById('shoot-bow').value;
-    const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
+            if (!confirm("Are you sure you want to submit this score?")) return;
 
-    // Auto-generate the digital scorecard proof image
-    const autoScorecardImage = generateDigitalScorecardImage(
-        archer.name,
-        bowStyle,
-        dateShot,
-        total,
-        hits,
-        tens,
-        endsMatrix
-    );
+            const total = liveScores.reduce((a, b) => a + b, 0);
+            const tens = liveScores.filter(s => s === 10).length;
+            const hits = liveScores.filter(s => s > 0).length;
+            const bowStyle = document.getElementById('shoot-bow').value;
+            const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
 
-    submitRecord({
-        id: Date.now(),
-        archerId: archer.id,
-        archerName: archer.name,
-        bow: bowStyle, 
-        gender: archer.gender || "Male", 
-        category: archer.category || "Senior",
-        score: total,
-        tens: tens,
-        hits: hits,
-        date: dateShot,
-        screenshot: autoScorecardImage // Passes the generated scorecard proof
-    });
+            const autoScorecardImage = generateDigitalScorecardImage(
+                archer.name,
+                bowStyle,
+                dateShot,
+                total,
+                hits,
+                tens,
+                endsMatrix
+            );
 
-    resetLiveRound(true);
-}
+            submitRecord({
+                id: Date.now(),
+                archerId: archer.id,
+                archerName: archer.name,
+                bow: bowStyle, 
+                gender: archer.gender || "Male", 
+                category: archer.category || "Senior",
+                score: total,
+                tens: tens,
+                hits: hits,
+                date: dateShot,
+                screenshot: autoScorecardImage
+            });
+
+            resetLiveRound(true);
+        }
 
         function renderLeaderboard() {
             const monthFilter = document.getElementById('lb-month-filter')?.value || 'overall';
