@@ -18,7 +18,7 @@
             --danger: #ef4444;
             --danger-hover: #dc2626;
             --success: #22c55e;
-            --border: #6b21a8; /* Rich purple border accent */
+            --border: #6b21a8;
         }
 
         * {
@@ -51,7 +51,7 @@
         }
 
         header {
-            background: linear-gradient(135deg, #581c87, #3b0764); /* Rich purple background */
+            background: linear-gradient(135deg, #581c87, #3b0764);
             padding: 24px 20px;
             display: flex;
             justify-content: space-between;
@@ -62,24 +62,36 @@
         .header-title {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
         }
 
-        .header-logo {
-            width: 144px;  /* Increased further by 50% from 96px */
-            height: 144px; /* Increased further by 50% from 96px */
-            object-fit: contain;
-            border-radius: 8px;
+        /* Enforce large sizing on both container and image/emoji element */
+        .header-logo-box {
+            width: 144px;
+            height: 144px;
+            min-width: 144px;
+            min-height: 144px;
+            border-radius: 10px;
             background: #1e1b4b;
             border: 2px solid #a855f7;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4.5rem; /* Larger font size for emoji */
+            overflow: hidden;
+        }
+
+        .header-logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .header-logo-emoji {
+            font-size: 5rem;
         }
 
         .header-text h1 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             color: #f3e8ff;
             display: flex;
             align-items: center;
@@ -87,9 +99,9 @@
         }
 
         .header-text p {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #d8b4fe;
-            margin-top: 4px;
+            margin-top: 6px;
         }
 
         .admin-btn {
@@ -428,7 +440,9 @@
         <header>
             <div class="header-title">
                 <div id="header-logo-container">
-                    <div class="header-logo" id="header-logo-display">🎯</div>
+                    <div class="header-logo-box">
+                        <span class="header-logo-emoji">🎯</span>
+                    </div>
                 </div>
                 <div class="header-text">
                     <h1 id="brand-title">Peacock Portsmouth League (PPL)</h1>
@@ -457,14 +471,14 @@
                     <select id="up-archer" onchange="onUploadArcherChange()"></select>
                 </div>
                 <div class="form-group">
-                    <label>Gender (Auto)</label>
+                    <label>Gender (Pre-filled)</label>
                     <select id="up-gender" onchange="updateUploadStats()">
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Age Category (Auto)</label>
+                    <label>Age Category (Pre-filled)</label>
                     <select id="up-cat" onchange="updateUploadStats()">
                         <option value="Senior">Senior</option>
                         <option value="50+">50+</option>
@@ -1020,10 +1034,17 @@
         saveLocalSettings();
 
         function applyBranding() {
+            const container = document.getElementById('header-logo-container');
             if (db.settings.logo) {
-                document.getElementById('header-logo-container').innerHTML = `<img src="${db.settings.logo}" class="header-logo" alt="Logo">`;
+                container.innerHTML = `
+                    <div class="header-logo-box">
+                        <img src="${db.settings.logo}" alt="Logo">
+                    </div>`;
             } else {
-                document.getElementById('header-logo-container').innerHTML = `<div class="header-logo" id="header-logo-display">🎯</div>`;
+                container.innerHTML = `
+                    <div class="header-logo-box">
+                        <span class="header-logo-emoji">🎯</span>
+                    </div>`;
             }
         }
 
@@ -1231,7 +1252,7 @@
                     gender: gender,
                     category: category,
                     score: score, 
-                    tens: tens, 
+                        tens: tens, 
                     hits: hits,
                     date: date || new Date().toISOString().split('T')[0], 
                     screenshot: ""
