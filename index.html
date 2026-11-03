@@ -566,7 +566,7 @@
                     <input type="number" id="up-hits" min="0" max="60" placeholder="e.g. 60" value="60">
                 </div>
                 <div class="form-group">
-                    <label>Photo Proof (Optional)</label>
+                    <label>Photo Proof (Optional but preferred for Golden Records Synchronising)</label>
                     <input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;">
                 </div>
             </div>
@@ -964,6 +964,12 @@
                 </div>
                 <button class="btn" onclick="addNewArcherRegistry()">➕ Add Archer to Database</button>
                 <button class="btn gold" style="margin-top: 10px;" onclick="syncArchersToCloud(); alert('Archers pushed to cloud!');">☁️ Force Sync Archers to Cloud</button>
+            </div>
+
+            <!-- NEW: DATA MANAGEMENT & CSV EXPORT -->
+            <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
+                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Data Management</h3>
+                <button class="btn gold" onclick="exportHistoryToCSV()">📥 Export Score History to CSV</button>
             </div>
 
             <h3 style="font-size: 1rem; margin-bottom: 12px;">Registered Archers Database</h3>
@@ -2326,6 +2332,47 @@
 
             closeDeletePinModal();
             alert("Action processed successfully.");
+        }
+
+        // --- CSV DATA EXPORT ---
+        function exportHistoryToCSV() {
+            if (!db.history || db.history.length === 0) {
+                alert("No score history available to export.");
+                return;
+            }
+
+            let csvContent = "Date,Archer Name,Bow Style,Gender,Category,Score,Hits,10s\n";
+            
+            db.history.forEach(h => {
+                const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                const gender = h.gender || (archer ? archer.gender : "Male");
+                const category = h.category || (archer ? archer.category : "Senior");
+                const date = h.date ? h.date.split('T')[0] : "";
+                
+                const row = [
+                    date,
+                    `"${h.archerName}"`,
+                    h.bow,
+                    gender,
+                    category,
+                    h.score,
+                    h.hits !== undefined ? h.hits : 60,
+                    h.tens
+                ];
+                csvContent += row.join(",") + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "PPL_League_Scores.csv");
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         }
     </script>
 </body>
