@@ -420,16 +420,16 @@
                 </div>
                 <div class="header-text">
                     <h1 id="brand-title">Peacock Portsmouth League (PPL)</h1>
-                    <p>Official Winter League & Indoor Scoring App</p>
+                    <p>Winter League & Indoor Scoring App</p>
                 </div>
             </div>
             <button class="admin-btn" onclick="openAdminModal()">🔒 Admin</button>
         </header>
 
-        <!-- Navigation Tabs (Settings Removed) -->
+        <!-- Navigation Tabs -->
         <nav class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('upload')">📤 Upload</button>
-            <button class="tab-btn" onclick="switchTab('shoot')">🎯 Shoot</button>
+            <button class="tab-btn active" onclick="switchTab('upload')">📤 Upload A Round</button>
+            <button class="tab-btn" onclick="switchTab('shoot')">🎯 Shoot A Round</button>
             <button class="tab-btn" onclick="switchTab('board')">🏆 PPL Leaderboard</button>
             <button class="tab-btn" onclick="switchTab('records')">🎖️ Club Portsmouth Records</button>
             <button class="tab-btn" onclick="switchTab('history')">📜 History</button>
@@ -632,7 +632,7 @@
                 <div class="form-group" style="flex: 1; min-width: 180px;">
                     <label>Period / Season View</label>
                     <select id="lb-month-filter" onchange="renderLeaderboard()">
-                        <option value="overall">🏆 Overall Season (Oct - Mar Sum)</option>
+                        <option value="overall">🏆 Overall Season (Sum of Monthly Bests)</option>
                         <option value="most-improved">📈 Most Improved vs PB (Max Gain)</option>
                         <option value="2026-10">October 2026</option>
                         <option value="2026-11">November 2026</option>
@@ -987,7 +987,6 @@
     <script>
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRnOF7mRyD1WxWDeQ9dCdHPNf6QsxYdMvdqZocr_H35v8uwWrHnxhBSe0c9OJ7bbHIsA/exec';
 
-        // FIXED: Robust default loading & instant localStorage caching
         let defaultArchers = [
             { id: "1730000001", name: "Richard Shepherd", gender: "Male", category: "Senior", defaultBow: "Recurve", startingPB: 450 }
         ];
@@ -1002,7 +1001,6 @@
             }
         };
 
-        // Ensure initial archers are always saved locally if none existed
         if (!localStorage.getItem('ppl_archers')) {
             localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
         }
@@ -1618,7 +1616,6 @@
         }
 
         async function fetchCloudArchers(callback) {
-            // FIXED: Always merge remote or local archers safely and preserve localStorage
             const localArchers = JSON.parse(localStorage.getItem('ppl_archers'));
             if (localArchers && localArchers.length > 0) {
                 db.archers = localArchers;
@@ -1628,7 +1625,6 @@
                 const res = await fetch(APPS_SCRIPT_URL + "?action=getArchers");
                 const data = await res.json();
                 if (data && data.length > 0) {
-                    // Merge cloud and local uniquely by ID
                     let map = {};
                     db.archers.forEach(a => map[a.id] = a);
                     data.forEach(a => map[a.id] = a);
@@ -1752,52 +1748,118 @@
 
             headersRow.innerHTML = `<th>Pos</th><th>Archer</th><th>Bow Style</th><th>Score / Sum</th><th>Hits</th><th>10s</th><th>Rnds</th>`;
 
-            let map = {};
-            pplHistory.forEach(h => {
-                // Filter by month if specific month selected, or include all for overall season sum
-                if (monthFilter !== 'overall' && !h.date.startsWith(monthFilter)) return;
-                const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                const gender = h.gender || (archer ? archer.gender : "Male");
-                if (genderFilter !== 'All' && gender !== genderFilter) return;
+            if (monthFilter !== 'overall') {
+                // Single Month View: Show best score for that specific month
+                let monthMap = {};
+                pplHistory.forEach(h => {
+                    if (!h.date || !h.date.startsWith(monthFilter)) return;
+                    const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                    const gender = h.gender || (archer ? archer.gender : "Male");
+                    if (genderFilter !== 'All' && gender !== genderFilter) return;
 
-                const key = `${h.archerId}_${h.bow}`;
-                if (!map[key]) {
-                    map[key] = { 
-                        archerName: h.archerName, 
-                        bow: h.bow, 
-                        scoreSum: 0, 
-                        hitsSum: 0, 
-                        tensSum: 0, 
-                        roundsCount: 0 
-                    };
+                    const key = `${h.archerId}_${h.bow}`;
+                    const score = parseInt(h.score) || 0;
+                    if (!monthMap[key] || score > monthMap[key].score) {
+                        monthMap[key] = { 
+                            archerName: h.archerName, 
+                            bow: h.bow, 
+                            score: score, 
+                            hits: parseInt(h.hits) || 60, 
+                            tens: parseInt(h.tens) || 0, 
+                            rounds: 1 
+                        };
+                    }
+                });
+
+                let rows = Object.values(monthMap);
+                if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
+                rows.sort((a, b) => b.score - a.score);
+
+                if (rows.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No Portsmouth scores recorded for this month.</td></tr>`; 
+                    return;
                 }
-                map[key].scoreSum += parseInt(h.score) || 0;
-                map[key].hitsSum += parseInt(h.hits) || 60;
-                map[key].tensSum += parseInt(h.tens) || 0;
-                map[key].roundsCount += 1;
-            });
 
-            let rows = Object.values(map);
-            if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
-            
-            // FIXED: Sort strictly by cumulative score sum descending for overall season ranking
-            rows.sort((a, b) => b.scoreSum - a.scoreSum);
+                tbody.innerHTML = rows.map((r, idx) => `
+                    <tr>
+                        <td><strong>#${idx + 1}</strong></td>
+                        <td>${r.archerName}</td>
+                        <td><span class="badge badge-gold">${r.bow}</span></td>
+                        <td><strong>${r.score}</strong></td>
+                        <td>${r.hits}</td>
+                        <td>${r.tens}</td>
+                        <td>${r.rounds}</td>
+                    </tr>
+                `).join('');
 
-            if (rows.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No Portsmouth scores recorded.</td></tr>`; return;
+            } else {
+                // Overall Season View: Find highest score per archer PER MONTH, then sum those monthly bests together
+                let archerMonthBests = {}; // { "archerId_bow_YYYY-MM": maxScore }
+
+                pplHistory.forEach(h => {
+                    if (!h.date) return;
+                    const monthKey = h.date.substring(0, 7); // YYYY-MM
+                    const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                    const gender = h.gender || (archer ? archer.gender : "Male");
+                    if (genderFilter !== 'All' && gender !== genderFilter) return;
+
+                    const comboKey = `${h.archerId}_${h.bow}_${monthKey}`;
+                    const score = parseInt(h.score) || 0;
+
+                    if (!archerMonthBests[comboKey] || score > archerMonthBests[comboKey].score) {
+                        archerMonthBests[comboKey] = {
+                            archerId: h.archerId,
+                            archerName: h.archerName,
+                            bow: h.bow,
+                            score: score,
+                            hits: parseInt(h.hits) || 60,
+                            tens: parseInt(h.tens) || 0,
+                            month: monthKey
+                        };
+                    }
+                });
+
+                // Now group by archer & bow to sum up their monthly best scores
+                let overallMap = {}; // { "archerId_bow": { scoreSum, hitsSum, tensSum, monthsCount } }
+                Object.values(archerMonthBests).forEach(item => {
+                    const archerBowKey = `${item.archerId}_${item.bow}`;
+                    if (!overallMap[archerBowKey]) {
+                        overallMap[archerBowKey] = {
+                            archerName: item.archerName,
+                            bow: item.bow,
+                            scoreSum: 0,
+                            hitsSum: 0,
+                            tensSum: 0,
+                            monthsCount: 0
+                        };
+                    }
+                    overallMap[archerBowKey].scoreSum += item.score;
+                    overallMap[archerBowKey].hitsSum += item.hits;
+                    overallMap[archerBowKey].tensSum += item.tens;
+                    overallMap[archerBowKey].monthsCount += 1;
+                });
+
+                let rows = Object.values(overallMap);
+                if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
+                rows.sort((a, b) => b.scoreSum - a.scoreSum);
+
+                if (rows.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No Portsmouth scores recorded for overall season.</td></tr>`; 
+                    return;
+                }
+
+                tbody.innerHTML = rows.map((r, idx) => `
+                    <tr>
+                        <td><strong>#${idx + 1}</strong></td>
+                        <td>${r.archerName}</td>
+                        <td><span class="badge badge-gold">${r.bow}</span></td>
+                        <td><strong>${r.scoreSum}</strong></td>
+                        <td>${r.hitsSum}</td>
+                        <td>${r.tensSum}</td>
+                        <td>${r.monthsCount}</td>
+                    </tr>
+                `).join('');
             }
-
-            tbody.innerHTML = rows.map((r, idx) => `
-                <tr>
-                    <td><strong>#${idx + 1}</strong></td>
-                    <td>${r.archerName}</td>
-                    <td><span class="badge badge-gold">${r.bow}</span></td>
-                    <td><strong>${r.scoreSum}</strong></td>
-                    <td>${r.hitsSum}</td>
-                    <td>${r.tensSum}</td>
-                    <td>${r.roundsCount}</td>
-                </tr>
-            `).join('');
         }
 
         function renderRecords() {
@@ -1921,7 +1983,6 @@
                 startingPB: parseInt(document.getElementById('new-archer-pb').value) || 250
             };
             db.archers.push(newArcher);
-            // FIXED: Immediately and persistently save to localStorage to survive page refreshes
             localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
             document.getElementById('new-archer-name').value = '';
             populateDropdowns(); 
@@ -1963,7 +2024,11 @@
             const pin = document.getElementById('delete-pin-input').value;
             if (pin === db.settings.pin) {
                 closeDeleteAuthModal();
-                if (pendingDeleteCallback) pendingDeleteCallback();
+                if (pendingDeleteCallback) {
+                    let cb = pendingDeleteCallback;
+                    pendingDeleteCallback = null;
+                    cb();
+                }
             } else {
                 alert("Incorrect Admin PIN.");
             }
