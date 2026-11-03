@@ -420,7 +420,7 @@
                 </div>
                 <div class="header-text">
                     <h1 id="brand-title">Peacock Portsmouth League (PPL)</h1>
-                    <p>Official Winter League & Indoor Scoring App</p>
+                    <p>Winter League & Indoor Scoring App</p>
                 </div>
             </div>
             <button class="admin-btn" onclick="openAdminModal()">🔒 Admin</button>
@@ -431,7 +431,7 @@
             <button class="tab-btn active" onclick="switchTab('upload')">📤 Upload</button>
             <button class="tab-btn" onclick="switchTab('shoot')">🎯 Shoot</button>
             <button class="tab-btn" onclick="switchTab('board')">🏆 PPL Leaderboard</button>
-            <button class="tab-btn" onclick="switchTab('records')">🎖️ Club Records</button>
+            <button class="tab-btn" onclick="switchTab('records')">🎖️ Club Portsmouth Records</button>
             <button class="tab-btn" onclick="switchTab('history')">📜 History</button>
             <button class="tab-btn" onclick="openAdminModal()">⚙️ Settings</button>
         </nav>
@@ -597,12 +597,12 @@
                     <span id="live-arr-label">3 Arrows Per End</span>
                 </div>
                 <div class="arrows-row" id="live-arrow-slots">
-                    <!-- Populated by JS dynamically based on round -->
+                    <!-- Populated by JS -->
                 </div>
             </div>
 
             <div class="keypad" id="dynamic-keypad">
-                <!-- Buttons rendered by JS based on round selection -->
+                <!-- Populated by JS -->
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
@@ -610,7 +610,6 @@
                 <button class="btn" id="confirm-end-btn" onclick="confirmEnd()" disabled>Confirm End</button>
             </div>
 
-            <!-- LIVE SCORESHEET TABLE -->
             <div style="margin-top: 20px; background: #111827; border: 1px solid var(--border); border-radius: 8px; padding: 12px; max-height: 250px; overflow-y: auto;">
                 <h4 style="font-size: 0.9rem; color: var(--primary); margin-bottom: 8px; text-align: center;">Running Scoresheet</h4>
                 <table style="width: 100%; font-size: 0.85rem; text-align: center;">
@@ -622,9 +621,7 @@
                             <th style="padding: 4px; border-bottom: 1px solid #334155;">Cum.</th>
                         </tr>
                     </thead>
-                    <tbody id="live-scoresheet-body">
-                        <!-- Populated by JS -->
-                    </tbody>
+                    <tbody id="live-scoresheet-body"></tbody>
                 </table>
             </div>
 
@@ -678,7 +675,7 @@
                             <th>Pos</th>
                             <th>Archer</th>
                             <th>Bow Style</th>
-                            <th>Score / Gain</th>
+                            <th>Score / Sum</th>
                             <th>Hits</th>
                             <th>10s</th>
                             <th>Rnds</th>
@@ -1085,7 +1082,6 @@
             return achieved;
         }
 
-        // DYNAMIC ROUND LOGIC
         function getRoundConfig(roundType) {
             switch(roundType) {
                 case "Portsmouth": return { arr: 3, ends: 20, max: 600, keys: [10,9,8,7,6,5,4,3,2,1,0] };
@@ -1122,7 +1118,6 @@
             });
         };
 
-        // UI Updates
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -1143,7 +1138,6 @@
             }
         }
 
-        // LOGO HANDLING
         function applyBranding() {
             const container = document.getElementById('header-logo-container');
             if (db.settings.logo) {
@@ -1461,7 +1455,6 @@
             renderLiveRoundUI(); 
         }
 
-        // DIGITAL SCORECARD PROOF GENERATOR
         function generateDigitalScorecardImage(archerName, round, bow, date, score, hits, tens, ends) {
             const canvas = document.createElement('canvas');
             canvas.width = 600;
@@ -1649,7 +1642,7 @@
             document.getElementById('hist-archer-filter').innerHTML = `<option value="All">All Archers</option>` + sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
         }
 
-        // PPL LEADERBOARD (Portsmouth ONLY) - FIXED "MOST IMPROVED" (MAX GAIN) LOGIC
+        // LEADERBOARD (PORTSMOUTH ONLY) + MOST IMPROVED
         function renderLeaderboard() {
             const tbody = document.getElementById('leaderboard-body');
             const bowFilter = document.getElementById('lb-bow-filter').value;
@@ -1947,7 +1940,6 @@
             `).join('');
         }
 
-        // CSV EXPORT FOR GOLDEN RECORDS (ALL ROUNDS)
         function exportHistoryToCSV() {
             if (!db.history || db.history.length === 0) { alert("No scores available to export."); return; }
 
@@ -1973,7 +1965,6 @@
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        // HISTORICAL RECORD SUBMIT
         async function submitHistoricalRecord() {
             const record = {
                 action: "addHistoricalRecord", bow: document.getElementById('hist-bow').value,
@@ -1992,7 +1983,6 @@
             } catch(e) { alert("Network error saving historical record."); }
         }
 
-        // MODALS
         function openAdminModal() { document.getElementById('admin-modal').classList.add('open'); document.getElementById('admin-pin-input').value = ''; }
         function closeAdminModal() { document.getElementById('admin-modal').classList.remove('open'); }
         function verifyAdminPin() {
