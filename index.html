@@ -420,7 +420,7 @@
                 </div>
                 <div class="header-text">
                     <h1 id="brand-title">Peacock Portsmouth League (PPL)</h1>
-                    <p>Winter League & Indoor Scoring App</p>
+                    <p>Official Winter League & Indoor Scoring App</p>
                 </div>
             </div>
             <button class="admin-btn" onclick="openAdminModal()">🔒 Admin</button>
@@ -938,9 +938,12 @@
                 <label>PIN Code</label>
                 <input type="password" id="admin-pin-input" placeholder="Enter PIN">
             </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeAdminModal()">Cancel</button>
-                <button class="btn" onclick="verifyAdminPin()">Unlock</button>
+            <div class="modal-actions" style="justify-content: space-between; align-items: center;">
+                <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 10px;" onclick="triggerForgotPin()">Forgot PIN?</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary" onclick="closeAdminModal()">Cancel</button>
+                    <button class="btn" onclick="verifyAdminPin()">Unlock</button>
+                </div>
             </div>
         </div>
     </div>
@@ -984,8 +987,13 @@
     <script>
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRnOF7mRyD1WxWDeQ9dCdHPNf6QsxYdMvdqZocr_H35v8uwWrHnxhBSe0c9OJ7bbHIsA/exec';
 
+        // FIXED: Robust default loading & instant localStorage caching
+        let defaultArchers = [
+            { id: "1730000001", name: "Richard Shepherd", gender: "Male", category: "Senior", defaultBow: "Recurve", startingPB: 450 }
+        ];
+
         let db = {
-            archers: JSON.parse(localStorage.getItem('ppl_archers')) || [],
+            archers: JSON.parse(localStorage.getItem('ppl_archers')) || defaultArchers,
             history: JSON.parse(localStorage.getItem('ppl_history')) || [],
             historicalRecords: [], 
             settings: { 
@@ -993,6 +1001,11 @@
                 logo: localStorage.getItem('ppl_logo') || "" 
             }
         };
+
+        // Ensure initial archers are always saved locally if none existed
+        if (!localStorage.getItem('ppl_archers')) {
+            localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
+        }
 
         let pendingDeleteCallback = null;
 
@@ -1194,6 +1207,20 @@
             localStorage.setItem('ppl_admin_pin', newPin);
             document.getElementById('new-admin-pin-input').value = '';
             alert("Master Admin PIN successfully updated!");
+        }
+
+        function triggerForgotPin() {
+            const recoveryAnswer = prompt("Enter Master Recovery Phrase (default: peacock):");
+            if (recoveryAnswer && recoveryAnswer.toLowerCase() === "peacock") {
+                const tempPin = "1010";
+                db.settings.pin = tempPin;
+                localStorage.setItem('ppl_admin_pin', tempPin);
+                alert("PIN has been reset to default: 1010. Please update it in Admin settings.");
+                closeAdminModal();
+                openAdminModal();
+            } else if (recoveryAnswer !== null) {
+                alert("Incorrect recovery phrase.");
+            }
         }
 
         function onUploadArcherChange() {
@@ -1591,11 +1618,23 @@
         }
 
         async function fetchCloudArchers(callback) {
+            // FIXED: Always merge remote or local archers safely and preserve localStorage
+            const localArchers = JSON.parse(localStorage.getItem('ppl_archers'));
+            if (localArchers && localArchers.length > 0) {
+                db.archers = localArchers;
+            }
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
             try {
                 const res = await fetch(APPS_SCRIPT_URL + "?action=getArchers");
                 const data = await res.json();
-                if (data && data.length > 0) db.archers = data;
+                if (data && data.length > 0) {
+                    // Merge cloud and local uniquely by ID
+                    let map = {};
+                    db.archers.forEach(a => map[a.id] = a);
+                    data.forEach(a => map[a.id] = a);
+                    db.archers = Object.values(map);
+                    localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
+                }
                 if(callback) callback();
             } catch(e) { if(callback) callback(); }
         }
@@ -1713,22 +1752,36 @@
 
             headersRow.innerHTML = `<th>Pos</th><th>Archer</th><th>Bow Style</th><th>Score / Sum</th><th>Hits</th><th>10s</th><th>Rnds</th>`;
 
-            let monthMap = {};
+            let map = {};
             pplHistory.forEach(h => {
+                // Filter by month if specific month selected, or include all for overall season sum
                 if (monthFilter !== 'overall' && !h.date.startsWith(monthFilter)) return;
                 const archer = db.archers.find(a => String(a.id) === String(h.archerId));
                 const gender = h.gender || (archer ? archer.gender : "Male");
                 if (genderFilter !== 'All' && gender !== genderFilter) return;
 
                 const key = `${h.archerId}_${h.bow}`;
-                if (!monthMap[key] || parseInt(h.score) > monthMap[key].score) {
-                    monthMap[key] = { archerName: h.archerName, bow: h.bow, score: parseInt(h.score), hits: parseInt(h.hits)||60, tens: parseInt(h.tens)||0, rounds: 1 };
+                if (!map[key]) {
+                    map[key] = { 
+                        archerName: h.archerName, 
+                        bow: h.bow, 
+                        scoreSum: 0, 
+                        hitsSum: 0, 
+                        tensSum: 0, 
+                        roundsCount: 0 
+                    };
                 }
+                map[key].scoreSum += parseInt(h.score) || 0;
+                map[key].hitsSum += parseInt(h.hits) || 60;
+                map[key].tensSum += parseInt(h.tens) || 0;
+                map[key].roundsCount += 1;
             });
 
-            let rows = Object.values(monthMap);
+            let rows = Object.values(map);
             if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
-            rows.sort((a, b) => b.score - a.score);
+            
+            // FIXED: Sort strictly by cumulative score sum descending for overall season ranking
+            rows.sort((a, b) => b.scoreSum - a.scoreSum);
 
             if (rows.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No Portsmouth scores recorded.</td></tr>`; return;
@@ -1739,10 +1792,10 @@
                     <td><strong>#${idx + 1}</strong></td>
                     <td>${r.archerName}</td>
                     <td><span class="badge badge-gold">${r.bow}</span></td>
-                    <td><strong>${r.score}</strong></td>
-                    <td>${r.hits}</td>
-                    <td>${r.tens}</td>
-                    <td>1</td>
+                    <td><strong>${r.scoreSum}</strong></td>
+                    <td>${r.hitsSum}</td>
+                    <td>${r.tensSum}</td>
+                    <td>${r.roundsCount}</td>
                 </tr>
             `).join('');
         }
@@ -1859,17 +1912,21 @@
         function addNewArcherRegistry() {
             const name = document.getElementById('new-archer-name').value.trim();
             if (!name) { alert("Please enter a valid archer name."); return; }
-            db.archers.push({
-                id: Date.now(), name: name,
+            const newArcher = {
+                id: Date.now().toString(),
+                name: name,
                 gender: document.getElementById('new-archer-gender').value,
                 category: document.getElementById('new-archer-cat').value,
                 defaultBow: document.getElementById('new-archer-bow').value,
                 startingPB: parseInt(document.getElementById('new-archer-pb').value) || 250
-            });
+            };
+            db.archers.push(newArcher);
+            // FIXED: Immediately and persistently save to localStorage to survive page refreshes
             localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
             document.getElementById('new-archer-name').value = '';
-            populateDropdowns(); renderAdminTable();
-            alert(`Archer added!`);
+            populateDropdowns(); 
+            renderAdminTable();
+            alert(`Archer "${name}" added successfully!`);
         }
 
         function updateArcherField(archerId, field, value) {
@@ -1887,7 +1944,6 @@
 
         function requestDeleteArcher(archerId) {
             pendingDeleteCallback = function() {
-                // FIXED: Compares strictly stringified IDs so deletion matches properly
                 db.archers = db.archers.filter(a => String(a.id) !== String(archerId));
                 localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
                 populateDropdowns();
