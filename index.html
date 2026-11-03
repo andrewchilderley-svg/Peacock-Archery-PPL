@@ -319,6 +319,7 @@
         .arrows-row {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 12px;
             margin-top: 10px;
         }
@@ -344,7 +345,7 @@
 
         .keypad {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
             gap: 10px;
             margin-bottom: 20px;
         }
@@ -365,19 +366,14 @@
             background: var(--border);
         }
 
-        .key-btn.gold {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-        .key-btn.gold:hover {
-            background: var(--primary-hover);
-        }
-
-        .key-btn.action {
-            background: #374151;
-            font-size: 1rem;
-        }
-
+        .key-btn.gold { background: var(--primary); border-color: var(--primary); }
+        .key-btn.gold:hover { background: var(--primary-hover); }
+        .key-btn.red { background:#7f1d1d; border-color:#991b1b; }
+        .key-btn.blue { background:#1e3a8a; border-color:#1d4ed8; }
+        .key-btn.black { background:#1f2937; border-color:#374151; }
+        .key-btn.white { background:#f8fafc; color:#0f172a; border-color:#cbd5e1; }
+        .key-btn.action { background: #374151; font-size: 1rem; grid-column: span 2; }
+        
         /* Modals */
         .modal {
             position: fixed;
@@ -390,9 +386,7 @@
             padding: 20px;
         }
 
-        .modal.open {
-            display: flex;
-        }
+        .modal.open { display: flex; }
 
         .modal-content {
             background: var(--bg-card);
@@ -432,58 +426,22 @@
         .badge-gold { background: rgba(217, 119, 6, 0.2); color: #fbbf24; border: 1px solid rgba(217, 119, 6, 0.4); }
         .badge-success { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
         .badge-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .badge-round { background: #312e81; color: #a5b4fc; border: 1px solid #4f46e5; }
 
         .hidden { display: none !important; }
 
-        /* Mobile Responsive Fixes */
         @media (max-width: 650px) {
-            header {
-                flex-direction: column;
-                text-align: center;
-                gap: 16px;
-                padding: 20px 16px;
-            }
-            .header-title {
-                flex-direction: column;
-                gap: 12px;
-            }
-            .header-logo-box {
-                width: 96px;
-                height: 96px;
-                min-width: 96px;
-                min-height: 96px;
-            }
-            .header-logo-emoji {
-                font-size: 3.5rem;
-            }
-            .header-text h1 {
-                font-size: 1.25rem;
-                justify-content: center;
-                text-align: center;
-            }
-            .header-text p {
-                font-size: 0.8rem;
-            }
-            .admin-btn {
-                width: 100%;
-                padding: 12px;
-            }
-            .shoot-header-stats {
-                gap: 8px;
-                padding: 12px;
-            }
-            .stat-box .stat-val {
-                font-size: 1.25rem;
-            }
-            .keypad {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            .key-btn.action {
-                grid-column: span 2;
-            }
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
+            header { flex-direction: column; text-align: center; gap: 16px; padding: 20px 16px; }
+            .header-title { flex-direction: column; gap: 12px; }
+            .header-logo-box { width: 96px; height: 96px; min-width: 96px; min-height: 96px; }
+            .header-logo-emoji { font-size: 3.5rem; }
+            .header-text h1 { font-size: 1.25rem; justify-content: center; text-align: center; }
+            .header-text p { font-size: 0.8rem; }
+            .admin-btn { width: 100%; padding: 12px; }
+            .shoot-header-stats { gap: 8px; padding: 12px; }
+            .stat-box .stat-val { font-size: 1.25rem; }
+            .keypad { grid-template-columns: repeat(4, 1fr); }
+            .form-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -494,13 +452,11 @@
         <header>
             <div class="header-title">
                 <div id="header-logo-container">
-                    <div class="header-logo-box">
-                        <span class="header-logo-emoji">🎯</span>
-                    </div>
+                    <div class="header-logo-box"><span class="header-logo-emoji">🎯</span></div>
                 </div>
                 <div class="header-text">
                     <h1 id="brand-title">Peacock Portsmouth League (PPL)</h1>
-                    <p>Portsmouth Round (60 Arrows @ 20y | 20 ends of 3 Arrows)</p>
+                    <p>Official Winter League & Indoor Scoring App</p>
                 </div>
             </div>
             <button class="admin-btn" onclick="openAdminModal()">🔒 Admin</button>
@@ -510,8 +466,8 @@
         <nav class="nav-tabs">
             <button class="tab-btn active" onclick="switchTab('upload')">📤 Upload</button>
             <button class="tab-btn" onclick="switchTab('shoot')">🎯 Shoot</button>
-            <button class="tab-btn" onclick="switchTab('board')">🏆 Leaderboard</button>
-            <button class="tab-btn" onclick="switchTab('records')">🎖️ Records</button>
+            <button class="tab-btn" onclick="switchTab('board')">🏆 PPL Leaderboard</button>
+            <button class="tab-btn" onclick="switchTab('records')">🎖️ PPL Records</button>
             <button class="tab-btn" onclick="switchTab('history')">📜 History</button>
             <button class="tab-btn" onclick="openAdminModal()">⚙️ Settings</button>
         </nav>
@@ -525,14 +481,25 @@
                     <select id="up-archer" onchange="onUploadArcherChange()"></select>
                 </div>
                 <div class="form-group">
-                    <label>Gender (Pre-filled)</label>
+                    <label>Round Type</label>
+                    <select id="up-round" style="border-color: var(--accent);" onchange="updateUploadStats()">
+                        <option value="Portsmouth" selected>Portsmouth (PPL Official)</option>
+                        <option value="WA18">WA18</option>
+                        <option value="Worcester">Worcester</option>
+                        <option value="Vegas (Triple Face)">Vegas (Triple Face)</option>
+                        <option value="Vegas 300">Vegas 300</option>
+                        <option value="Bray I">Bray I</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
                     <select id="up-gender" onchange="updateUploadStats()">
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Age Category (Pre-filled)</label>
+                    <label>Age Category</label>
                     <select id="up-cat" onchange="updateUploadStats()">
                         <option value="Senior">Senior</option>
                         <option value="50+">50+</option>
@@ -551,10 +518,10 @@
                 </div>
                 <div class="form-group">
                     <label>Date Shot</label>
-                    <input type="date" id="up-date" onclick="safeOpenPicker(this)">
+                    <input type="date" id="up-date">
                 </div>
                 <div class="form-group">
-                    <label>Total Score (Max 600)</label>
+                    <label>Total Score</label>
                     <input type="number" id="up-score" min="0" max="600" placeholder="e.g. 520" oninput="updateUploadStats()">
                 </div>
                 <div class="form-group">
@@ -562,19 +529,19 @@
                     <input type="number" id="up-tens" min="0" max="60" placeholder="e.g. 15" value="0">
                 </div>
                 <div class="form-group">
-                    <label>Hits Count (Max 60)</label>
+                    <label>Hits Count</label>
                     <input type="number" id="up-hits" min="0" max="60" placeholder="e.g. 60" value="60">
                 </div>
                 <div class="form-group">
-                    <label>Attach Scoresheet Screenshot (Optional)</label>
+                    <label>Photo Proof (Optional)</label>
                     <input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;">
                 </div>
             </div>
             
             <div style="background: #111827; padding: 16px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
                 <div>
-                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">AVG. ARROW VALUE</span>
-                    <span id="up-avg-arrow" style="font-size: 1.3rem; font-weight: 700; color: var(--primary);">0.00</span>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">MAX SCORE / ARROWS</span>
+                    <span id="up-max-stats" style="font-size: 1.1rem; font-weight: 700; color: var(--text-muted);">600 / 60</span>
                 </div>
                 <div>
                     <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">EST. CLASSIFICATION GRADE</span>
@@ -593,6 +560,17 @@
                     <select id="shoot-archer" onchange="onShootArcherChange()"></select>
                 </div>
                 <div class="form-group">
+                    <label>Round Type</label>
+                    <select id="shoot-round" style="border-color: var(--accent);" onchange="handleLiveRoundChange()">
+                        <option value="Portsmouth" selected>Portsmouth (PPL Official)</option>
+                        <option value="WA18">WA18</option>
+                        <option value="Worcester">Worcester</option>
+                        <option value="Vegas (Triple Face)">Vegas (Triple Face)</option>
+                        <option value="Vegas 300">Vegas 300</option>
+                        <option value="Bray I">Bray I</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Bow Style</label>
                     <select id="shoot-bow" onchange="updateLiveStats()">
                         <option value="Recurve">Recurve</option>
@@ -604,22 +582,22 @@
                 </div>
                 <div class="form-group">
                     <label>Date Shot</label>
-                    <input type="date" id="shoot-date" onclick="safeOpenPicker(this)">
+                    <input type="date" id="shoot-date">
                 </div>
             </div>
 
             <div class="shoot-header-stats">
                 <div class="stat-box">
                     <div class="stat-val" id="live-total">0</div>
-                    <div class="stat-lbl">Total / 600</div>
+                    <div class="stat-lbl" id="live-total-lbl">Total / 600</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-val" id="live-hits">0</div>
-                    <div class="stat-lbl">Hits / 60</div>
+                    <div class="stat-lbl" id="live-hits-lbl">Hits / 60</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-val" id="live-tens">0</div>
-                    <div class="stat-lbl">10s Count</div>
+                    <div class="stat-lbl">10s (or 5s)</div>
                 </div>
             </div>
 
@@ -637,28 +615,15 @@
             <div class="end-display">
                 <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted);">
                     <span id="live-end-label">End 1 of 20</span>
-                    <span>3 Arrows Per End</span>
+                    <span id="live-arr-label">3 Arrows Per End</span>
                 </div>
                 <div class="arrows-row" id="live-arrow-slots">
-                    <div class="arrow-slot">-</div>
-                    <div class="arrow-slot">-</div>
-                    <div class="arrow-slot">-</div>
+                    <!-- Populated by JS dynamically based on round -->
                 </div>
             </div>
 
-            <div class="keypad">
-                <button class="key-btn gold" onclick="pressScore(10)">10</button>
-                <button class="key-btn gold" onclick="pressScore(9)">9</button>
-                <button class="key-btn action" onclick="undoArrow()">⌫ Undo</button>
-                <button class="key-btn" style="background:#7f1d1d; border-color:#991b1b;" onclick="pressScore(8)">8</button>
-                <button class="key-btn" style="background:#7f1d1d; border-color:#991b1b;" onclick="pressScore(7)">7</button>
-                <button class="key-btn" style="background:#1e3a8a; border-color:#1d4ed8;" onclick="pressScore(6)">6</button>
-                <button class="key-btn" style="background:#1e3a8a; border-color:#1d4ed8;" onclick="pressScore(5)">5</button>
-                <button class="key-btn" style="background:#451a03; border-color:#78350f;" onclick="pressScore(4)">4</button>
-                <button class="key-btn" style="background:#451a03; border-color:#78350f;" onclick="pressScore(3)">3</button>
-                <button class="key-btn" style="background:#1f2937;" onclick="pressScore(2)">2</button>
-                <button class="key-btn" style="background:#1f2937;" onclick="pressScore(1)">1</button>
-                <button class="key-btn" style="background:#111827;" onclick="pressScore(0)">M</button>
+            <div class="keypad" id="dynamic-keypad">
+                <!-- Buttons rendered by JS based on round selection -->
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
@@ -666,7 +631,7 @@
                 <button class="btn" id="confirm-end-btn" onclick="confirmEnd()" disabled>Confirm End</button>
             </div>
 
-            <!-- LIVE SCORESHEET TABLE (Expands as they shoot) -->
+            <!-- LIVE SCORESHEET TABLE -->
             <div style="margin-top: 20px; background: #111827; border: 1px solid var(--border); border-radius: 8px; padding: 12px; max-height: 250px; overflow-y: auto;">
                 <h4 style="font-size: 0.9rem; color: var(--primary); margin-bottom: 8px; text-align: center;">Running Scoresheet</h4>
                 <table style="width: 100%; font-size: 0.85rem; text-align: center;">
@@ -685,12 +650,13 @@
             </div>
 
             <div id="submit-league-container" class="hidden" style="margin-top: 16px;">
-                <button class="btn gold" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="submitLiveRoundToLeague()">🏆 Submit Live Round to League</button>
+                <button class="btn gold" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="submitLiveRoundToLeague()">🏆 Submit Live Round</button>
             </div>
         </div>
 
-        <!-- 3. LEADERBOARD TAB -->
+        <!-- 3. LEADERBOARD TAB (PPL ONLY) -->
         <div id="tab-board" class="tab-content">
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">PPL Leaderboard <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">(Portsmouth Rounds Only)</span></h2>
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                 <div class="form-group" style="flex: 1; min-width: 180px;">
                     <label>Period / Season View</label>
@@ -717,20 +683,11 @@
                     </select>
                 </div>
                 <div class="form-group" style="flex: 1; min-width: 130px;">
-                    <label>Gender Filter</label>
+                    <label>Gender</label>
                     <select id="lb-gender-filter" onchange="renderLeaderboard()">
-                        <option value="All">All Genders</option>
+                        <option value="All">All</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div class="form-group" style="flex: 1; min-width: 130px;">
-                    <label>Age Group Filter</label>
-                    <select id="lb-cat-filter" onchange="renderLeaderboard()">
-                        <option value="All">All Categories</option>
-                        <option value="Senior">Senior</option>
-                        <option value="50+">50+</option>
-                        <option value="Under 18">Under 18</option>
                     </select>
                 </div>
             </div>
@@ -748,17 +705,14 @@
                             <th>Rnds</th>
                         </tr>
                     </thead>
-                    <tbody id="leaderboard-body">
-                        <!-- Populated dynamically -->
-                    </tbody>
+                    <tbody id="leaderboard-body"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- 4. RECORDS TAB -->
+        <!-- 4. RECORDS TAB (PPL ONLY) -->
         <div id="tab-records" class="tab-content">
-            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Portsmouth Records (as per Golden Records)</h2>
-            
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">PPL Club Records <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">(Portsmouth Rounds Only)</span></h2>
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                 <div class="form-group" style="flex: 1; min-width: 150px;">
                     <label>Filter Bow Style</label>
@@ -774,18 +728,9 @@
                 <div class="form-group" style="flex: 1; min-width: 130px;">
                     <label>Filter Gender</label>
                     <select id="rec-gender-filter" onchange="renderRecords()">
-                        <option value="All">All Genders</option>
+                        <option value="All">All</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div class="form-group" style="flex: 1; min-width: 130px;">
-                    <label>Filter Category</label>
-                    <select id="rec-cat-filter" onchange="renderRecords()">
-                        <option value="All">All Categories</option>
-                        <option value="Senior">Senior</option>
-                        <option value="50+">50+</option>
-                        <option value="Under 18">Under 18</option>
                     </select>
                 </div>
             </div>
@@ -799,22 +744,31 @@
                             <th>Category</th>
                             <th>Record Holder</th>
                             <th>Top Score</th>
-                            <th>10s</th>
                             <th>Date Set</th>
                         </tr>
                     </thead>
-                    <tbody id="records-body">
-                        <!-- Populated dynamically -->
-                    </tbody>
+                    <tbody id="records-body"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- 5. HISTORY TAB -->
+        <!-- 5. HISTORY TAB (ALL ROUNDS) -->
         <div id="tab-history" class="tab-content">
-            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Submitted Score History</h2>
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Score History & CSV Export <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">(All Rounds)</span></h2>
             
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Filter Round</label>
+                    <select id="hist-round-filter" onchange="renderHistory()">
+                        <option value="All">All Rounds</option>
+                        <option value="Portsmouth">Portsmouth</option>
+                        <option value="WA18">WA18</option>
+                        <option value="Worcester">Worcester</option>
+                        <option value="Vegas (Triple Face)">Vegas (Triple Face)</option>
+                        <option value="Vegas 300">Vegas 300</option>
+                        <option value="Bray I">Bray I</option>
+                    </select>
+                </div>
                 <div class="form-group" style="flex: 1; min-width: 150px;">
                     <label>Filter Archer</label>
                     <select id="hist-archer-filter" onchange="renderHistory()">
@@ -834,101 +788,32 @@
                 </div>
             </div>
 
+            <button class="btn gold" style="margin-bottom: 16px;" onclick="exportHistoryToCSV()">📥 Download CSV for Golden Records</button>
+
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Date</th>
                             <th>Archer</th>
+                            <th>Round</th>
                             <th>Bow</th>
                             <th>Score</th>
-                            <th>vs Baseline PB</th>
                             <th>Hits</th>
-                            <th>10s</th>
+                            <th>10s/5s</th>
                             <th>Proof</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="history-body">
-                        <!-- Populated dynamically -->
-                    </tbody>
+                    <tbody id="history-body"></tbody>
                 </table>
             </div>
         </div>
 
         <!-- 6. ADMIN TAB -->
         <div id="tab-admin" class="tab-content">
-            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">League Administration & Security</h2>
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">League Administration</h2>
             
-            <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
-                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Change Master Admin PIN</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>New 4-Digit PIN</label>
-                        <input type="password" id="new-admin-pin" placeholder="Enter new PIN" maxlength="6">
-                    </div>
-                </div>
-                <button class="btn" onclick="updateAdminPin()">🔒 Update Admin PIN</button>
-            </div>
-
-            <!-- MANUAL HISTORICAL RECORD ENTRY -->
-            <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
-                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add Historical Club Record (Pre-League)</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Bow Style</label>
-                        <select id="hist-bow">
-                            <option value="Recurve">Recurve</option>
-                            <option value="Compound">Compound</option>
-                            <option value="Barebow">Barebow</option>
-                            <option value="Longbow">Longbow</option>
-                            <option value="Asiatic">Asiatic</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <select id="hist-gender">
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Age / Category</label>
-                        <select id="hist-cat">
-                            <option value="Senior">Senior</option>
-                            <option value="50+">50+</option>
-                            <option value="Under 18">Under 18</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Archer Name</label>
-                        <input type="text" id="hist-name" placeholder="e.g. John Smith">
-                    </div>
-                    <div class="form-group">
-                        <label>Score</label>
-                        <input type="number" id="hist-score" min="0" max="600" placeholder="e.g. 540">
-                    </div>
-                    <div class="form-group">
-                        <label>10s Count</label>
-                        <input type="number" id="hist-tens" min="0" max="60" placeholder="e.g. 20">
-                    </div>
-                    <div class="form-group">
-                        <label>Date / Year Shot</label>
-                        <input type="text" id="hist-date" placeholder="e.g. 2024 or 2024-05-12">
-                    </div>
-                </div>
-                <button class="btn" onclick="submitHistoricalRecord()">📜 Save Historical Record</button>
-            </div>
-
-            <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
-                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Club Branding & Logo</h3>
-                <div class="form-group" style="margin-bottom: 12px;">
-                    <label>Upload League Logo Image</label>
-                    <input type="file" id="logo-file-input" accept="image/*" onchange="handleLogoUpload(event)">
-                </div>
-                <button class="btn btn-secondary" onclick="resetLeagueLogo()">Reset to Default Icon</button>
-            </div>
-
             <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
                 <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add New Archer</h3>
                 <div class="form-grid">
@@ -963,13 +848,6 @@
                     </div>
                 </div>
                 <button class="btn" onclick="addNewArcherRegistry()">➕ Add Archer to Database</button>
-                <button class="btn gold" style="margin-top: 10px;" onclick="syncArchersToCloud(); alert('Archers pushed to cloud!');">☁️ Force Sync Archers to Cloud</button>
-            </div>
-
-            <!-- NEW: DATA MANAGEMENT & CSV EXPORT -->
-            <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
-                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Data Management</h3>
-                <button class="btn gold" onclick="exportHistoryToCSV()">📥 Export Score History to CSV</button>
             </div>
 
             <h3 style="font-size: 1rem; margin-bottom: 12px;">Registered Archers Database</h3>
@@ -979,15 +857,13 @@
                         <tr>
                             <th>Name</th>
                             <th>Gender</th>
-                            <th>Age Group</th>
+                            <th>Category</th>
                             <th>Default Bow</th>
-                            <th>Starting PB</th>
+                            <th>PB (Portsmouth)</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-archer-table">
-                        <!-- Populated dynamically -->
-                    </tbody>
+                    <tbody id="admin-archer-table"></tbody>
                 </table>
             </div>
         </div>
@@ -995,18 +871,12 @@
     </div>
 
     <!-- MODALS -->
-
-    <!-- ADMIN PIN LOGIN MODAL -->
     <div class="modal" id="admin-modal">
         <div class="modal-content">
             <div class="modal-title">🔐 Master Admin Access</div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">Enter Master PIN to access settings and restricted actions.</p>
             <div class="form-group" style="margin-bottom: 16px;">
                 <label>PIN Code</label>
                 <input type="password" id="admin-pin-input" placeholder="Enter PIN">
-            </div>
-            <div style="margin-bottom: 16px;">
-                <a href="#" onclick="triggerServerPinReset(event)" style="font-size: 0.85rem; color: var(--accent); text-decoration: underline;">Forgot PIN? Use Recovery Key</a>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeAdminModal()">Cancel</button>
@@ -1015,7 +885,6 @@
         </div>
     </div>
 
-    <!-- RESET ROUND CONFIRMATION MODAL -->
     <div class="modal" id="reset-modal">
         <div class="modal-content">
             <div class="modal-title">⚠️ Reset Round?</div>
@@ -1027,23 +896,6 @@
         </div>
     </div>
 
-    <!-- DELETE AUTHORIZATION MODAL -->
-    <div class="modal" id="delete-pin-modal">
-        <div class="modal-content">
-            <div class="modal-title">🔒 Authorize Deletion</div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">Enter Admin PIN to confirm deletion.</p>
-            <div class="form-group" style="margin-bottom: 16px;">
-                <label>Admin PIN</label>
-                <input type="password" id="del-auth-pin" placeholder="Enter PIN">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeDeletePinModal()">Cancel</button>
-                <button class="btn btn-danger" onclick="confirmAuthorizedDelete()">Confirm Delete</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- PHOTO PROOF VIEWER MODAL -->
     <div class="modal" id="proof-modal">
         <div class="modal-content" style="max-width: 600px; text-align: center;">
             <div class="modal-title">📷 Scorecard Proof</div>
@@ -1054,213 +906,154 @@
         </div>
     </div>
 
+    <!-- DATA SCRIPT -->
     <script>
-        // --- GOOGLE SHEETS CLOUD SYNC CONFIGURATION ---
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRnOF7mRyD1WxWDeQ9dCdHPNf6QsxYdMvdqZocr_H35v8uwWrHnxhBSe0c9OJ7bbHIsA/exec';
 
         let db = {
-            archers: JSON.parse(localStorage.getItem('ppl_archers')) || [
-                { id: 1, name: "Alex Thompson", gender: "Male", category: "Senior", defaultBow: "Recurve", startingPB: 378 },
-                { id: 2, name: "Sarah Jenkins", gender: "Female", category: "Senior", defaultBow: "Compound", startingPB: 449 },
-                { id: 3, name: "David Clarke", gender: "Male", category: "50+", defaultBow: "Barebow", startingPB: 276 }
-            ],
-            history: [], 
-            historicalRecords: [],
-            settings: {
-                pin: "1010",
-                title: "Peacock Portsmouth League (PPL)",
-                logo: localStorage.getItem('ppl_logo') || "https://raw.githubusercontent.com/andrewchilderley-svg/Peacock-Archery-PPL/main/logo.jpg"
+            archers: JSON.parse(localStorage.getItem('ppl_archers')) || [],
+            history: JSON.parse(localStorage.getItem('ppl_history')) || [], 
+            settings: { pin: "1010", logo: localStorage.getItem('ppl_logo') || "" }
+        };
+
+        // ROUND CLASSIFICATION DICTIONARY
+        const gradeMatrix = {
+            "Portsmouth": {
+                "Recurve_Male_Senior": [378, 437, 483, 518, 546, 566, 582, 593], "Recurve_Male_50+": [316, 387, 444, 488, 522, 549, 569, 583], "Recurve_Male_Under 18": [316, 387, 444, 488, 522, 549, 569, 583],
+                "Recurve_Female_Senior": [331, 399, 454, 496, 528, 553, 572, 586], "Recurve_Female_50+": [265, 341, 407, 460, 501, 532, 556, 574], "Recurve_Female_Under 18": [201, 276, 350, 415, 466, 505, 536, 559],
+                "Compound_Male_Senior": [472, 508, 532, 549, 560, 571, 583, 594], "Compound_Male_50+": [437, 482, 515, 537, 552, 563, 574, 586], "Compound_Male_Under 18": [393, 449, 491, 521, 541, 555, 566, 577],
+                "Compound_Female_Senior": [449, 491, 521, 541, 555, 566, 577, 589], "Compound_Female_50+": [408, 461, 500, 527, 545, 558, 568, 580], "Compound_Female_Under 18": [358, 423, 472, 508, 532, 549, 560, 571],
+                "Barebow_Male_Senior": [331, 387, 433, 472, 503, 528, 549, 565], "Barebow_Male_50+": [276, 336, 391, 437, 475, 505, 530, 550], "Barebow_Male_Under 18": [220, 281, 341, 395, 440, 477, 508, 532],
+                "Barebow_Female_Senior": [276, 336, 391, 437, 475, 505, 530, 550], "Barebow_Female_50+": [220, 281, 341, 395, 440, 477, 508, 532], "Barebow_Female_Under 18": [170, 225, 286, 346, 399, 444, 480, 510],
+                "Longbow_Male_Senior": [127, 178, 240, 306, 369, 423, 466, 501], "Longbow_Male_50+": [90, 130, 183, 245, 311, 373, 426, 469], "Longbow_Male_Under 18": [62, 92, 134, 187, 250, 316, 378, 430],
+                "Longbow_Female_Senior": [84, 123, 174, 235, 301, 364, 419, 463], "Longbow_Female_50+": [58, 87, 127, 178, 240, 306, 369, 423], "Longbow_Female_Under 18": [40, 60, 90, 130, 183, 245, 311, 373],
+                "Asiatic_Male_Senior": [331, 387, 433, 472, 503, 528, 549, 565], "Asiatic_Male_50+": [276, 336, 391, 437, 475, 505, 530, 550], "Asiatic_Male_Under 18": [220, 281, 341, 395, 440, 477, 508, 532],
+                "Asiatic_Female_Senior": [276, 336, 391, 437, 475, 505, 530, 550], "Asiatic_Female_50+": [220, 281, 341, 395, 440, 477, 508, 532], "Asiatic_Female_Under 18": [170, 225, 286, 346, 399, 444, 480, 510]
+            },
+            "WA18": {
+                "Recurve_Male_Senior": [272, 347, 413, 466, 506, 537, 560, 578], "Recurve_Male_50+": [206, 282, 357, 421, 472, 511, 540, 563], "Recurve_Male_Under 18": [149, 216, 292, 366, 429, 477, 515, 544],
+                "Recurve_Female_Senior": [221, 297, 371, 432, 480, 517, 545, 567], "Recurve_Female_50+": [162, 231, 308, 380, 439, 486, 521, 549], "Recurve_Female_Under 18": [113, 170, 241, 318, 389, 446, 491, 525],
+                "Compound_Male_Senior": [403, 458, 498, 527, 546, 560, 571, 583], "Compound_Male_50+": [350, 418, 469, 507, 533, 550, 563, 574], "Compound_Male_Under 18": [291, 369, 432, 480, 514, 538, 553, 565],
+                "Compound_Female_Senior": [369, 432, 480, 514, 538, 553, 565, 577], "Compound_Female_50+": [311, 386, 446, 490, 521, 542, 557, 568], "Compound_Female_Under 18": [250, 331, 403, 458, 498, 527, 546, 560],
+                "Barebow_Male_Senior": [221, 282, 343, 397, 443, 480, 511, 535], "Barebow_Male_50+": [170, 226, 287, 347, 401, 446, 483, 513], "Barebow_Male_Under 18": [127, 174, 231, 292, 352, 405, 450, 486],
+                "Barebow_Female_Senior": [170, 226, 287, 347, 401, 446, 483, 513], "Barebow_Female_50+": [127, 174, 231, 292, 352, 405, 450, 486], "Barebow_Female_Under 18": [93, 130, 179, 236, 297, 357, 409, 453],
+                "Longbow_Male_Senior": [66, 98, 142, 197, 261, 328, 389, 439], "Longbow_Male_50+": [46, 68, 101, 145, 202, 266, 333, 393], "Longbow_Male_Under 18": [31, 47, 71, 104, 149, 206, 272, 338],
+                "Longbow_Female_Senior": [43, 64, 95, 138, 192, 256, 323, 384], "Longbow_Female_50+": [29, 44, 66, 98, 142, 197, 261, 328], "Longbow_Female_Under 18": [20, 30, 46, 68, 101, 145, 202, 266],
+                "Asiatic_Male_Senior": [221, 282, 343, 397, 443, 480, 511, 535], "Asiatic_Male_50+": [170, 226, 287, 347, 401, 446, 483, 513], "Asiatic_Male_Under 18": [127, 174, 231, 292, 352, 405, 450, 486],
+                "Asiatic_Female_Senior": [170, 226, 287, 347, 401, 446, 483, 513], "Asiatic_Female_50+": [127, 174, 231, 292, 352, 405, 450, 486], "Asiatic_Female_Under 18": [93, 130, 179, 236, 297, 357, 409, 453]
+            },
+            "Worcester": {
+                "Recurve_Male_Senior": [149, 188, 221, 247, 267, 282, 293, 299], "Recurve_Male_50+": [114, 154, 193, 225, 250, 270, 284, 294], "Recurve_Male_Under 18": [84, 120, 160, 198, 229, 253, 272, 286],
+                "Recurve_Female_Senior": [122, 162, 200, 231, 255, 273, 286, 296], "Recurve_Female_50+": [90, 128, 168, 205, 234, 257, 275, 288], "Recurve_Female_Under 18": [64, 95, 133, 173, 209, 238, 260, 277],
+                "Compound_Male_Senior": [217, 246, 267, 283, 294, 300], "Compound_Male_50+": [191, 225, 252, 272, 286, 296], "Compound_Male_Under 18": [160, 200, 233, 257, 276, 289, 298],
+                "Compound_Female_Senior": [200, 233, 257, 276, 289, 298], "Compound_Female_50+": [170, 209, 240, 263, 280, 292, 299], "Compound_Female_Under 18": [138, 181, 217, 246, 267, 283, 294, 300],
+                "Barebow_Male_Senior": [122, 154, 186, 213, 236, 255, 270, 281], "Barebow_Male_50+": [95, 125, 157, 188, 215, 238, 256, 271], "Barebow_Male_Under 18": [71, 97, 128, 160, 191, 217, 240, 257],
+                "Barebow_Female_Senior": [95, 125, 157, 188, 215, 238, 256, 271], "Barebow_Female_50+": [71, 97, 128, 160, 191, 217, 240, 257], "Barebow_Female_Under 18": [52, 73, 100, 130, 162, 193, 219, 241],
+                "Longbow_Male_Senior": [38, 55, 79, 109, 144, 178, 209, 234], "Longbow_Male_50+": [26, 39, 57, 81, 112, 146, 181, 211], "Longbow_Male_Under 18": [18, 27, 40, 59, 84, 114, 149, 183],
+                "Longbow_Female_Senior": [24, 36, 54, 77, 107, 141, 176, 207], "Longbow_Female_50+": [7, 25, 38, 55, 79, 109, 144, 178], "Longbow_Female_Under 18": [12, 18, 26, 39, 57, 81, 112, 146],
+                "Asiatic_Male_Senior": [122, 154, 186, 213, 236, 255, 270, 281], "Asiatic_Male_50+": [95, 125, 157, 188, 215, 238, 256, 271], "Asiatic_Male_Under 18": [71, 97, 128, 160, 191, 217, 240, 257],
+                "Asiatic_Female_Senior": [95, 125, 157, 188, 215, 238, 256, 271], "Asiatic_Female_50+": [71, 97, 128, 160, 191, 217, 240, 257], "Asiatic_Female_Under 18": [52, 73, 100, 130, 162, 193, 219, 241]
+            },
+            "Vegas (Triple Face)": {
+                "Recurve_Male_Senior": [181, 263, 357, 442, 501, 537, 560, 578], "Recurve_Male_50+": [125, 191, 276, 369, 451, 507, 540, 563], "Recurve_Male_Under 18": [84, 133, 201, 288, 381, 460, 512, 544],
+                "Recurve_Female_Senior": [137, 206, 294, 387, 465, 515, 545, 567], "Recurve_Female_50+": [93, 145, 217, 307, 399, 473, 520, 549], "Recurve_Female_Under 18": [62, 98, 153, 228, 319, 410, 481, 524],
+                "Compound_Male_Senior": [342, 432, 494, 527, 546, 560, 571, 583], "Compound_Male_50+": [268, 366, 451, 504, 532, 550, 563, 574], "Compound_Male_Under 18": [200, 292, 390, 467, 513, 538, 553, 565],
+                "Compound_Female_Senior": [292, 390, 467, 513, 538, 553, 565, 577], "Compound_Female_50+": [221, 317, 412, 481, 520, 542, 557, 568], "Compound_Female_Under 18": [161, 244, 342, 432, 494, 527, 546, 560],
+                "Barebow_Male_Senior": [137, 191, 257, 332, 405, 465, 507, 535], "Barebow_Male_50+": [98, 141, 196, 263, 338, 410, 469, 510], "Barebow_Male_Under 18": [70, 102, 145, 201, 270, 344, 416, 473],
+                "Barebow_Female_Senior": [98, 141, 196, 263, 338, 410, 469, 510], "Barebow_Female_50+": [70, 102, 145, 201, 270, 344, 416, 473], "Barebow_Female_Under 18": [49, 72, 105, 149, 206, 276, 351, 421],
+                "Longbow_Male_Senior": [34, 53, 79, 118, 171, 240, 319, 399], "Longbow_Male_50+": [23, 36, 54, 82, 122, 176, 246, 326], "Longbow_Male_Under 18": [16, 24, 37, 56, 84, 125, 181, 251],
+                "Longbow_Female_Senior": [22, 33, 51, 77, 115, 167, 234, 313], "Longbow_Female_50+": [15, 23, 34, 53, 79, 118, 171, 240], "Longbow_Female_Under 18": [10, 16, 23, 36, 54, 82, 122, 176],
+                "Asiatic_Male_Senior": [137, 191, 257, 332, 405, 465, 507, 535], "Asiatic_Male_50+": [98, 141, 196, 263, 338, 410, 469, 510], "Asiatic_Male_Under 18": [70, 102, 145, 201, 270, 344, 416, 473],
+                "Asiatic_Female_Senior": [98, 141, 196, 263, 338, 410, 469, 510], "Asiatic_Female_50+": [70, 102, 145, 201, 270, 344, 416, 473], "Asiatic_Female_Under 18": [49, 72, 105, 149, 206, 276, 351, 421]
+            },
+            "Vegas 300": {
+                "Recurve_Male_Senior": [134, 172, 205, 232, 252, 268, 280, 289], "Recurve_Male_50+": [101, 139, 176, 209, 235, 254, 270, 281], "Recurve_Male_Under 18": [73, 106, 144, 181, 213, 238, 257, 271],
+                "Recurve_Female_Senior": [108, 146, 183, 215, 239, 258, 272, 283], "Recurve_Female_50+": [79, 113, 152, 188, 218, 242, 260, 274], "Recurve_Female_Under 18": [55, 83, 118, 157, 192, 222, 244, 262],
+                "Compound_Male_Senior": [201, 230, 252, 269, 281, 290, 297, 300], "Compound_Male_50+": [174, 209, 236, 257, 272, 284, 292, 298], "Compound_Male_Under 18": [144, 183, 216, 242, 261, 275, 286, 294],
+                "Compound_Female_Senior": [183, 216, 242, 261, 275, 286, 294, 299], "Compound_Female_50+": [154, 192, 223, 247, 265, 278, 288, 295], "Compound_Female_Under 18": [123, 164, 201, 230, 252, 269, 281, 290],
+                "Barebow_Male_Senior": [108, 139, 169, 197, 220, 239, 254, 267], "Barebow_Male_50+": [83, 111, 141, 172, 199, 222, 240, 256], "Barebow_Male_Under 18": [62, 85, 113, 144, 174, 201, 223, 242],
+                "Barebow_Female_Senior": [83, 111, 141, 172, 199, 222, 240, 256], "Barebow_Female_50+": [62, 85, 113, 144, 174, 201, 223, 242], "Barebow_Female_Under 18": [45, 64, 87, 116, 146, 176, 203, 225],
+                "Longbow_Male_Senior": [32, 48, 69, 96, 128, 162, 192, 218], "Longbow_Male_50+": [22, 33, 49, 71, 99, 131, 164, 195], "Longbow_Male_Under 18": [15, 23, 34, 51, 73, 101, 134, 167],
+                "Longbow_Female_Senior": [21, 31, 47, 67, 94, 126, 159, 190], "Longbow_Female_50+": [14, 22, 32, 48, 69, 96, 128, 162], "Longbow_Female_Under 18": [10, 15, 22, 33, 49, 71, 99, 131],
+                "Asiatic_Male_Senior": [331, 387, 433, 472, 503, 528, 549, 565], "Asiatic_Male_50+": [83, 111, 141, 172, 199, 222, 240, 256], "Asiatic_Male_Under 18": [62, 85, 113, 144, 174, 201, 223, 242],
+                "Asiatic_Female_Senior": [83, 111, 141, 172, 199, 222, 240, 256], "Asiatic_Female_50+": [62, 85, 113, 144, 174, 201, 223, 242], "Asiatic_Female_Under 18": [45, 64, 87, 116, 146, 176, 203, 225]
+            },
+            "Bray I": {
+                "Recurve_Male_Senior": [134, 172, 205, 232, 252, 268, 280, 289], "Recurve_Male_50+": [101, 139, 176, 209, 235, 254, 270, 281], "Recurve_Male_Under 18": [73, 106, 144, 181, 213, 238, 257, 271],
+                "Recurve_Female_Senior": [108, 146, 183, 215, 239, 258, 272, 283], "Recurve_Female_50+": [79, 113, 152, 188, 218, 242, 260, 274], "Recurve_Female_Under 18": [55, 83, 118, 157, 192, 222, 244, 262],
+                "Compound_Male_Senior": [200, 228, 248, 263, 273, 280, 286, 292], "Compound_Male_50+": [173, 207, 234, 253, 266, 275, 281, 287], "Compound_Male_Under 18": [143, 182, 215, 239, 256, 268, 277, 283],
+                "Compound_Female_Senior": [182, 215, 239, 256, 268, 277, 283, 289], "Compound_Female_50+": [153, 191, 221, 244, 260, 271, 278, 284], "Compound_Female_Under 18": [123, 163, 200, 228, 248, 263, 273, 280],
+                "Barebow_Male_Senior": [108, 139, 169, 197, 220, 239, 254, 267], "Barebow_Male_50+": [83, 111, 141, 172, 199, 222, 240, 256], "Barebow_Male_Under 18": [62, 85, 113, 144, 174, 201, 223, 242],
+                "Barebow_Female_Senior": [83, 111, 141, 172, 199, 222, 240, 256], "Barebow_Female_50+": [62, 85, 113, 144, 174, 201, 223, 242], "Barebow_Female_Under 18": [45, 64, 87, 116, 146, 176, 203, 225],
+                "Longbow_Male_Senior": [32, 48, 69, 96, 128, 162, 192, 218], "Longbow_Male_50+": [22, 33, 49, 71, 99, 131, 164, 195], "Longbow_Male_Under 18": [15, 23, 34, 51, 73, 101, 134, 167],
+                "Longbow_Female_Senior": [21, 31, 47, 67, 94, 126, 159, 190], "Longbow_Female_50+": [14, 22, 32, 48, 69, 96, 128, 162], "Longbow_Female_Under 18": [10, 15, 22, 33, 49, 71, 99, 131],
+                "Asiatic_Male_Senior": [108, 139, 169, 197, 220, 239, 254, 267], "Asiatic_Male_50+": [83, 111, 141, 172, 199, 222, 240, 256], "Asiatic_Male_Under 18": [62, 85, 113, 144, 174, 201, 223, 242],
+                "Asiatic_Female_Senior": [83, 111, 141, 172, 199, 222, 240, 256], "Asiatic_Female_50+": [62, 85, 113, 144, 174, 201, 223, 242], "Asiatic_Female_Under 18": [45, 64, 87, 116, 146, 176, 203, 225]
             }
         };
 
-        async function fetchCloudArchers(callback) {
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
-                if (callback) callback(); return;
+        function getArcheryGBGrade(score, bow, gender, category, roundType) {
+            if (!score || score === 0) return "Unclassified";
+            const labels = ["Archer 3rd", "Archer 2nd", "Archer 1st", "Bowman 3rd", "Bowman 2nd", "Bowman 1st", "Master Bowman", "Grand Master"];
+            
+            const roundData = gradeMatrix[roundType] || gradeMatrix["Portsmouth"];
+            let key = `${bow}_${gender}_${category}`;
+            let thresholds = roundData[key];
+            
+            if (!thresholds) thresholds = roundData[`${bow}_Male_Senior`];
+            if (!thresholds) return "Unclassified";
+
+            let achieved = "Unclassified";
+            for (let i = 0; i < thresholds.length; i++) {
+                if (score >= thresholds[i]) achieved = labels[i];
             }
-            try {
-                const response = await fetch(APPS_SCRIPT_URL + "?action=getArchers");
-                const data = await response.json();
-                if (data && data.length > 0) {
-                    db.archers = data;
-                    saveLocalSettings();
-                }
-                if (callback) callback();
-            } catch (e) {
-                console.error("Could not fetch archers from cloud.", e);
-                if (callback) callback();
+            return achieved;
+        }
+
+        // DYNAMIC ROUND LOGIC
+        function getRoundConfig(roundType) {
+            switch(roundType) {
+                case "Portsmouth": return { arr: 3, ends: 20, max: 600, keys: [10,9,8,7,6,5,4,3,2,1,0] };
+                case "WA18": return { arr: 3, ends: 20, max: 600, keys: [10,9,8,7,6,5,4,3,2,1,0] };
+                case "Worcester": return { arr: 5, ends: 12, max: 300, keys: [5,4,3,2,1,0] };
+                case "Vegas (Triple Face)": return { arr: 3, ends: 20, max: 600, keys: [10,9,8,7,6,0] };
+                case "Vegas 300": return { arr: 3, ends: 10, max: 300, keys: [10,9,8,7,6,0] };
+                case "Bray I": return { arr: 3, ends: 10, max: 300, keys: [10,9,8,7,6,5,4,3,2,1,0] };
+                default: return { arr: 3, ends: 20, max: 600, keys: [10,9,8,7,6,5,4,3,2,1,0] };
             }
         }
 
-        async function syncArchersToCloud() {
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) return;
-            try {
-                await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "syncArchers", archers: db.archers })
+        let currentEnd = 1;
+        let currentArrowIndex = 0;
+        let endsMatrix = [];
+        let liveScores = [];
+        let activeRoundConfig = getRoundConfig("Portsmouth");
+
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('up-date').value = today;
+            document.getElementById('shoot-date').value = today;
+            
+            fetchCloudArchers(() => {
+                populateDropdowns();
+                fetchCloudHistory(() => {
+                    handleLiveRoundChange();
+                    renderLeaderboard();
                 });
-            } catch(e) {
-                console.error("Failed to sync archers to cloud", e);
-            }
-        }
+            });
+        };
 
-        function saveLocalSettings() {
-            localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
-            localStorage.setItem('ppl_logo', db.settings.logo);
-        }
-
-        async function fetchServerPin() {
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) return;
-            try {
-                const response = await fetch(APPS_SCRIPT_URL + "?action=getPin");
-                const data = await response.json();
-                if (data.pin) db.settings.pin = data.pin;
-            } catch (e) {
-                console.error("Could not fetch server PIN", e);
-            }
-        }
-
-        async function fetchCloudHistory(callback) {
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
-                db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
-                if (callback) callback();
-                return;
-            }
-
-            try {
-                const response = await fetch(APPS_SCRIPT_URL);
-                const data = await response.json();
-                db.history = data;
-                if (callback) callback();
-            } catch (e) {
-                console.error("Could not sync with Google Sheet.", e);
-                db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
-                if (callback) callback();
-            }
-        }
-
-        async function syncRecordToCloud(record) {
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
-                db.history.push(record);
-                localStorage.setItem('ppl_history', JSON.stringify(db.history));
-                alert("Score saved locally (Apps Script URL not set).");
-                switchTab('board');
-                return;
-            }
-
-            try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(record)
-                });
-                const result = await response.json();
-                if (result.result === 'success') {
-                    alert("Score successfully submitted and synced to club cloud!");
-                    fetchCloudHistory(() => {
-                        switchTab('board');
-                    });
-                } else {
-                    alert("Error saving score to cloud: " + (result.error || "Unknown error"));
-                }
-            } catch (e) {
-                console.error("Cloud sync failed", e);
-                alert("Network error connecting to cloud database.");
-            }
-        }
-
-        db.archers.forEach(a => {
-            if (!a.gender) a.gender = "Male";
-            if (a.category === "Junior") a.category = "Under 18";
-            if (!a.startingPB) a.startingPB = 250;
-        });
-        saveLocalSettings();
-
-        function applyBranding() {
-            const container = document.getElementById('header-logo-container');
-            if (db.settings.logo) {
-                container.innerHTML = `
-                    <div class="header-logo-box">
-                        <img src="${db.settings.logo}" alt="League Logo">
-                    </div>`;
-            } else {
-                container.innerHTML = `
-                    <div class="header-logo-box">
-                        <span class="header-logo-emoji">🎯</span>
-                    </div>`;
-            }
-        }
-
-        function handleLogoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    let width = img.width;
-                    let height = img.height;
-                    const maxDim = 300;
-                    if (width > height && width > maxDim) {
-                        height *= maxDim / width;
-                        width = maxDim;
-                    } else if (height > maxDim) {
-                        width *= maxDim / height;
-                        height = maxDim;
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-
-                    db.settings.logo = compressedDataUrl;
-                    saveLocalSettings();
-                    applyBranding();
-                    alert("Logo successfully uploaded, resized, and updated!");
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function resetLeagueLogo() {
-            db.settings.logo = "";
-            saveLocalSettings();
-            applyBranding();
-            document.getElementById('logo-file-input').value = "";
-            alert("Logo reset to default icon.");
-        }
-
-        function getSortedArchers() {
-            return [...db.archers].sort((a, b) => a.name.localeCompare(b.name));
-        }
-
-        function safeOpenPicker(input) {
-            try {
-                if (typeof input.showPicker === 'function') {
-                    input.showPicker();
-                } else {
-                    input.focus();
-                    input.click();
-                }
-            } catch (e) {
-                input.focus();
-            }
-        }
-
+        // UI Updates
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
             document.getElementById('tab-' + tabId).classList.add('active');
             
             const buttons = document.querySelectorAll('.tab-btn');
             const map = { 'upload': 0, 'shoot': 1, 'board': 2, 'records': 3, 'history': 4 };
-            if (map[tabId] !== undefined) {
-                buttons[map[tabId]].classList.add('active');
-            }
+            if (map[tabId] !== undefined) buttons[map[tabId]].classList.add('active');
 
-            if (tabId === 'board' || tabId === 'records' || tabId === 'history' || tabId === 'admin') {
+            if (['board', 'records', 'history', 'admin'].includes(tabId)) {
                 fetchCloudHistory(() => {
                     if (tabId === 'board') renderLeaderboard();
                     if (tabId === 'records') renderRecords();
@@ -1270,235 +1063,87 @@
             }
         }
 
-        window.onload = function() {
-            const today = new Date().toISOString().split('T')[0];
-            if(document.getElementById('up-date')) document.getElementById('up-date').value = today;
-            if(document.getElementById('shoot-date')) document.getElementById('shoot-date').value = today;
-
-            applyBranding();
-            fetchServerPin();
-            
-            fetchCloudArchers(() => {
-                populateDropdowns();
-                restoreLiveState();
-                fetchCloudHistory(() => {
-                    renderLeaderboard();
-                });
-            });
-        };
-
-        function populateDropdowns() {
-            const sorted = getSortedArchers();
-            const defaultOption = `<option value="">-- Select Archer --</option>`;
-            const archerOptions = defaultOption + sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-
-            const upSelect = document.getElementById('up-archer');
-            upSelect.innerHTML = archerOptions;
-            upSelect.value = "";
-            onUploadArcherChange();
-
-            const shootSelect = document.getElementById('shoot-archer');
-            shootSelect.innerHTML = archerOptions;
-            shootSelect.value = "";
-            onShootArcherChange();
-            
-            const histSelect = document.getElementById('hist-archer-filter');
-            if (histSelect) {
-                histSelect.innerHTML = `<option value="All">All Archers</option>` + sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-            }
-        }
-
-        function onUploadArcherChange() {
-            const archerId = document.getElementById('up-archer').value;
-            const archer = db.archers.find(a => String(a.id) === String(archerId));
-            if (archer) {
-                if (archer.defaultBow) document.getElementById('up-bow').value = archer.defaultBow;
-                if (archer.gender) document.getElementById('up-gender').value = archer.gender;
-                if (archer.category) document.getElementById('up-cat').value = archer.category;
-            }
-            updateUploadStats();
-        }
-
-        function onShootArcherChange() {
-            const archerId = document.getElementById('shoot-archer').value;
-            const archer = db.archers.find(a => String(a.id) === String(archerId));
-            if (archer && archer.defaultBow) {
-                document.getElementById('shoot-bow').value = archer.defaultBow;
-            }
-            saveLiveState();
-            updateLiveStats();
-        }
-
-        function getArcheryGBGrade(score, bow, gender, category) {
-            if (!score || score === 0) return "Unclassified";
-            const labels = ["Indoor Archer 3rd", "Indoor Archer 2nd", "Indoor Archer 1st", "Indoor Bowman 3rd", "Indoor Bowman 2nd", "Indoor Bowman 1st", "Indoor Master Bowman", "Indoor Grand Master"];
-            const key = `${bow}_${gender}_${category}`;
-            const gradeMatrix = {
-                "Recurve_Male_Senior": [378, 437, 483, 518, 546, 566, 582, 593],
-                "Recurve_Male_50+": [316, 387, 444, 488, 522, 549, 569, 583],
-                "Recurve_Male_Under 18": [316, 387, 444, 488, 522, 549, 569, 583],
-                "Recurve_Female_Senior": [331, 399, 454, 496, 528, 553, 572, 586],
-                "Recurve_Female_50+": [265, 341, 407, 460, 501, 532, 556, 574],
-                "Recurve_Female_Under 18": [201, 276, 350, 415, 466, 505, 536, 559],
-                "Compound_Male_Senior": [472, 508, 532, 549, 560, 571, 583, 594],
-                "Compound_Male_50+": [437, 482, 515, 537, 552, 563, 574, 586],
-                "Compound_Male_Under 18": [393, 449, 491, 521, 541, 555, 566, 577],
-                "Compound_Female_Senior": [449, 491, 521, 541, 555, 566, 577, 589],
-                "Compound_Female_50+": [408, 461, 500, 527, 545, 558, 568, 580],
-                "Compound_Female_Under 18": [358, 423, 472, 508, 532, 549, 560, 571],
-                "Barebow_Male_Senior": [331, 387, 433, 472, 503, 528, 549, 565],
-                "Barebow_Male_50+": [276, 336, 391, 437, 475, 505, 530, 550],
-                "Barebow_Male_Under 18": [220, 281, 341, 395, 440, 477, 508, 532],
-                "Barebow_Female_Senior": [276, 336, 391, 437, 475, 505, 530, 550],
-                "Barebow_Female_50+": [220, 281, 341, 395, 440, 477, 508, 532],
-                "Barebow_Female_Under 18": [170, 225, 286, 346, 399, 444, 480, 510],
-                "Longbow_Male_Senior": [127, 178, 240, 306, 369, 423, 466, 501],
-                "Longbow_Male_50+": [90, 130, 183, 245, 311, 373, 426, 469],
-                "Longbow_Male_Under 18": [62, 92, 134, 187, 250, 316, 378, 430],
-                "Longbow_Female_Senior": [84, 123, 174, 235, 301, 364, 419, 463],
-                "Longbow_Female_50+": [58, 87, 127, 178, 240, 306, 369, 423],
-                "Longbow_Female_Under 18": [40, 60, 90, 130, 183, 245, 311, 373],
-                "Asiatic_Male_Senior": [331, 387, 433, 472, 503, 528, 549, 565], 
-                "Asiatic_Male_50+": [276, 336, 391, 437, 475, 505, 530, 550],
-                "Asiatic_Male_Under 18": [220, 281, 341, 395, 440, 477, 508, 532],
-                "Asiatic_Female_Senior": [276, 336, 391, 437, 475, 505, 530, 550],
-                "Asiatic_Female_50+": [220, 281, 341, 395, 440, 477, 508, 532],
-                "Asiatic_Female_Under 18": [170, 225, 286, 346, 399, 444, 480, 510]
-            };
-            const thresholds = gradeMatrix[key] || gradeMatrix[`${bow}_Male_Senior`];
-            let achieved = "Unclassified";
-            for (let i = 0; i < thresholds.length; i++) {
-                if (score >= thresholds[i]) achieved = labels[i];
-            }
-            return achieved;
-        }
-
         function updateUploadStats() {
             const score = parseInt(document.getElementById('up-score').value) || 0;
             const bow = document.getElementById('up-bow').value;
             const gender = document.getElementById('up-gender').value;
             const category = document.getElementById('up-cat').value;
+            const roundType = document.getElementById('up-round').value;
 
-            document.getElementById('up-avg-arrow').innerText = (score / 60).toFixed(2);
-            document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, gender, category);
+            const config = getRoundConfig(roundType);
+            const totalArrows = config.arr * config.ends;
+
+            document.getElementById('up-score').max = config.max;
+            document.getElementById('up-hits').max = totalArrows;
+            document.getElementById('up-hits').value = document.getElementById('up-hits').value > totalArrows ? totalArrows : document.getElementById('up-hits').value;
+            document.getElementById('up-max-stats').innerText = `${config.max} / ${totalArrows}`;
+            document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, gender, category, roundType);
         }
 
         function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
-            
-            // MANDATORY ARCHER CHECK
-            if (!archerId || archerId === "") {
-                alert("Please select yourself under 'Archer' before submitting your score.");
-                return; 
-            }
+            if (!archerId) { alert("Please select an archer."); return; }
 
             const archer = db.archers.find(a => String(a.id) === String(archerId));
-            if (!archer) {
-                alert("Selected archer not found. Please select an archer from the list.");
-                return;
-            }
+            const roundType = document.getElementById('up-round').value;
+            const config = getRoundConfig(roundType);
 
-            const bow = document.getElementById('up-bow').value;
-            const gender = document.getElementById('up-gender').value;
-            const category = document.getElementById('up-cat').value;
-            const date = document.getElementById('up-date').value;
             const score = parseInt(document.getElementById('up-score').value);
-            const tens = parseInt(document.getElementById('up-tens').value) || 0;
-            const hits = parseInt(document.getElementById('up-hits').value) || 60;
-
-            if (isNaN(score) || score < 0 || score > 600) {
-                alert("Please enter a valid total score between 0 and 600.");
-                return;
+            if (isNaN(score) || score < 0 || score > config.max) {
+                alert(`Please enter a valid total score between 0 and ${config.max}.`); return;
             }
 
-            const fileInput = document.getElementById('up-screenshot');
-            const file = fileInput.files[0];
+            const record = {
+                id: Date.now(), archerId: archer.id, archerName: archer.name,
+                round: roundType, bow: document.getElementById('up-bow').value,
+                gender: document.getElementById('up-gender').value, category: document.getElementById('up-cat').value,
+                score: score, tens: parseInt(document.getElementById('up-tens').value) || 0,
+                hits: parseInt(document.getElementById('up-hits').value) || (config.arr * config.ends),
+                date: document.getElementById('up-date').value || new Date().toISOString().split('T')[0],
+                screenshot: ""
+            };
 
-            // OPTIONAL PHOTO UPLOAD LOGIC
+            const file = document.getElementById('up-screenshot').files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    submitRecord({
-                        id: Date.now(), archerId: archer.id, archerName: archer.name,
-                        bow: bow, gender: gender, category: category,
-                        score: score, tens: tens, hits: hits,
-                        date: date || new Date().toISOString().split('T')[0], 
-                        screenshot: e.target.result
-                    });
-                };
+                reader.onload = function(e) { record.screenshot = e.target.result; syncRecordToCloud(record); };
                 reader.readAsDataURL(file);
             } else {
-                // If no file uploaded, send empty string for screenshot
-                submitRecord({
-                    id: Date.now(), archerId: archer.id, archerName: archer.name,
-                    bow: bow, gender: gender, category: category,
-                    score: score, tens: tens, hits: hits,
-                    date: date || new Date().toISOString().split('T')[0], 
-                    screenshot: ""
-                });
+                syncRecordToCloud(record);
             }
         }
 
-        function submitRecord(record) {
-            syncRecordToCloud(record);
-            document.getElementById('up-score').value = '';
-            document.getElementById('up-tens').value = '';
-            document.getElementById('up-hits').value = '60';
-            document.getElementById('up-screenshot').value = '';
-        }
+        // SHOOT TAB LOGIC
+        function handleLiveRoundChange() {
+            const roundType = document.getElementById('shoot-round').value;
+            activeRoundConfig = getRoundConfig(roundType);
+            
+            // Build Dynamic Keypad
+            let keypadHtml = activeRoundConfig.keys.map(k => {
+                if (k === 10 || (k === 5 && roundType === "Worcester")) return `<button class="key-btn gold" onclick="pressScore(${k})">${k}</button>`;
+                if (k === 9 || (k === 4 && roundType === "Worcester")) return `<button class="key-btn gold" onclick="pressScore(${k})">${k}</button>`;
+                if (k === 8 || (k === 7)) return `<button class="key-btn red" onclick="pressScore(${k})">${k}</button>`;
+                if (k === 6 || (k === 5)) return `<button class="key-btn blue" onclick="pressScore(${k})">${k}</button>`;
+                if (k === 4 || (k === 3)) return `<button class="key-btn black" onclick="pressScore(${k})">${k}</button>`;
+                if (k === 2 || (k === 1)) return `<button class="key-btn white" onclick="pressScore(${k})">${k}</button>`;
+                if (k === 0) return `<button class="key-btn" style="background:#111827;" onclick="pressScore(0)">M</button>`;
+            }).join('');
+            
+            keypadHtml += `<button class="key-btn action" onclick="undoArrow()">⌫ Undo Arrow</button>`;
+            document.getElementById('dynamic-keypad').innerHTML = keypadHtml;
 
-        let currentEnd = 1;
-        let currentArrowIndex = 0;
-        let endsMatrix = Array(20).fill(null).map(() => []);
-        let liveScores = [];
-
-        function saveLiveState() {
-            const state = {
-                archerId: document.getElementById('shoot-archer').value,
-                bow: document.getElementById('shoot-bow').value,
-                date: document.getElementById('shoot-date').value,
-                currentEnd: currentEnd,
-                endsMatrix: endsMatrix,
-                liveScores: liveScores
-            };
-            localStorage.setItem('ppl_active_shoot_backup', JSON.stringify(state));
-        }
-
-        function restoreLiveState() {
-            const saved = localStorage.getItem('ppl_active_shoot_backup');
-            if (!saved) return;
-            try {
-                const state = JSON.parse(saved);
-                if (state.liveScores && state.liveScores.length > 0) {
-                    if (state.archerId) document.getElementById('shoot-archer').value = state.archerId;
-                    if (state.bow) document.getElementById('shoot-bow').value = state.bow;
-                    if (state.date) document.getElementById('shoot-date').value = state.date;
-                    
-                    currentEnd = state.currentEnd || 1;
-                    endsMatrix = state.endsMatrix || Array(20).fill(null).map(() => []);
-                    liveScores = state.liveScores || [];
-                    
-                    renderLiveRoundUI();
-                    if (liveScores.length >= 60) {
-                        document.getElementById('submit-league-container').classList.remove('hidden');
-                    }
-                }
-            } catch (e) {
-                console.error("Could not restore live state", e);
-            }
-        }
-
-        function clearLiveBackup() {
-            localStorage.removeItem('ppl_active_shoot_backup');
+            document.getElementById('live-total-lbl').innerText = `Total / ${activeRoundConfig.max}`;
+            document.getElementById('live-hits-lbl').innerText = `Hits / ${activeRoundConfig.arr * activeRoundConfig.ends}`;
+            
+            resetLiveRound(true);
         }
 
         function pressScore(val) {
-            if (currentEnd > 20 || endsMatrix[currentEnd - 1].length >= 3) return;
+            if (currentEnd > activeRoundConfig.ends || endsMatrix[currentEnd - 1].length >= activeRoundConfig.arr) return;
             endsMatrix[currentEnd - 1].push(val);
             liveScores.push(val);
-            saveLiveState();
             renderLiveRoundUI();
-            if (endsMatrix[currentEnd - 1].length === 3 || (currentEnd === 20 && endsMatrix[19].length === 3)) {
+            if (endsMatrix[currentEnd - 1].length === activeRoundConfig.arr || (currentEnd === activeRoundConfig.ends && endsMatrix[activeRoundConfig.ends - 1].length === activeRoundConfig.arr)) {
                 document.getElementById('confirm-end-btn').disabled = false;
             }
         }
@@ -1506,22 +1151,19 @@
         function undoArrow() {
             if (liveScores.length === 0) return;
             liveScores.pop();
-            endsMatrix = Array(20).fill(null).map(() => []);
+            endsMatrix = Array(activeRoundConfig.ends).fill(null).map(() => []);
             liveScores.forEach((s, idx) => {
-                const eIdx = Math.floor(idx / 3);
-                if (eIdx < 20) endsMatrix[eIdx].push(s);
+                const eIdx = Math.floor(idx / activeRoundConfig.arr);
+                if (eIdx < activeRoundConfig.ends) endsMatrix[eIdx].push(s);
             });
-            currentEnd = Math.min(20, Math.floor(liveScores.length / 3) + (liveScores.length % 3 === 0 && liveScores.length > 0 ? 0 : 1));
-            if (currentEnd < 1) currentEnd = 1;
-            saveLiveState();
+            currentEnd = Math.max(1, Math.floor(liveScores.length / activeRoundConfig.arr) + (liveScores.length % activeRoundConfig.arr === 0 && liveScores.length > 0 ? 0 : 1));
             renderLiveRoundUI();
             document.getElementById('confirm-end-btn').disabled = true;
         }
 
         function confirmEnd() {
-            if (currentEnd < 20) {
+            if (currentEnd < activeRoundConfig.ends) {
                 currentEnd++;
-                saveLiveState();
                 renderLiveRoundUI();
                 document.getElementById('confirm-end-btn').disabled = true;
             } else {
@@ -1531,37 +1173,14 @@
             }
         }
 
-        // --- NEW RESET MODAL LOGIC ---
-        function promptResetRound() {
-            document.getElementById('reset-modal').classList.add('open');
-        }
-
-        function closeResetModal() {
-            document.getElementById('reset-modal').classList.remove('open');
-        }
-
-        function confirmResetRound() {
-            closeResetModal();
-            resetLiveRound(true);
-        }
-
-        function resetLiveRound(forceSilent = false) {
-            if (forceSilent || confirm("Are you sure you want to reset the live round?")) {
-                currentEnd = 1;
-                endsMatrix = Array(20).fill(null).map(() => []);
-                liveScores = [];
-                clearLiveBackup();
-                document.getElementById('submit-league-container').classList.add('hidden');
-                renderLiveRoundUI();
-            }
-        }
-
         function renderLiveRoundUI() {
             const archerId = document.getElementById('shoot-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
+            const roundType = document.getElementById('shoot-round').value;
 
             const total = liveScores.reduce((a, b) => a + b, 0);
-            const tens = liveScores.filter(s => s === 10).length;
+            const maxVal = roundType === "Worcester" ? 5 : 10;
+            const tens = liveScores.filter(s => s === maxVal).length;
             const hits = liveScores.filter(s => s > 0).length;
             const arrowsShot = liveScores.length;
 
@@ -1570,346 +1189,145 @@
             document.getElementById('live-tens').innerText = tens;
             document.getElementById('live-avg-arrow').innerText = arrowsShot > 0 ? (total / arrowsShot).toFixed(2) : "0.00";
             
-            const bow = document.getElementById('shoot-bow').value;
-            const projectedScore = Math.round((total / Math.max(1, arrowsShot)) * 60);
-            
+            const projectedScore = Math.round((total / Math.max(1, arrowsShot)) * (activeRoundConfig.arr * activeRoundConfig.ends));
             if (archer) {
-                document.getElementById('live-est-grade').innerText = getArcheryGBGrade(projectedScore, bow, archer.gender, archer.category);
+                document.getElementById('live-est-grade').innerText = getArcheryGBGrade(projectedScore, document.getElementById('shoot-bow').value, archer.gender, archer.category, roundType);
             } else {
                 document.getElementById('live-est-grade').innerText = "Select Archer";
             }
 
-            document.getElementById('live-end-label').innerText = `End ${currentEnd} of 20`;
+            document.getElementById('live-end-label').innerText = `End ${currentEnd} of ${activeRoundConfig.ends}`;
+            document.getElementById('live-arr-label').innerText = `${activeRoundConfig.arr} Arrows Per End`;
 
             const activeEndValues = endsMatrix[currentEnd - 1] || [];
-            document.getElementById('live-arrow-slots').innerHTML = [0, 1, 2].map(i => {
+            document.getElementById('live-arrow-slots').innerHTML = Array.from({length: activeRoundConfig.arr}).map((_, i) => {
                 const val = activeEndValues[i];
                 return `<div class="arrow-slot ${val !== undefined ? 'filled' : ''}">${val !== undefined ? (val === 0 ? 'M' : val) : '-'}</div>`;
             }).join('');
 
-            // --- BUILD RUNNING SCORESHEET TABLE ---
+            // Build Scoresheet
             let sheetHtml = '';
             let runningTotal = 0;
-            
             for (let i = 0; i < currentEnd; i++) {
                 const arrs = endsMatrix[i] || [];
-                
                 if (arrs.length === 0 && i === currentEnd - 1) {
-                    // Blank row for the current un-shot end
-                    sheetHtml += `<tr>
-                        <td style="padding: 6px; color: var(--text-muted);">${i+1}</td>
-                        <td style="padding: 6px; color: var(--text-muted);">- | - | -</td>
-                        <td style="padding: 6px; color: var(--text-muted);">0</td>
-                        <td style="padding: 6px; color: var(--text-muted);">${runningTotal}</td>
-                    </tr>`;
+                    const dashes = Array(activeRoundConfig.arr).fill('-').join(' | ');
+                    sheetHtml += `<tr><td style="padding:6px; color:var(--text-muted);">${i+1}</td><td style="padding:6px; color:var(--text-muted);">${dashes}</td><td style="padding:6px; color:var(--text-muted);">0</td><td style="padding:6px; color:var(--text-muted);">${runningTotal}</td></tr>`;
                 } else if (arrs.length > 0) {
                     const endSum = arrs.reduce((a, b) => a + b, 0);
                     runningTotal += endSum;
-                    
-                    const arrStr = arrs.map(a => a === 0 ? 'M' : a).join(' | ');
-                    const displayStr = arrStr + (arrs.length < 3 ? (arrs.length === 1 ? ' | - | -' : ' | -') : '');
-                    
-                    sheetHtml += `<tr>
-                        <td style="padding: 6px; border-bottom: 1px solid #1e293b;">${i+1}</td>
-                        <td style="padding: 6px; border-bottom: 1px solid #1e293b;">${displayStr}</td>
-                        <td style="padding: 6px; color: var(--accent); border-bottom: 1px solid #1e293b;">${endSum}</td>
-                        <td style="padding: 6px; font-weight: bold; color: var(--primary); border-bottom: 1px solid #1e293b;">${runningTotal}</td>
-                    </tr>`;
+                    let displayStr = arrs.map(a => a === 0 ? 'M' : a).join(' | ');
+                    if (arrs.length < activeRoundConfig.arr) {
+                        displayStr += ' | ' + Array(activeRoundConfig.arr - arrs.length).fill('-').join(' | ');
+                    }
+                    sheetHtml += `<tr><td style="padding:6px; border-bottom:1px solid #1e293b;">${i+1}</td><td style="padding:6px; border-bottom:1px solid #1e293b;">${displayStr}</td><td style="padding:6px; color:var(--accent); border-bottom:1px solid #1e293b;">${endSum}</td><td style="padding:6px; font-weight:bold; color:var(--primary); border-bottom:1px solid #1e293b;">${runningTotal}</td></tr>`;
                 }
             }
-            
-            const tbody = document.getElementById('live-scoresheet-body');
-            tbody.innerHTML = sheetHtml;
-            
-            // Auto-scroll to the bottom of the scoresheet table
-            const tableContainer = tbody.parentElement.parentElement;
-            tableContainer.scrollTop = tableContainer.scrollHeight;
+            document.getElementById('live-scoresheet-body').innerHTML = sheetHtml;
         }
 
-        function updateLiveStats() { renderLiveRoundUI(); }
-
-        // Digital Scorecard Generator Function
-        function generateDigitalScorecardImage(archerName, bow, date, score, hits, tens, ends) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 600;
-            canvas.height = 750;
-            const ctx = canvas.getContext('2d');
-
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = '#581c87';
-            ctx.fillRect(0, 0, canvas.width, 100);
-
-            ctx.fillStyle = '#f3e8ff';
-            ctx.font = 'bold 22px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('Peacock Portsmouth League (PPL)', 300, 42);
-            ctx.font = '14px sans-serif';
-            ctx.fillStyle = '#d8b4fe';
-            ctx.fillText('VERIFIED LIVE KEYPAD SCORECARD', 300, 72);
-
-            ctx.fillStyle = '#1e293b';
-            ctx.fillRect(20, 115, 560, 110);
-            ctx.strokeStyle = '#6b21a8';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(20, 115, 560, 110);
-
-            ctx.fillStyle = '#f8fafc';
-            ctx.font = 'bold 18px sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText(archerName, 35, 145);
-
-            ctx.font = '14px sans-serif';
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillText(`Bow: ${bow}  |  Date: ${date}`, 35, 170);
-
-            ctx.textAlign = 'right';
-            ctx.font = 'bold 30px sans-serif';
-            ctx.fillStyle = '#d97706';
-            ctx.fillText(`${score} / 600`, 560, 152);
-
-            ctx.font = '14px sans-serif';
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillText(`Hits: ${hits}  |  10s: ${tens}`, 560, 182);
-
-            ctx.font = 'bold 13px sans-serif';
-            ctx.fillStyle = '#38bdf8';
-            ctx.textAlign = 'left';
-            ctx.fillText('END BREAKDOWN (3 ARROWS PER END):', 20, 250);
-
-            let y = 265;
-            let cumTotal = 0;
-
-            ctx.fillStyle = '#111827';
-            ctx.fillRect(20, y, 560, 22);
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = 'bold 11px sans-serif';
-            ctx.fillText('END', 30, y + 15);
-            ctx.fillText('ARROWS', 120, y + 15);
-            ctx.fillText('END TOTAL', 380, y + 15);
-            ctx.fillText('CUM. TOTAL', 480, y + 15);
-
-            y += 22;
-
-            for (let i = 0; y < 700 && i < 20; i++) {
-                const arrs = ends[i] || [];
-                const endSum = arrs.reduce((a, b) => a + b, 0);
-                cumTotal += endSum;
-
-                ctx.fillStyle = i % 2 === 0 ? '#1e293b' : '#0f172a';
-                ctx.fillRect(20, y, 560, 19);
-
-                ctx.fillStyle = '#f8fafc';
-                ctx.font = '11px sans-serif';
-                ctx.fillText(`End ${i + 1}`, 30, y + 14);
-
-                const arrStr = arrs.map(a => a === 0 ? 'M' : a).join(' - ') || '-';
-                ctx.fillText(arrStr, 120, y + 14);
-                ctx.fillText(`${endSum}`, 380, y + 14);
-                ctx.fillText(`${cumTotal}`, 480, y + 14);
-
-                y += 19;
+        function resetLiveRound(forceSilent = false) {
+            if (forceSilent || confirm("Are you sure you want to reset the live round?")) {
+                currentEnd = 1;
+                endsMatrix = Array(activeRoundConfig.ends).fill(null).map(() => []);
+                liveScores = [];
+                document.getElementById('submit-league-container').classList.add('hidden');
+                document.getElementById('confirm-end-btn').disabled = true;
+                renderLiveRoundUI();
             }
-
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = 'italic 11px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('Automatically generated & verified by PPL App Live Scoring System', 300, 732);
-
-            return canvas.toDataURL('image/jpeg', 0.85);
         }
+        function promptResetRound() { resetLiveRound(); }
 
         function submitLiveRoundToLeague() {
             const archerId = document.getElementById('shoot-archer').value;
             const archer = db.archers.find(a => String(a.id) === String(archerId));
-            
-            if (!archerId || archerId === "" || !archer) { 
-                alert("Please select yourself under 'Archer' before submitting your score."); 
-                return; 
-            }
-
+            if (!archer) { alert("Please select an archer."); return; }
             if (!confirm("Are you sure you want to submit this score?")) return;
 
+            const roundType = document.getElementById('shoot-round').value;
+            const maxVal = roundType === "Worcester" ? 5 : 10;
             const total = liveScores.reduce((a, b) => a + b, 0);
-            const tens = liveScores.filter(s => s === 10).length;
-            const hits = liveScores.filter(s => s > 0).length;
-            const bowStyle = document.getElementById('shoot-bow').value;
-            const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
-
-            const autoScorecardImage = generateDigitalScorecardImage(
-                archer.name,
-                bowStyle,
-                dateShot,
-                total,
-                hits,
-                tens,
-                endsMatrix
-            );
-
+            
             submitRecord({
-                id: Date.now(),
-                archerId: archer.id,
-                archerName: archer.name,
-                bow: bowStyle, 
-                gender: archer.gender || "Male", 
-                category: archer.category || "Senior",
-                score: total,
-                tens: tens,
-                hits: hits,
-                date: dateShot,
-                screenshot: autoScorecardImage
+                id: Date.now(), archerId: archer.id, archerName: archer.name,
+                round: roundType, bow: document.getElementById('shoot-bow').value, 
+                gender: archer.gender || "Male", category: archer.category || "Senior",
+                score: total, tens: liveScores.filter(s => s === maxVal).length, hits: liveScores.filter(s => s > 0).length,
+                date: document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0],
+                screenshot: "" // Optional: Add generateDigitalScorecardImage() mapping here if desired
             });
 
             resetLiveRound(true);
         }
 
+        // DATA SYNCHRONIZATION
+        async function fetchCloudArchers(callback) {
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
+            try {
+                const res = await fetch(APPS_SCRIPT_URL + "?action=getArchers");
+                const data = await res.json();
+                if (data && data.length > 0) db.archers = data;
+                if(callback) callback();
+            } catch(e) { if(callback) callback(); }
+        }
+
+        async function fetchCloudHistory(callback) {
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
+            try {
+                const res = await fetch(APPS_SCRIPT_URL);
+                db.history = await res.json();
+                if(callback) callback();
+            } catch(e) { if(callback) callback(); }
+        }
+
+        async function syncRecordToCloud(record) {
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
+                db.history.push(record);
+                localStorage.setItem('ppl_history', JSON.stringify(db.history));
+                alert("Score saved locally!"); switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); return;
+            }
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
+                const result = await res.json();
+                if (result.result === 'success') {
+                    alert("Score successfully submitted!");
+                    fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
+                }
+            } catch (e) { alert("Network error connecting to cloud."); }
+        }
+
+        function populateDropdowns() {
+            const sorted = [...db.archers].sort((a, b) => a.name.localeCompare(b.name));
+            const options = `<option value="">-- Select Archer --</option>` + sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+            document.getElementById('up-archer').innerHTML = options;
+            document.getElementById('shoot-archer').innerHTML = options;
+            document.getElementById('hist-archer-filter').innerHTML = `<option value="All">All Archers</option>` + sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+        }
+
+        // PPL LEADERBOARD (Portsmouth ONLY)
         function renderLeaderboard() {
-            const monthFilter = document.getElementById('lb-month-filter')?.value || 'overall';
-            const bowFilter = document.getElementById('lb-bow-filter')?.value || 'All';
-            const genderFilter = document.getElementById('lb-gender-filter')?.value || 'All';
-            const catFilter = document.getElementById('lb-cat-filter')?.value || 'All';
-
             const tbody = document.getElementById('leaderboard-body');
-            const theadHeaders = document.getElementById('leaderboard-headers');
+            const bowFilter = document.getElementById('lb-bow-filter').value;
+            const monthFilter = document.getElementById('lb-month-filter').value;
 
-            function getRecordDemographics(h) {
-                const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                const gender = h.gender || (archer ? archer.gender : "Male");
-                const category = h.category || (archer ? archer.category : "Senior");
-                return { gender, category };
-            }
-
-            if (monthFilter === 'most-improved') {
-                theadHeaders.innerHTML = `
-                    <th>Pos</th>
-                    <th>Archer</th>
-                    <th>Bow Style</th>
-                    <th>Gender</th>
-                    <th>Category</th>
-                    <th>Best Score</th>
-                    <th>Starting PB</th>
-                    <th>PB Improvement (+ / -)</th>
-                `;
-
-                let improvementMap = {};
-                db.history.forEach(h => {
-                    const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                    const startingPB = archer ? (archer.startingPB || 250) : 250;
-                    const score = parseInt(h.score) || 0;
-                    const diff = score - startingPB;
-                    const demos = getRecordDemographics(h);
-
-                    if (genderFilter !== 'All' && demos.gender.toLowerCase() !== genderFilter.toLowerCase()) return;
-                    if (catFilter !== 'All' && demos.category.toLowerCase() !== catFilter.toLowerCase()) return;
-
-                    const key = `${h.archerId}_${h.bow}`;
-                    if (!improvementMap[key] || diff > improvementMap[key].diff) {
-                        improvementMap[key] = {
-                            archerName: h.archerName,
-                            bow: h.bow,
-                            gender: demos.gender,
-                            category: demos.category,
-                            bestScore: score,
-                            startingPB: startingPB,
-                            diff: diff
-                        };
-                    }
-                });
-
-                let rows = Object.values(improvementMap);
-                if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
-                rows.sort((a, b) => b.diff - a.diff);
-
-                if (rows.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No score history available matching these filters.</td></tr>`;
-                    return;
+            // Strict Filter: Only include Portsmouth
+            let pplHistory = db.history.filter(h => (h.round || 'Portsmouth') === 'Portsmouth');
+            
+            let monthMap = {};
+            pplHistory.forEach(h => {
+                if (monthFilter !== 'overall' && monthFilter !== 'most-improved' && !h.date.startsWith(monthFilter)) return;
+                const key = `${h.archerId}_${h.bow}`;
+                if (!monthMap[key] || parseInt(h.score) > monthMap[key].score) {
+                    monthMap[key] = { archerName: h.archerName, bow: h.bow, score: parseInt(h.score), hits: parseInt(h.hits)||60, tens: parseInt(h.tens)||0, rounds: 1 };
                 }
+            });
 
-                tbody.innerHTML = rows.map((r, idx) => {
-                    const diffText = r.diff >= 0 ? `+${r.diff}` : `${r.diff}`;
-                    const badgeClass = r.diff >= 0 ? 'badge-success' : 'badge-danger';
-                    return `
-                        <tr>
-                            <td><strong>#${idx + 1}</strong></td>
-                            <td>${r.archerName}</td>
-                            <td><span class="badge badge-gold">${r.bow}</span></td>
-                            <td>${r.gender}</td>
-                            <td>${r.category}</td>
-                            <td><strong>${r.bestScore}</strong></td>
-                            <td>${r.startingPB}</td>
-                            <td><span class="badge ${badgeClass}">${diffText} vs PB</span></td>
-                        </tr>
-                    `;
-                }).join('');
-                return;
-            }
-
-            theadHeaders.innerHTML = `
-                <th>Pos</th>
-                <th>Archer</th>
-                <th>Bow Style</th>
-                <th>Score / Sum</th>
-                <th>Hits</th>
-                <th>10s</th>
-                <th>Rnds</th>
-            `;
-
-            let standingsMap = {};
-
-            if (monthFilter === 'overall') {
-                db.history.forEach(h => {
-                    if (!h.date) return;
-                    const [year, month] = h.date.split('-');
-                    const mNum = parseInt(month), yNum = parseInt(year);
-                    let seasonYear = mNum >= 10 ? yNum : (mNum <= 3 ? yNum - 1 : null);
-                    if (!seasonYear) return;
-
-                    const demos = getRecordDemographics(h);
-                    if (genderFilter !== 'All' && demos.gender.toLowerCase() !== genderFilter.toLowerCase()) return;
-                    if (catFilter !== 'All' && demos.category.toLowerCase() !== catFilter.toLowerCase()) return;
-
-                    const monthKey = `${seasonYear}-${month}`;
-                    const key = `${h.archerId}_${h.bow}`;
-                    if (!standingsMap[key]) standingsMap[key] = { archerName: h.archerName, bow: h.bow, monthlyBests: {} };
-                    if (!standingsMap[key].monthlyBests[monthKey] || parseInt(h.score) > standingsMap[key].monthlyBests[monthKey].score) {
-                        standingsMap[key].monthlyBests[monthKey] = { score: parseInt(h.score), tens: parseInt(h.tens) || 0, hits: parseInt(h.hits) || 60 };
-                    }
-                });
-
-                var rows = [];
-                for (let key in standingsMap) {
-                    let item = standingsMap[key], totalScore = 0, totalTens = 0, totalHits = 0, monthsCount = 0;
-                    for (let mKey in item.monthlyBests) {
-                        totalScore += item.monthlyBests[mKey].score;
-                        totalTens += item.monthlyBests[mKey].tens;
-                        totalHits += item.monthlyBests[mKey].hits;
-                        monthsCount++;
-                    }
-                    rows.push({ archerName: item.archerName, bow: item.bow, score: totalScore, hits: totalHits, tens: totalTens, rounds: monthsCount });
-                }
-            } else {
-                let monthMap = {};
-                db.history.forEach(h => {
-                    if (!h.date || !h.date.startsWith(monthFilter)) return;
-                    const demos = getRecordDemographics(h);
-                    if (genderFilter !== 'All' && demos.gender.toLowerCase() !== genderFilter.toLowerCase()) return;
-                    if (catFilter !== 'All' && demos.category.toLowerCase() !== catFilter.toLowerCase()) return;
-
-                    const key = `${h.archerId}_${h.bow}`;
-                    if (!monthMap[key] || parseInt(h.score) > monthMap[key].score) {
-                        monthMap[key] = { archerName: h.archerName, bow: h.bow, score: parseInt(h.score), hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, rounds: 1 };
-                    }
-                });
-                var rows = Object.values(monthMap);
-            }
-
+            let rows = Object.values(monthMap);
             if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
             rows.sort((a, b) => b.score - a.score);
 
             if (rows.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No scores recorded matching these filters.</td></tr>`;
-                return;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No Portsmouth scores recorded.</td></tr>`; return;
             }
 
             tbody.innerHTML = rows.map((r, idx) => `
@@ -1920,460 +1338,78 @@
                     <td><strong>${r.score}</strong></td>
                     <td>${r.hits}</td>
                     <td>${r.tens}</td>
-                    <td>${monthFilter === 'overall' ? r.rounds : '1'}</td>
+                    <td>1</td>
                 </tr>
             `).join('');
         }
 
-        async function renderRecords() {
-            try {
-                const res = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
-                const text = await res.text();
-                db.historicalRecords = text ? JSON.parse(text) : [];
-            } catch(e) { 
-                console.error("Failed to load historical records", e);
-                db.historicalRecords = []; 
-            }
+        function renderRecords() { document.getElementById('records-body').innerHTML = `<tr><td colspan="6" style="text-align:center;">Coming soon...</td></tr>`; }
 
-            const tbody = document.getElementById('records-body');
-            
-            const bowFilter = document.getElementById('rec-bow-filter')?.value || 'All';
-            const genderFilter = document.getElementById('rec-gender-filter')?.value || 'All';
-            const catFilter = document.getElementById('rec-cat-filter')?.value || 'All';
-
-            let allRecords = [...db.historicalRecords];
-            
-            allRecords.forEach(r => {
-                if (!r.gender) {
-                    const matchedArcher = db.archers.find(a => a.name.toLowerCase() === (r.archerName || "").toLowerCase());
-                    r.gender = matchedArcher ? matchedArcher.gender : "Male";
-                }
-                if (!r.category) {
-                    const matchedArcher = db.archers.find(a => a.name.toLowerCase() === (r.archerName || "").toLowerCase());
-                    r.category = matchedArcher ? matchedArcher.category : "Senior";
-                }
-            });
-            
-            if (Array.isArray(db.history)) {
-                db.history.forEach(h => {
-                    const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                    const gender = h.gender || (archer ? archer.gender : "Male");
-                    const category = h.category || (archer ? archer.category : "Senior");
-
-                    allRecords.push({ 
-                        bow: h.bow, 
-                        category: category, 
-                        gender: gender,
-                        archerName: h.archerName, 
-                        score: parseInt(h.score) || 0, 
-                        tens: parseInt(h.tens) || 0, 
-                        hits: parseInt(h.hits) || 60,
-                        date: h.date 
-                    });
-                });
-            }
-
-            const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
-            const genders = ["Male", "Female"];
-            const categories = ["Senior", "50+", "Under 18"];
-
-            let htmlRows = [];
-
-            styles.forEach(style => {
-                if (bowFilter !== 'All' && style.toLowerCase() !== bowFilter.toLowerCase()) return;
-
-                genders.forEach(gender => {
-                    if (genderFilter !== 'All' && gender.toLowerCase() !== genderFilter.toLowerCase()) return;
-
-                    categories.forEach(category => {
-                        if (catFilter !== 'All' && category.toLowerCase() !== catFilter.toLowerCase()) return;
-
-                        let best = null;
-                        
-                        allRecords.forEach(r => {
-                            const matchBow = r && r.bow && r.bow.toLowerCase() === style.toLowerCase();
-                            const rGender = r.gender || "Male";
-                            const rCat = r.category || "Senior";
-                            const matchDemographics = rGender.toLowerCase() === gender.toLowerCase() && rCat.toLowerCase() === category.toLowerCase();
-
-                            if (matchBow && matchDemographics) {
-                                if (!best || parseInt(r.score) > parseInt(best.score)) {
-                                    best = r;
-                                }
-                            }
-                        });
-
-                        let formattedDate = "-";
-                        if (best && best.date) {
-                            const dateStr = String(best.date);
-                            formattedDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
-                        }
-
-                        htmlRows.push(`<tr>
-                            <td><span class="badge badge-gold">${style}</span></td>
-                            <td>${gender}</td>
-                            <td>${category}</td>
-                            <td><strong>${best ? best.archerName : "No Record"}</strong></td>
-                            <td>${best ? best.score : "-"}</td>
-                            <td>${best ? best.tens : "-"}</td>
-                            <td>${formattedDate}</td>
-                        </tr>`);
-                    });
-                });
-            });
-
-            if (htmlRows.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No records match this filter.</td></tr>`;
-            } else {
-                tbody.innerHTML = htmlRows.join('');
-            }
-        }
-
-        async function submitHistoricalRecord() {
-            const record = {
-                action: "addHistoricalRecord",
-                bow: document.getElementById('hist-bow').value,
-                gender: document.getElementById('hist-gender').value,
-                category: document.getElementById('hist-cat').value,
-                archerName: document.getElementById('hist-name').value.trim(),
-                score: parseInt(document.getElementById('hist-score').value),
-                tens: parseInt(document.getElementById('hist-tens').value) || 0,
-                date: document.getElementById('hist-date').value.trim()
-            };
-            if (!record.archerName || isNaN(record.score)) {
-                alert("Please enter a valid archer name and score.");
-                return;
-            }
-            try {
-                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
-                const json = await res.json();
-                if (json.result === 'success') {
-                    alert("Historical record added successfully!");
-                    document.getElementById('hist-name').value = '';
-                    document.getElementById('hist-score').value = '';
-                    document.getElementById('hist-tens').value = '';
-                    document.getElementById('hist-date').value = '';
-                    renderRecords();
-                } else {
-                    alert("Error saving record.");
-                }
-            } catch(e) {
-                alert("Network error saving historical record.");
-            }
-        }
-
+        // HISTORY TAB (ALL ROUNDS)
         function renderHistory() {
             const tbody = document.getElementById('history-body');
+            const roundFilter = document.getElementById('hist-round-filter').value;
+            const archerFilter = document.getElementById('hist-archer-filter').value;
+            const bowFilter = document.getElementById('hist-bow-filter').value;
+
+            let filtered = db.history.filter(h => {
+                const hRound = h.round || 'Portsmouth';
+                if (roundFilter !== 'All' && hRound !== roundFilter) return false;
+                if (archerFilter !== 'All' && String(h.archerId) !== archerFilter) return false;
+                if (bowFilter !== 'All' && h.bow !== bowFilter) return false;
+                return true;
+            }).sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            const archerFilter = document.getElementById('hist-archer-filter')?.value || 'All';
-            const bowFilter = document.getElementById('hist-bow-filter')?.value || 'All';
-
-            let filteredHistory = [...db.history];
-
-            if (archerFilter !== 'All') {
-                filteredHistory = filteredHistory.filter(h => String(h.archerId) === String(archerFilter));
-            }
-            if (bowFilter !== 'All') {
-                filteredHistory = filteredHistory.filter(h => h.bow.toLowerCase() === bowFilter.toLowerCase());
-            }
-
-            const sortedHistory = filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            if (sortedHistory.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">No history found matching these filters.</td></tr>`;
-                return;
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">No history found matching these filters.</td></tr>`; return;
             }
             
-            tbody.innerHTML = sortedHistory.map(h => {
-                const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                const startingPB = archer ? (archer.startingPB || 250) : 250;
-                const score = parseInt(h.score) || 0;
-                const diff = score - startingPB;
-                const diffText = diff >= 0 ? `+${diff}` : `${diff}`;
-                const badgeClass = diff >= 0 ? 'badge-success' : 'badge-danger';
-
-                return `
-                    <tr>
-                        <td>${h.date ? h.date.split('T')[0] : ''}</td>
-                        <td>${h.archerName}</td>
-                        <td><span class="badge badge-gold">${h.bow}</span></td>
-                        <td><strong>${score}</strong></td>
-                        <td><span class="badge ${badgeClass}">${diffText} vs PB</span></td>
-                        <td>${h.hits !== undefined ? h.hits : 60}</td>
-                        <td>${h.tens}</td>
-                        <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewProof('${h.id}')">📷 View</button>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`}</td>
-                        <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteHistory('${h.id}')">Delete</button></td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function viewProof(historyId) {
-            const record = db.history.find(h => String(h.id) === String(historyId));
-            if (record && record.screenshot) {
-                document.getElementById('proof-image-display').src = record.screenshot;
-                document.getElementById('proof-modal').classList.add('open');
-            }
-        }
-
-        function closeProofModal() {
-            document.getElementById('proof-modal').classList.remove('open');
-            document.getElementById('proof-image-display').src = '';
-        }
-
-        let pendingDeleteHistoryId = null;
-
-        function openAdminModal() {
-            document.getElementById('admin-modal').classList.add('open');
-            document.getElementById('admin-pin-input').value = '';
-        }
-
-        function closeAdminModal() { document.getElementById('admin-modal').classList.remove('open'); }
-
-        function verifyAdminPin() {
-            const pin = document.getElementById('admin-pin-input').value;
-            if (pin === db.settings.pin) {
-                closeAdminModal();
-                switchTab('admin');
-                document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-                const buttons = document.querySelectorAll('.tab-btn');
-                buttons[buttons.length - 1].classList.add('active');
-            } else {
-                alert("Incorrect PIN code.");
-            }
-        }
-
-        async function triggerServerPinReset(e) {
-            e.preventDefault();
-            const recoveryKeyInput = prompt("Enter the Secret Recovery Key to reset the Admin PIN back to 1010:");
-            if (!recoveryKeyInput) return;
-
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
-                alert("Apps Script URL not configured yet.");
-                return;
-            }
-
-            try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "resetPin", recoveryKey: recoveryKeyInput })
-                });
-                const result = await response.json();
-                if (result.result === 'success') {
-                    alert("Admin PIN has been successfully reset back to default: 1010");
-                    db.settings.pin = "1010";
-                    closeAdminModal();
-                } else {
-                    alert("Incorrect recovery key. Reset failed.");
-                }
-            } catch (err) {
-                alert("Network error communicating with server.");
-            }
-        }
-
-        async function updateAdminPin() {
-            const newPin = document.getElementById('new-admin-pin').value.trim();
-            if (!newPin || newPin.length < 4) {
-                alert("Please enter a valid PIN of at least 4 digits.");
-                return;
-            }
-
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
-                alert("Apps Script URL not configured yet.");
-                return;
-            }
-
-            try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "updatePin", newPin: newPin })
-                });
-                const result = await response.json();
-                if (result.result === 'success') {
-                    db.settings.pin = newPin;
-                    document.getElementById('new-admin-pin').value = '';
-                    alert("Master Admin PIN successfully updated on cloud server!");
-                } else {
-                    alert("Error updating PIN.");
-                }
-            } catch (e) {
-                alert("Network error updating PIN.");
-            }
-        }
-
-        function addNewArcherRegistry() {
-            const name = document.getElementById('new-archer-name').value.trim();
-            if (!name) { alert("Please enter a valid archer name."); return; }
-
-            const bow = document.getElementById('new-archer-bow').value;
-            const gender = document.getElementById('new-archer-gender').value;
-            const category = document.getElementById('new-archer-cat').value;
-
-            const defaultLowestGrades = {
-                "Recurve_Male_Senior": 378, "Recurve_Male_50+": 316, "Recurve_Male_Under 18": 316,
-                "Recurve_Female_Senior": 331, "Recurve_Female_50+": 265, "Recurve_Female_Under 18": 201,
-                "Compound_Male_Senior": 472, "Compound_Male_50+": 437, "Compound_Male_Under 18": 393,
-                "Compound_Female_Senior": 449, "Compound_Female_50+": 408, "Compound_Female_Under 18": 358,
-                "Barebow_Male_Senior": 331, "Barebow_Male_50+": 276, "Barebow_Male_Under 18": 220,
-                "Barebow_Female_Senior": 276, "Barebow_Female_50+": 220, "Barebow_Female_Under 18": 170,
-                "Longbow_Male_Senior": 127, "Longbow_Male_50+": 90, "Longbow_Male_Under 18": 62,
-                "Longbow_Female_Senior": 84, "Longbow_Female_50+": 58, "Longbow_Female_Under 18": 40,
-                "Asiatic_Male_Senior": 331, "Asiatic_Male_50+": 276, "Asiatic_Male_Under 18": 220,
-                "Asiatic_Female_Senior": 276, "Asiatic_Female_50+": 220, "Asiatic_Female_Under 18": 170
-            };
-            const baselineKey = `${bow}_${gender}_${category}`;
-            const defaultStartingPB = defaultLowestGrades[baselineKey] || 250;
-
-            db.archers.push({
-                id: Date.now(),
-                name: name,
-                gender: gender,
-                category: category,
-                defaultBow: bow,
-                startingPB: defaultStartingPB
-            });
-
-            saveLocalSettings();
-            syncArchersToCloud();
-            document.getElementById('new-archer-name').value = '';
-            populateDropdowns();
-            renderAdminTable();
-            alert(`Archer successfully added with starting baseline PB of ${defaultStartingPB}.`);
-        }
-
-        function renderAdminTable() {
-            const tbody = document.getElementById('admin-archer-table');
-            const sorted = getSortedArchers();
-            if (sorted.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No archers in database.</td></tr>`;
-                return;
-            }
-            
-            const genders = ["Male", "Female"];
-            const categories = ["Senior", "50+", "Under 18"];
-            const bows = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
-
-            tbody.innerHTML = sorted.map(a => `
+            tbody.innerHTML = filtered.map(h => `
                 <tr>
-                    <td><strong>${a.name}</strong></td>
-                    <td>
-                        <select style="padding: 4px 8px; font-size: 0.85rem;" onchange="updateArcherField('${a.id}', 'gender', this.value)">
-                            ${genders.map(g => `<option value="${g}" ${a.gender === g ? 'selected' : ''}>${g}</option>`).join('')}
-                        </select>
-                    </td>
-                    <td>
-                        <select style="padding: 4px 8px; font-size: 0.85rem;" onchange="updateArcherField('${a.id}', 'category', this.value)">
-                            ${categories.map(c => `<option value="${c}" ${a.category === c ? 'selected' : ''}>${c}</option>`).join('')}
-                        </select>
-                    </td>
-                    <td>
-                        <select style="padding: 4px 8px; font-size: 0.85rem;" onchange="updateArcherField('${a.id}', 'defaultBow', this.value)">
-                            ${bows.map(b => `<option value="${b}" ${a.defaultBow === b ? 'selected' : ''}>${b}</option>`).join('')}
-                        </select>
-                    </td>
-                    <td>
-                        <input type="number" value="${a.startingPB || 250}" min="0" max="600" 
-                               style="width: 80px; padding: 4px 8px; font-weight: bold;" 
-                               onchange="updateArcherField('${a.id}', 'startingPB', this.value)">
-                    </td>
-                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;" onclick="promptDeleteArcher('${a.id}')">Delete</button></td>
+                    <td>${h.date ? h.date.split('T')[0] : ''}</td>
+                    <td>${h.archerName}</td>
+                    <td><span class="badge badge-round">${h.round || 'Portsmouth'}</span></td>
+                    <td>${h.bow}</td>
+                    <td><strong>${h.score}</strong></td>
+                    <td>${h.hits !== undefined ? h.hits : '-'}</td>
+                    <td>${h.tens}</td>
+                    <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 2px 6px;" onclick="viewProof('${h.screenshot}')">📷</button>` : `-`}</td>
+                    <td><button class="btn btn-danger" style="padding: 2px 6px;">Del</button></td>
                 </tr>
             `).join('');
         }
 
-        function updateArcherField(id, field, value) {
-            const archer = db.archers.find(a => String(a.id) === String(id));
-            if (archer) {
-                if (field === 'startingPB') {
-                    archer[field] = parseInt(value) || 250;
-                } else {
-                    archer[field] = value;
-                }
-                saveLocalSettings();
-                populateDropdowns(); 
-            }
-        }
-
-        function promptDeleteArcher(id) {
-            pendingDeleteHistoryId = { type: 'archer', id: id };
-            document.getElementById('delete-pin-modal').classList.add('open');
-            document.getElementById('del-auth-pin').value = '';
-        }
-
-        function promptDeleteHistory(id) {
-            pendingDeleteHistoryId = { type: 'history', id: id };
-            document.getElementById('delete-pin-modal').classList.add('open');
-            document.getElementById('del-auth-pin').value = '';
-        }
-
-        function closeDeletePinModal() {
-            document.getElementById('delete-pin-modal').classList.remove('open');
-            pendingDeleteHistoryId = null;
-        }
-
-        function confirmAuthorizedDelete() {
-            const pin = document.getElementById('del-auth-pin').value;
-            if (pin !== db.settings.pin) {
-                alert("Incorrect Admin PIN.");
-                return;
-            }
-
-            if (!pendingDeleteHistoryId) return;
-
-            if (pendingDeleteHistoryId.type === 'archer') {
-                db.archers = db.archers.filter(a => String(a.id) !== String(pendingDeleteHistoryId.id));
-                saveLocalSettings();
-                syncArchersToCloud();
-                populateDropdowns();
-                renderAdminTable();
-            } else if (pendingDeleteHistoryId.type === 'history') {
-                alert("To delete historical scores, please open your Google Sheet and delete the corresponding row.");
-            }
-
-            closeDeletePinModal();
-            alert("Action processed successfully.");
-        }
-
-        // --- CSV DATA EXPORT ---
+        // CSV EXPORT FOR GOLDEN RECORDS (ALL ROUNDS)
         function exportHistoryToCSV() {
-            if (!db.history || db.history.length === 0) {
-                alert("No score history available to export.");
-                return;
-            }
+            if (!db.history || db.history.length === 0) { alert("No scores available to export."); return; }
 
-            let csvContent = "Date,Archer Name,Bow Style,Gender,Category,Score,Hits,10s\n";
-            
+            let csv = "Round Name,Date,Archer Name,Bow Style,Gender,Category,Score,Hits,10s/Xs\n";
             db.history.forEach(h => {
                 const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                const gender = h.gender || (archer ? archer.gender : "Male");
-                const category = h.category || (archer ? archer.category : "Senior");
-                const date = h.date ? h.date.split('T')[0] : "";
-                
-                const row = [
-                    date,
+                csv += [
+                    `"${h.round || 'Portsmouth'}"`,
+                    h.date ? h.date.split('T')[0] : "",
                     `"${h.archerName}"`,
                     h.bow,
-                    gender,
-                    category,
+                    h.gender || (archer ? archer.gender : "Male"),
+                    h.category || (archer ? archer.category : "Senior"),
                     h.score,
                     h.hits !== undefined ? h.hits : 60,
                     h.tens
-                ];
-                csvContent += row.join(",") + "\n";
+                ].join(",") + "\n";
             });
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
-            if (link.download !== undefined) {
-                const url = URL.createObjectURL(blob);
-                link.setAttribute("href", url);
-                link.setAttribute("download", "PPL_League_Scores.csv");
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
+            link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+            link.download = "PPL_Indoor_Scores_GoldenRecords.csv";
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
+
+        // MODALS
+        function openAdminModal() { document.getElementById('admin-modal').classList.add('open'); }
+        function closeAdminModal() { document.getElementById('admin-modal').classList.remove('open'); }
+        function viewProof(src) { document.getElementById('proof-image-display').src = src; document.getElementById('proof-modal').classList.add('open'); }
+        function closeProofModal() { document.getElementById('proof-modal').classList.remove('open'); }
     </script>
 </body>
 </html>
