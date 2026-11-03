@@ -1210,8 +1210,8 @@
         }
 
         function triggerForgotPin() {
-            const recoveryAnswer = prompt("Enter Master Recovery Phrase (default: peacock):");
-            if (recoveryAnswer && recoveryAnswer.toLowerCase() === "peacock") {
+            const recoveryAnswer = prompt("Enter Master Recovery Phrase");
+            if (recoveryAnswer && recoveryAnswer.toLowerCase() === "peacockppl") {
                 const tempPin = "1010";
                 db.settings.pin = tempPin;
                 localStorage.setItem('ppl_admin_pin', tempPin);
