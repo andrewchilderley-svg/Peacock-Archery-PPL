@@ -428,8 +428,8 @@
 
         <!-- Navigation Tabs -->
         <nav class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('upload')">📤 Upload A Round</button>
-            <button class="tab-btn" onclick="switchTab('shoot')">🎯 Shoot A Round</button>
+            <button class="tab-btn active" onclick="switchTab('upload')">📤 Upload Round</button>
+            <button class="tab-btn" onclick="switchTab('shoot')">🎯 Shoot Round</button>
             <button class="tab-btn" onclick="switchTab('board')">🏆 PPL Leaderboard</button>
             <button class="tab-btn" onclick="switchTab('records')">🎖️ Club Portsmouth Records</button>
             <button class="tab-btn" onclick="switchTab('history')">📜 History</button>
@@ -651,14 +651,6 @@
                         <option value="Barebow">Barebow</option>
                         <option value="Longbow">Longbow</option>
                         <option value="Asiatic">Asiatic</option>
-                    </select>
-                </div>
-                <div class="form-group" style="flex: 1; min-width: 130px;">
-                    <label>Gender</label>
-                    <select id="lb-gender-filter" onchange="renderLeaderboard()">
-                        <option value="All">All</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
                     </select>
                 </div>
             </div>
@@ -1208,8 +1200,8 @@
         }
 
         function triggerForgotPin() {
-            const recoveryAnswer = prompt("Enter Master Recovery Phrase");
-            if (recoveryAnswer && recoveryAnswer.toLowerCase() === "peacockppl") {
+            const recoveryAnswer = prompt("Enter Master Recovery Phrase (default: peacock):");
+            if (recoveryAnswer && recoveryAnswer.toLowerCase() === "peacock") {
                 const tempPin = "1010";
                 db.settings.pin = tempPin;
                 localStorage.setItem('ppl_admin_pin', tempPin);
@@ -1626,8 +1618,8 @@
                 const data = await res.json();
                 if (data && data.length > 0) {
                     let map = {};
-                    db.archers.forEach(a => map[a.id] = a);
-                    data.forEach(a => map[a.id] = a);
+                    db.archers.forEach(a => map[String(a.id)] = a);
+                    data.forEach(a => map[String(a.id)] = a);
                     db.archers = Object.values(map);
                     localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
                 }
@@ -1694,7 +1686,6 @@
         function renderLeaderboard() {
             const tbody = document.getElementById('leaderboard-body');
             const bowFilter = document.getElementById('lb-bow-filter').value;
-            const genderFilter = document.getElementById('lb-gender-filter').value;
             const monthFilter = document.getElementById('lb-month-filter').value;
             const headersRow = document.getElementById('leaderboard-headers');
 
@@ -1749,13 +1740,9 @@
             headersRow.innerHTML = `<th>Pos</th><th>Archer</th><th>Bow Style</th><th>Score / Sum</th><th>Hits</th><th>10s</th><th>Rnds</th>`;
 
             if (monthFilter !== 'overall') {
-                // Single Month View: Show best score for that specific month
                 let monthMap = {};
                 pplHistory.forEach(h => {
                     if (!h.date || !h.date.startsWith(monthFilter)) return;
-                    const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                    const gender = h.gender || (archer ? archer.gender : "Male");
-                    if (genderFilter !== 'All' && gender !== genderFilter) return;
 
                     const key = `${h.archerId}_${h.bow}`;
                     const score = parseInt(h.score) || 0;
@@ -1793,16 +1780,11 @@
                 `).join('');
 
             } else {
-                // Overall Season View: Find highest score per archer PER MONTH, then sum those monthly bests together
-                let archerMonthBests = {}; // { "archerId_bow_YYYY-MM": maxScore }
+                let archerMonthBests = {};
 
                 pplHistory.forEach(h => {
                     if (!h.date) return;
-                    const monthKey = h.date.substring(0, 7); // YYYY-MM
-                    const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                    const gender = h.gender || (archer ? archer.gender : "Male");
-                    if (genderFilter !== 'All' && gender !== genderFilter) return;
-
+                    const monthKey = h.date.substring(0, 7);
                     const comboKey = `${h.archerId}_${h.bow}_${monthKey}`;
                     const score = parseInt(h.score) || 0;
 
@@ -1819,8 +1801,7 @@
                     }
                 });
 
-                // Now group by archer & bow to sum up their monthly best scores
-                let overallMap = {}; // { "archerId_bow": { scoreSum, hitsSum, tensSum, monthsCount } }
+                let overallMap = {};
                 Object.values(archerMonthBests).forEach(item => {
                     const archerBowKey = `${item.archerId}_${item.bow}`;
                     if (!overallMap[archerBowKey]) {
@@ -2004,15 +1985,15 @@
         }
 
         function requestDeleteArcher(archerId) {
-            pendingDeleteCallback = function() {
+            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            const name = archer ? archer.name : "Archer";
+            if (confirm(`Are you sure you want to delete ${name} from the database?`)) {
                 db.archers = db.archers.filter(a => String(a.id) !== String(archerId));
                 localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
                 populateDropdowns();
                 renderAdminTable();
-                alert("Archer successfully deleted.");
-            };
-            document.getElementById('delete-pin-input').value = '';
-            document.getElementById('delete-auth-modal').classList.add('open');
+                alert(`${name} successfully deleted.`);
+            }
         }
 
         function closeDeleteAuthModal() {
