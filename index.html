@@ -455,6 +455,13 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Target Face</label>
+                    <select id="up-face">
+                        <option value="Full Face" selected>Full Face</option>
+                        <option value="Triple Spot">Triple Spot</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Gender</label>
                     <select id="up-gender" onchange="updateUploadStats()">
                         <option value="Male">Male</option>
@@ -534,6 +541,13 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Target Face</label>
+                    <select id="shoot-face" onchange="updateLiveStats()">
+                        <option value="Full Face" selected>Full Face</option>
+                        <option value="Triple Spot">Triple Spot</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Gender</label>
                     <select id="shoot-gender" onchange="updateLiveStats()">
                         <option value="Male">Male</option>
@@ -560,7 +574,7 @@
                 </div>
                 <div class="form-group">
                     <label>Date Shot</label>
-                    <input type="date" id="shoot-date">
+                    <input type="date" id="shoot-date" onchange="updateLiveStats()">
                 </div>
             </div>
 
@@ -1269,6 +1283,7 @@
                 id: Date.now(), archerId: archer.id, archerName: archer.name,
                 round: roundType, bow: document.getElementById('up-bow').value,
                 gender: document.getElementById('up-gender').value, category: document.getElementById('up-cat').value,
+                targetFace: document.getElementById('up-face').value,
                 score: score, tens: parseInt(document.getElementById('up-tens').value) || 0,
                 hits: parseInt(document.getElementById('up-hits').value) || (config.arr * config.ends),
                 date: document.getElementById('up-date').value || new Date().toISOString().split('T')[0],
@@ -1300,6 +1315,7 @@
                 bow: document.getElementById('shoot-bow').value,
                 gender: document.getElementById('shoot-gender').value,
                 category: document.getElementById('shoot-cat').value,
+                targetFace: document.getElementById('shoot-face').value,
                 date: document.getElementById('shoot-date').value,
                 currentEnd: currentEnd,
                 endsMatrix: endsMatrix,
@@ -1319,6 +1335,7 @@
                     if (state.bow) document.getElementById('shoot-bow').value = state.bow;
                     if (state.gender) document.getElementById('shoot-gender').value = state.gender;
                     if (state.category) document.getElementById('shoot-cat').value = state.category;
+                    if (state.targetFace) document.getElementById('shoot-face').value = state.targetFace;
                     if (state.date) document.getElementById('shoot-date').value = state.date;
                     
                     activeRoundConfig = getRoundConfig(state.roundType);
@@ -1590,6 +1607,7 @@
             const tens = liveScores.filter(s => s === maxVal).length;
             const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
             const bowStyle = document.getElementById('shoot-bow').value;
+            const targetFace = document.getElementById('shoot-face').value;
 
             const autoScorecard = generateDigitalScorecardImage(
                 archer.name, roundType, bowStyle, dateShot, total, hits, tens, endsMatrix
@@ -1599,6 +1617,7 @@
                 id: Date.now(), archerId: archer.id, archerName: archer.name,
                 round: roundType, bow: bowStyle, 
                 gender: document.getElementById('shoot-gender').value, category: document.getElementById('shoot-cat').value,
+                targetFace: targetFace,
                 score: total, tens: tens, hits: hits,
                 date: dateShot,
                 screenshot: autoScorecard
@@ -2056,11 +2075,12 @@
         function exportHistoryToCSV() {
             if (!db.history || db.history.length === 0) { alert("No scores available to export."); return; }
 
-            let csv = "Round Name,Date,Archer Name,Bow Style,Gender,Category,Score,Hits,10s/Xs\n";
+            let csv = "Round Name,Target Face,Date,Archer Name,Bow Style,Gender,Category,Score,Hits,10s/Xs\n";
             db.history.forEach(h => {
                 const archer = db.archers.find(a => String(a.id) === String(h.archerId));
                 csv += [
                     `"${h.round || 'Portsmouth'}"`,
+                    `"${h.targetFace || 'Full Face'}"`,
                     h.date ? h.date.split('T')[0] : "",
                     `"${h.archerName}"`,
                     h.bow,
