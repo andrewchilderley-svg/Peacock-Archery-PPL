@@ -2001,43 +2001,32 @@
         }
 
 function requestDeleteScore(scoreId) {
-    pendingDeleteCallback = async function() {
-        // Remove locally from app history first for instant UI update
+    pendingDeleteCallback = function() {
+        // 1. Instantly hide it locally in the app
         db.history = db.history.filter(h => String(h.id) !== String(scoreId));
         localStorage.setItem('ppl_history', JSON.stringify(db.history));
         renderHistory();
         renderLeaderboard();
 
+        // 2. Force the background deletion request to bypass browser CORS blocking
         if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
-            try {
-                // Submit via POST (just like submitting a new score)
-                const payload = {
-                    action: "deleteScore",
-                    id: String(scoreId)
-                };
-                
-                const res = await fetch(APPS_SCRIPT_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify(payload) 
-                });
-                
-                const result = await res.json();
-                
-                if (result.result === 'success') {
-                    alert("Score soft-deleted! 'DELETED' written to Google Sheet.");
-                    fetchCloudHistory(() => { renderHistory(); renderLeaderboard(); });
-                } else {
-                    alert("Score hidden in app, but could not update Google Sheet row.");
-                }
-            } catch(e) {
-                alert("Score hidden locally. Could not connect to Google to write DELETED.");
-            }
-        } else {
-            alert("Score deleted locally!");
+            const payload = { action: "deleteScore", id: String(scoreId) };
+            
+            fetch(APPS_SCRIPT_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', // This is the magic bullet that stops the browser from blocking it
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(payload) 
+            }).then(() => {
+                alert("Score successfully removed from app and sent to Google Sheets for deletion.");
+            }).catch(e => {
+                console.error("Cloud sync error:", e);
+                alert("Score hidden in app, but check internet connection for cloud sync.");
+            });
         }
     };
     
-    // Trigger the PIN modal
+    // Trigger the PIN authentication modal
     document.getElementById('delete-pin-input').value = '';
     document.getElementById('delete-auth-modal').classList.add('open');
 }
