@@ -961,7 +961,7 @@
     <div class="modal" id="delete-auth-modal">
         <div class="modal-content">
             <div class="modal-title">🔐 Admin PIN Required</div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Enter Admin PIN to authorize deletion:</p>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Enter Admin PIN to permanently delete score from database:</p>
             <div class="form-group" style="margin-bottom: 16px;">
                 <input type="password" id="delete-pin-input" placeholder="Enter PIN">
             </div>
@@ -1092,7 +1092,6 @@
             }
         };
 
-        // Formats dates cleanly as DD MMM YY (e.g. 04 Nov 26)
         function formatDateDisplay(dStr) {
             if (!dStr) return "-";
             let str = String(dStr).trim();
@@ -1100,7 +1099,6 @@
 
             let dateObj = null;
 
-            // UK Format DD/MM/YYYY or DD-MM-YYYY
             let ukMatch = str.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
             if (ukMatch) {
                 let d = parseInt(ukMatch[1], 10);
@@ -1108,7 +1106,6 @@
                 let y = parseInt(ukMatch[3], 10);
                 dateObj = new Date(y, m, d);
             } else {
-                // ISO YYYY-MM-DD
                 let isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
                 if (isoMatch) {
                     let y = parseInt(isoMatch[1], 10);
@@ -1135,7 +1132,6 @@
             return `${day} ${month} ${year}`;
         }
 
-        // Internal YYYY-MM-DD helper for sorting/filtering
         function formatDateISO(dStr) {
             if (!dStr) return "";
             let str = String(dStr).trim();
@@ -2019,18 +2015,36 @@
                     <td>${h.hits !== undefined ? h.hits : '-'}</td>
                     <td>${h.tens}</td>
                     <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 2px 6px;" onclick="viewProof('${h.screenshot}')">📷</button>` : `-`}</td>
-                    <td><button class="btn btn-danger" style="padding: 2px 6px;" onclick="requestDeleteScore(${h.id})">Del</button></td>
+                    <td><button class="btn btn-danger" style="padding: 2px 6px;" onclick="requestDeleteScore('${h.id}')">Del</button></td>
                 </tr>
                 `;
             }).join('');
         }
 
         function requestDeleteScore(scoreId) {
-            pendingDeleteCallback = function() {
-                db.history = db.history.filter(h => Number(h.id) !== Number(scoreId));
+            pendingDeleteCallback = async function() {
+                db.history = db.history.filter(h => String(h.id) !== String(scoreId));
                 localStorage.setItem('ppl_history', JSON.stringify(db.history));
                 renderHistory();
-                alert("Score successfully deleted.");
+
+                if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
+                    try {
+                        const res = await fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: "deleteScore", id: scoreId })
+                        });
+                        const result = await res.json();
+                        if (result.result === 'success') {
+                            alert("Score permanently deleted from Google Sheet!");
+                        } else {
+                            alert("Score deleted locally, but could not be located in Google Sheet.");
+                        }
+                    } catch(e) {
+                        alert("Score deleted locally, but network error prevented cloud update.");
+                    }
+                } else {
+                    alert("Score deleted locally!");
+                }
             };
             document.getElementById('delete-pin-input').value = '';
             document.getElementById('delete-auth-modal').classList.add('open');
