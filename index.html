@@ -21,311 +21,55 @@
             --border: #6b21a8;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 960px;
-            background: var(--bg-card);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-        }
-
-        header {
-            background: linear-gradient(135deg, #581c87, #3b0764);
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #7e22ce;
-        }
-
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .header-logo-box {
-            width: 110px;
-            height: 110px;
-            min-width: 110px;
-            min-height: 110px;
-            border-radius: 10px;
-            background: #1e1b4b;
-            border: 2px solid #a855f7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .header-logo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { width: 100%; max-width: 960px; background: var(--bg-card); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
+        header { background: linear-gradient(135deg, #581c87, #3b0764); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #7e22ce; }
+        .header-title { display: flex; align-items: center; gap: 16px; }
+        .header-logo-box { width: 110px; height: 110px; min-width: 110px; min-height: 110px; border-radius: 10px; background: #1e1b4b; border: 2px solid #a855f7; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+        .header-logo-box img { width: 100%; height: 100%; object-fit: contain; display: block; }
         .header-logo-emoji { font-size: 4rem; }
-
-        .header-text h1 {
-            font-size: 1.5rem;
-            color: #f3e8ff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .header-text p {
-            font-size: 0.85rem;
-            color: #d8b4fe;
-            margin-top: 4px;
-        }
-
-        .admin-btn {
-            background: #581c87;
-            color: var(--text-main);
-            border: 1px solid #9333ea;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .admin-btn:hover {
-            background: #7e22ce;
-            border-color: #a855f7;
-        }
-
-        /* Nav Tabs */
-        .nav-tabs {
-            display: flex;
-            background: #111827;
-            overflow-x: auto;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 12px 14px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.88rem;
-            cursor: pointer;
-            white-space: nowrap;
-            text-align: center;
-            transition: all 0.2s;
-            border-bottom: 3px solid transparent;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-main);
-            background: rgba(255,255,255,0.02);
-        }
-
-        .tab-btn.active {
-            color: #c084fc;
-            border-bottom-color: #a855f7;
-            background: rgba(147, 51, 234, 0.1);
-        }
-
-        .tab-content {
-            display: none;
-            padding: 20px;
-            flex: 1;
-        }
-
+        .header-text h1 { font-size: 1.5rem; color: #f3e8ff; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .header-text p { font-size: 0.85rem; color: #d8b4fe; margin-top: 4px; }
+        .admin-btn { background: #581c87; color: var(--text-main); border: 1px solid #9333ea; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; white-space: nowrap; }
+        .admin-btn:hover { background: #7e22ce; border-color: #a855f7; }
+        
+        .nav-tabs { display: flex; background: #111827; overflow-x: auto; border-bottom: 1px solid var(--border); }
+        .tab-btn { flex: 1; padding: 12px 14px; background: none; border: none; color: var(--text-muted); font-weight: 600; font-size: 0.88rem; cursor: pointer; white-space: nowrap; text-align: center; transition: all 0.2s; border-bottom: 3px solid transparent; }
+        .tab-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.02); }
+        .tab-btn.active { color: #c084fc; border-bottom-color: #a855f7; background: rgba(147, 51, 234, 0.1); }
+        .tab-content { display: none; padding: 20px; flex: 1; }
         .tab-content.active { display: block; }
 
-        /* Forms & Inputs */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-            gap: 14px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        select, input, button {
-            background: var(--bg-input);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            padding: 9px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        select, input, button { background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border); padding: 9px 12px; border-radius: 6px; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
         select:focus, input:focus { border-color: #a855f7; }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 9px 16px;
-            border-radius: 6px;
-            transition: background 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
+        .btn { background: var(--primary); color: white; border: none; font-weight: 600; cursor: pointer; padding: 9px 16px; border-radius: 6px; transition: background 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
         .btn:hover { background: var(--primary-hover); }
         .btn-secondary { background: var(--bg-input); border: 1px solid var(--border); }
         .btn-secondary:hover { background: var(--border); }
         .btn-danger { background: var(--danger); }
         .btn-danger:hover { background: var(--danger-hover); }
 
-        /* Tables & Lists */
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            margin-top: 14px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.86rem;
-        }
-
-        th, td {
-            padding: 8px 10px;
-            border-bottom: 1px solid var(--border);
-            vertical-align: middle;
-        }
-
-        th {
-            background: #111827;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-        }
-
+        .table-container { width: 100%; overflow-x: auto; margin-top: 14px; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem; }
+        th, td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th { background: #111827; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
         tr:last-child td { border-bottom: none; }
         tr:hover td { background: rgba(255, 255, 255, 0.02); }
-
         .nowrap { white-space: nowrap; }
 
-        /* Keypad Shoot Area */
-        .shoot-header-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-            background: #111827;
-            padding: 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-
+        .shoot-header-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; background: #111827; padding: 16px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }
         .stat-box .stat-val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
         .stat-box .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
-
-        .end-display {
-            background: #111827;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .arrows-row {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .arrow-slot {
-            width: 50px;
-            height: 50px;
-            background: var(--bg-input);
-            border: 2px dashed var(--border);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-
-        .arrow-slot.filled {
-            border-style: solid;
-            border-color: var(--primary);
-            background: rgba(217, 119, 6, 0.1);
-        }
-
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .key-btn {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            font-size: 1.2rem;
-            font-weight: 700;
-            padding: 16px 0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.1s;
-        }
-
+        .end-display { background: #111827; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 20px; text-align: center; }
+        .arrows-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+        .arrow-slot { width: 50px; height: 50px; background: var(--bg-input); border: 2px dashed var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 700; }
+        .arrow-slot.filled { border-style: solid; border-color: var(--primary); background: rgba(217, 119, 6, 0.1); }
+        .keypad { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .key-btn { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); font-size: 1.2rem; font-weight: 700; padding: 16px 0; border-radius: 8px; cursor: pointer; transition: all 0.1s; }
         .key-btn:hover { background: var(--border); }
         .key-btn.gold { background: var(--primary); border-color: var(--primary); }
         .key-btn.gold:hover { background: var(--primary-hover); }
@@ -335,60 +79,17 @@
         .key-btn.white { background:#f8fafc; color:#0f172a; border-color:#cbd5e1; }
         .key-btn.action { background: #374151; font-size: 1rem; grid-column: span 2; }
 
-        /* Modals */
-        .modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
         .modal.open { display: flex; }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 450px; padding: 24px; box-shadow: 0 20px 25px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
+        .modal-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
 
-        .modal-content {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            width: 100%;
-            max-width: 450px;
-            padding: 24px;
-            box-shadow: 0 20px 25px rgba(0,0,0,0.5);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--primary);
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        /* Badges & Tags */
-        .badge {
-            display: inline-block;
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+        .badge { display: inline-block; padding: 3px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
         .badge-gold { background: rgba(217, 119, 6, 0.2); color: #fbbf24; border: 1px solid rgba(217, 119, 6, 0.4); }
         .badge-success { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
         .badge-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
         .badge-round { background: #312e81; color: #a5b4fc; border: 1px solid #4f46e5; }
-
         .hidden { display: none !important; }
 
         @media (max-width: 650px) {
@@ -397,10 +98,8 @@
             .header-logo-box { width: 80px; height: 80px; min-width: 80px; min-height: 80px; }
             .header-logo-emoji { font-size: 3rem; }
             .header-text h1 { font-size: 1.2rem; justify-content: center; text-align: center; }
-            .header-text p { font-size: 0.8rem; }
             .admin-btn { width: 100%; padding: 10px; }
             .shoot-header-stats { gap: 8px; padding: 12px; }
-            .stat-box .stat-val { font-size: 1.2rem; }
             .keypad { grid-template-columns: repeat(4, 1fr); }
             .form-grid { grid-template-columns: 1fr; }
         }
@@ -428,7 +127,7 @@
             <button class="tab-btn active" onclick="switchTab('upload')">📤 Upload Round</button>
             <button class="tab-btn" onclick="switchTab('shoot')">🎯 Shoot Round</button>
             <button class="tab-btn" onclick="switchTab('board')">🏆 PPL Leaderboard</button>
-            <button class="tab-btn" onclick="switchTab('records')">🎖️ Club Records (Portsmouth)</button>
+            <button class="tab-btn" onclick="switchTab('records')">🎖️ Club Records</button>
             <button class="tab-btn" onclick="switchTab('history')">📜 History</button>
         </nav>
 
@@ -436,10 +135,7 @@
         <div id="tab-upload" class="tab-content active">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Manual Score Submission</h2>
             <div class="form-grid">
-                <div class="form-group">
-                    <label>Archer</label>
-                    <select id="up-archer" onchange="onUploadArcherChange()"></select>
-                </div>
+                <div class="form-group"><label>Archer</label><select id="up-archer" onchange="onUploadArcherChange()"></select></div>
                 <div class="form-group">
                     <label>Round Type</label>
                     <select id="up-round" style="border-color: var(--accent);" onchange="updateUploadStats()">
@@ -451,28 +147,9 @@
                         <option value="Bray I">Bray I</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Target Face</label>
-                    <select id="up-face">
-                        <option value="Full Face" selected>Full Face</option>
-                        <option value="Triple Spot">Triple Spot</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Gender</label>
-                    <select id="up-gender" onchange="updateUploadStats()">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Age Category</label>
-                    <select id="up-cat" onchange="updateUploadStats()">
-                        <option value="Senior">Senior</option>
-                        <option value="50+">50+</option>
-                        <option value="Under 18">Under 18</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Target Face</label><select id="up-face"><option value="Full Face" selected>Full Face</option><option value="Triple Spot">Triple Spot</option></select></div>
+                <div class="form-group"><label>Gender</label><select id="up-gender" onchange="updateUploadStats()"><option value="Male">Male</option><option value="Female">Female</option></select></div>
+                <div class="form-group"><label>Age Category</label><select id="up-cat" onchange="updateUploadStats()"><option value="Senior">Senior</option><option value="50+">50+</option><option value="Under 18">Under 18</option></select></div>
                 <div class="form-group">
                     <label>Bow Style</label>
                     <select id="up-bow" onchange="updateUploadStats()">
@@ -483,49 +160,23 @@
                         <option value="Asiatic">Asiatic</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Date Shot</label>
-                    <input type="date" id="up-date">
-                </div>
-                <div class="form-group">
-                    <label>Total Score</label>
-                    <input type="number" id="up-score" min="0" max="600" placeholder="e.g. 520" oninput="updateUploadStats()">
-                </div>
-                <div class="form-group">
-                    <label>10s Count</label>
-                    <input type="number" id="up-tens" min="0" max="60" placeholder="e.g. 15" value="0">
-                </div>
-                <div class="form-group">
-                    <label>Hits Count</label>
-                    <input type="number" id="up-hits" min="0" max="60" placeholder="e.g. 60" value="60">
-                </div>
-                <div class="form-group">
-                    <label>Photo Proof (Optional)</label>
-                    <input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;">
-                </div>
+                <div class="form-group"><label>Date Shot</label><input type="date" id="up-date"></div>
+                <div class="form-group"><label>Total Score</label><input type="number" id="up-score" min="0" max="600" placeholder="e.g. 520" oninput="updateUploadStats()"></div>
+                <div class="form-group"><label>10s Count</label><input type="number" id="up-tens" min="0" max="60" placeholder="e.g. 15" value="0"></div>
+                <div class="form-group"><label>Hits Count</label><input type="number" id="up-hits" min="0" max="60" placeholder="e.g. 60" value="60"></div>
+                <div class="form-group"><label>Photo Proof</label><input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;"></div>
             </div>
-            
             <div style="background: #111827; padding: 16px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
-                <div>
-                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">MAX SCORE / ARROWS</span>
-                    <span id="up-max-stats" style="font-size: 1.1rem; font-weight: 700; color: var(--text-muted);">600 / 60</span>
-                </div>
-                <div>
-                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">EST. CLASSIFICATION GRADE</span>
-                    <span id="up-est-grade" style="font-size: 1.3rem; font-weight: 700; color: var(--accent);">Unclassified</span>
-                </div>
+                <div><span style="font-size: 0.8rem; color: var(--text-muted); display: block;">MAX SCORE / ARROWS</span><span id="up-max-stats" style="font-size: 1.1rem; font-weight: 700; color: var(--text-muted);">600 / 60</span></div>
+                <div><span style="font-size: 0.8rem; color: var(--text-muted); display: block;">EST. CLASSIFICATION GRADE</span><span id="up-est-grade" style="font-size: 1.3rem; font-weight: 700; color: var(--accent);">Unclassified</span></div>
             </div>
-
             <button class="btn" onclick="processManualScore()">💾 Save & Submit Score</button>
         </div>
 
-        <!-- 2. SHOOT TAB (LIVE KEYPAD) -->
+        <!-- 2. SHOOT TAB -->
         <div id="tab-shoot" class="tab-content">
             <div class="form-grid" style="margin-bottom: 12px;">
-                <div class="form-group">
-                    <label>Archer</label>
-                    <select id="shoot-archer" onchange="onShootArcherChange()"></select>
-                </div>
+                <div class="form-group"><label>Archer</label><select id="shoot-archer" onchange="onShootArcherChange()"></select></div>
                 <div class="form-group">
                     <label>Round Type</label>
                     <select id="shoot-round" style="border-color: var(--accent);" onchange="handleLiveRoundChange()">
@@ -537,28 +188,9 @@
                         <option value="Bray I">Bray I</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Target Face</label>
-                    <select id="shoot-face" onchange="updateLiveStats()">
-                        <option value="Full Face" selected>Full Face</option>
-                        <option value="Triple Spot">Triple Spot</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Gender</label>
-                    <select id="shoot-gender" onchange="updateLiveStats()">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Age Category</label>
-                    <select id="shoot-cat" onchange="updateLiveStats()">
-                        <option value="Senior">Senior</option>
-                        <option value="50+">50+</option>
-                        <option value="Under 18">Under 18</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Target Face</label><select id="shoot-face" onchange="updateLiveStats()"><option value="Full Face" selected>Full Face</option><option value="Triple Spot">Triple Spot</option></select></div>
+                <div class="form-group"><label>Gender</label><select id="shoot-gender" onchange="updateLiveStats()"><option value="Male">Male</option><option value="Female">Female</option></select></div>
+                <div class="form-group"><label>Age Category</label><select id="shoot-cat" onchange="updateLiveStats()"><option value="Senior">Senior</option><option value="50+">50+</option><option value="Under 18">Under 18</option></select></div>
                 <div class="form-group">
                     <label>Bow Style</label>
                     <select id="shoot-bow" onchange="updateLiveStats()">
@@ -569,71 +201,34 @@
                         <option value="Asiatic">Asiatic</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Date Shot</label>
-                    <input type="date" id="shoot-date" onchange="updateLiveStats()">
-                </div>
+                <div class="form-group"><label>Date Shot</label><input type="date" id="shoot-date" onchange="updateLiveStats()"></div>
             </div>
-
             <div class="shoot-header-stats">
-                <div class="stat-box">
-                    <div class="stat-val" id="live-total">0</div>
-                    <div class="stat-lbl" id="live-total-lbl">Total / 600</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-val" id="live-hits">0</div>
-                    <div class="stat-lbl" id="live-hits-lbl">Hits / 60</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-val" id="live-tens">0</div>
-                    <div class="stat-lbl">10s (or 5s)</div>
-                </div>
+                <div class="stat-box"><div class="stat-val" id="live-total">0</div><div class="stat-lbl" id="live-total-lbl">Total / 600</div></div>
+                <div class="stat-box"><div class="stat-val" id="live-hits">0</div><div class="stat-lbl" id="live-hits-lbl">Hits / 60</div></div>
+                <div class="stat-box"><div class="stat-val" id="live-tens">0</div><div class="stat-lbl">10s (or 5s)</div></div>
             </div>
-
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-                <div style="background: #111827; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-                    <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">AVG. ARROW</span>
-                    <span id="live-avg-arrow" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">0.00</span>
-                </div>
-                <div style="background: #111827; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-                    <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">PROJECTED GRADE</span>
-                    <span id="live-est-grade" style="font-size: 1.1rem; font-weight: 700; color: var(--accent);">Unclassified</span>
-                </div>
+                <div style="background: #111827; padding: 12px; border-radius: 8px; border: 1px solid var(--border);"><span style="font-size: 0.75rem; color: var(--text-muted); display: block;">AVG. ARROW</span><span id="live-avg-arrow" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">0.00</span></div>
+                <div style="background: #111827; padding: 12px; border-radius: 8px; border: 1px solid var(--border);"><span style="font-size: 0.75rem; color: var(--text-muted); display: block;">PROJECTED GRADE</span><span id="live-est-grade" style="font-size: 1.1rem; font-weight: 700; color: var(--accent);">Unclassified</span></div>
             </div>
-
             <div class="end-display">
-                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted);">
-                    <span id="live-end-label">End 1 of 20</span>
-                    <span id="live-arr-label">3 Arrows Per End</span>
-                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted);"><span id="live-end-label">End 1 of 20</span><span id="live-arr-label">3 Arrows Per End</span></div>
                 <div class="arrows-row" id="live-arrow-slots"></div>
             </div>
-
             <div class="keypad" id="dynamic-keypad"></div>
-
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
                 <button class="btn btn-secondary" onclick="promptResetRound()">Reset Round</button>
                 <button class="btn" id="confirm-end-btn" onclick="confirmEnd()" disabled>Confirm End</button>
             </div>
-
             <div style="margin-top: 20px; background: #111827; border: 1px solid var(--border); border-radius: 8px; padding: 12px; max-height: 250px; overflow-y: auto;">
                 <h4 style="font-size: 0.9rem; color: var(--primary); margin-bottom: 8px; text-align: center;">Running Scoresheet</h4>
                 <table style="width: 100%; font-size: 0.85rem; text-align: center;">
-                    <thead>
-                        <tr>
-                            <th style="padding: 4px; border-bottom: 1px solid #334155;">End</th>
-                            <th style="padding: 4px; border-bottom: 1px solid #334155;">Arrows</th>
-                            <th style="padding: 4px; border-bottom: 1px solid #334155;">Total</th>
-                            <th style="padding: 4px; border-bottom: 1px solid #334155;">Cum.</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th style="padding: 4px; border-bottom: 1px solid #334155;">End</th><th style="padding: 4px; border-bottom: 1px solid #334155;">Arrows</th><th style="padding: 4px; border-bottom: 1px solid #334155;">Total</th><th style="padding: 4px; border-bottom: 1px solid #334155;">Cum.</th></tr></thead>
                     <tbody id="live-scoresheet-body"></tbody>
                 </table>
             </div>
-
-            <div id="submit-league-container" class="hidden" style="margin-top: 16px;">
-                <button class="btn gold" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="submitLiveRoundToLeague()">🏆 Submit Live Round</button>
-            </div>
+            <div id="submit-league-container" class="hidden" style="margin-top: 16px;"><button class="btn gold" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="submitLiveRoundToLeague()">🏆 Submit Live Round</button></div>
         </div>
 
         <!-- 3. LEADERBOARD TAB -->
@@ -665,20 +260,9 @@
                     </select>
                 </div>
             </div>
-
             <div class="table-container">
                 <table>
-                    <thead>
-                        <tr id="leaderboard-headers">
-                            <th>Pos</th>
-                            <th>Archer</th>
-                            <th>Bow Style</th>
-                            <th>Score / Sum</th>
-                            <th>Hits</th>
-                            <th>10s</th>
-                            <th>Rnds</th>
-                        </tr>
-                    </thead>
+                    <thead><tr id="leaderboard-headers"><th>Pos</th><th>Archer</th><th>Bow Style</th><th>Score / Sum</th><th>Hits</th><th>10s</th><th>Rnds</th></tr></thead>
                     <tbody id="leaderboard-body"></tbody>
                 </table>
             </div>
@@ -717,19 +301,9 @@
                     </select>
                 </div>
             </div>
-
             <div class="table-container">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Bow Style</th>
-                            <th>Gender</th>
-                            <th>Category</th>
-                            <th>Record Holder</th>
-                            <th>Top Score</th>
-                            <th>Date Set</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Bow Style</th><th>Gender</th><th>Category</th><th>Record Holder</th><th>Top Score</th><th>Date Set</th></tr></thead>
                     <tbody id="records-body"></tbody>
                 </table>
             </div>
@@ -738,7 +312,6 @@
         <!-- 5. HISTORY TAB -->
         <div id="tab-history" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Score History</h2>
-            
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                 <div class="form-group" style="flex: 1; min-width: 140px;">
                     <label>Filter Round</label>
@@ -752,12 +325,7 @@
                         <option value="Bray I">Bray I</option>
                     </select>
                 </div>
-                <div class="form-group" style="flex: 1; min-width: 140px;">
-                    <label>Filter Archer</label>
-                    <select id="hist-archer-filter" onchange="renderHistory()">
-                        <option value="All">All Archers</option>
-                    </select>
-                </div>
+                <div class="form-group" style="flex: 1; min-width: 140px;"><label>Filter Archer</label><select id="hist-archer-filter" onchange="renderHistory()"><option value="All">All Archers</option></select></div>
                 <div class="form-group" style="flex: 1; min-width: 140px;">
                     <label>Filter Bow Style</label>
                     <select id="hist-bow-filter" onchange="renderHistory()">
@@ -770,21 +338,9 @@
                     </select>
                 </div>
             </div>
-
             <div class="table-container">
                 <table>
-                    <thead>
-                        <tr>
-                            <th class="nowrap">Date</th>
-                            <th class="nowrap">Archer</th>
-                            <th>Round</th>
-                            <th>Bow</th>
-                            <th>Score</th>
-                            <th class="nowrap">vs PB</th>
-                            <th class="nowrap">Hits / 10s</th>
-                            <th style="text-align: center;">Actions</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th class="nowrap">Date</th><th class="nowrap">Archer</th><th>Round</th><th>Bow</th><th>Score</th><th class="nowrap">vs PB</th><th class="nowrap">Hits / 10s</th><th style="text-align: center;">Actions</th></tr></thead>
                     <tbody id="history-body"></tbody>
                 </table>
             </div>
@@ -793,20 +349,13 @@
         <!-- 6. ADMIN TAB -->
         <div id="tab-admin" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">League Administration</h2>
-
-            <!-- ADMIN PIN & SECURITY SETTINGS -->
             <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
                 <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Security & PIN Management</h3>
                 <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
-                    <div class="form-group" style="flex: 1; min-width: 200px;">
-                        <label>Change Master Admin PIN</label>
-                        <input type="text" id="new-admin-pin-input" placeholder="Enter new 4-digit PIN">
-                    </div>
+                    <div class="form-group" style="flex: 1; min-width: 200px;"><label>Change Master Admin PIN</label><input type="text" id="new-admin-pin-input" placeholder="Enter new 4-digit PIN"></div>
                     <button class="btn" onclick="updateAdminPin()">🔑 Update PIN</button>
                 </div>
             </div>
-
-            <!-- DATA MANAGEMENT & CLOUD SYNC -->
             <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
                 <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Data & Cloud Management</h3>
                 <div style="display: flex; gap: 12px; flex-wrap: wrap;">
@@ -814,137 +363,52 @@
                     <button class="btn btn-secondary" onclick="forceSyncArchersToCloud()">☁️ Force Sync Archers to Cloud</button>
                 </div>
             </div>
-
-            <!-- BRANDING LOGO UPLOAD -->
             <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
                 <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Club Branding & Logo</h3>
-                <div class="form-group" style="margin-bottom: 12px;">
-                    <label>Upload League Logo Image</label>
-                    <input type="file" id="logo-file-input" accept="image/*" onchange="handleLogoUpload(event)">
-                </div>
+                <div class="form-group" style="margin-bottom: 12px;"><label>Upload League Logo Image</label><input type="file" id="logo-file-input" accept="image/*" onchange="handleLogoUpload(event)"></div>
                 <button class="btn btn-secondary" onclick="resetLeagueLogo()">Reset to Default Icon</button>
             </div>
-            
-            <!-- HISTORICAL CLUB RECORDS ENTRY -->
             <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
                 <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add Historical Club Record (Portsmouth)</h3>
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Bow Style</label>
-                        <select id="hist-bow">
-                            <option value="Recurve">Recurve</option>
-                            <option value="Compound">Compound</option>
-                            <option value="Barebow">Barebow</option>
-                            <option value="Longbow">Longbow</option>
-                            <option value="Asiatic">Asiatic</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <select id="hist-gender">
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Age / Category</label>
-                        <select id="hist-cat">
-                            <option value="Senior">Senior</option>
-                            <option value="50+">50+</option>
-                            <option value="Under 18">Under 18</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Archer Name</label>
-                        <input type="text" id="hist-name" placeholder="e.g. John Smith">
-                    </div>
-                    <div class="form-group">
-                        <label>Score</label>
-                        <input type="number" id="hist-score" min="0" max="600" placeholder="e.g. 540">
-                    </div>
-                    <div class="form-group">
-                        <label>Date Set</label>
-                        <input type="text" id="hist-date" placeholder="e.g. 04 Nov 26 or 2026-11-04">
-                    </div>
+                    <div class="form-group"><label>Bow Style</label><select id="hist-bow"><option value="Recurve">Recurve</option><option value="Compound">Compound</option><option value="Barebow">Barebow</option><option value="Longbow">Longbow</option><option value="Asiatic">Asiatic</option></select></div>
+                    <div class="form-group"><label>Gender</label><select id="hist-gender"><option value="Male">Male</option><option value="Female">Female</option></select></div>
+                    <div class="form-group"><label>Age / Category</label><select id="hist-cat"><option value="Senior">Senior</option><option value="50+">50+</option><option value="Under 18">Under 18</option></select></div>
+                    <div class="form-group"><label>Archer Name</label><input type="text" id="hist-name" placeholder="e.g. John Smith"></div>
+                    <div class="form-group"><label>Score</label><input type="number" id="hist-score" min="0" max="600" placeholder="e.g. 540"></div>
+                    <div class="form-group"><label>Date Set</label><input type="text" id="hist-date" placeholder="e.g. 04 Nov 26 or 2026-11-04"></div>
                 </div>
                 <button class="btn" onclick="submitHistoricalRecord()">📜 Save Historical Record</button>
             </div>
-
-            <!-- ADD NEW ARCHER -->
             <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
                 <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add New Archer</h3>
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="new-archer-name" placeholder="e.g. Jane Doe">
-                    </div>
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <select id="new-archer-gender">
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Age Group</label>
-                        <select id="new-archer-cat">
-                            <option value="Senior">Senior</option>
-                            <option value="50+">50+</option>
-                            <option value="Under 18">Under 18</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Default Bow</label>
-                        <select id="new-archer-bow">
-                            <option value="Recurve">Recurve</option>
-                            <option value="Compound">Compound</option>
-                            <option value="Barebow">Barebow</option>
-                            <option value="Longbow">Longbow</option>
-                            <option value="Asiatic">Asiatic</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Starting PB (Portsmouth)</label>
-                        <input type="number" id="new-archer-pb" value="584" min="0" max="600">
-                    </div>
+                    <div class="form-group"><label>Full Name</label><input type="text" id="new-archer-name" placeholder="e.g. Jane Doe"></div>
+                    <div class="form-group"><label>Gender</label><select id="new-archer-gender"><option value="Male">Male</option><option value="Female">Female</option></select></div>
+                    <div class="form-group"><label>Age Group</label><select id="new-archer-cat"><option value="Senior">Senior</option><option value="50+">50+</option><option value="Under 18">Under 18</option></select></div>
+                    <div class="form-group"><label>Default Bow</label><select id="new-archer-bow"><option value="Recurve">Recurve</option><option value="Compound">Compound</option><option value="Barebow">Barebow</option><option value="Longbow">Longbow</option><option value="Asiatic">Asiatic</option></select></div>
+                    <div class="form-group"><label>Starting PB (Portsmouth)</label><input type="number" id="new-archer-pb" value="250" min="0" max="600"></div>
                 </div>
                 <button class="btn" onclick="addNewArcherRegistry()">➕ Add Archer to Database</button>
             </div>
-
             <h3 style="font-size: 1rem; margin-bottom: 12px;">Registered Archers Database (Editable)</h3>
             <div class="table-container">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Gender</th>
-                            <th>Category</th>
-                            <th>Default Bow</th>
-                            <th>Starting PB</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Name</th><th>Gender</th><th>Category</th><th>Default Bow</th><th>Starting PB</th><th>Action</th></tr></thead>
                     <tbody id="admin-archer-table"></tbody>
                 </table>
             </div>
         </div>
-
     </div>
 
     <!-- MODALS -->
     <div class="modal" id="admin-modal">
         <div class="modal-content">
             <div class="modal-title">🔐 Master Admin Access</div>
-            <div class="form-group" style="margin-bottom: 16px;">
-                <label>PIN Code</label>
-                <input type="password" id="admin-pin-input" placeholder="Enter PIN">
-            </div>
+            <div class="form-group" style="margin-bottom: 16px;"><label>PIN Code</label><input type="password" id="admin-pin-input" placeholder="Enter PIN"></div>
             <div class="modal-actions" style="justify-content: space-between; align-items: center;">
                 <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 10px;" onclick="triggerForgotPin()">Forgot PIN?</button>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-secondary" onclick="closeAdminModal()">Cancel</button>
-                    <button class="btn" onclick="verifyAdminPin()">Unlock</button>
-                </div>
+                <div style="display: flex; gap: 8px;"><button class="btn btn-secondary" onclick="closeAdminModal()">Cancel</button><button class="btn" onclick="verifyAdminPin()">Unlock</button></div>
             </div>
         </div>
     </div>
@@ -953,9 +417,7 @@
         <div class="modal-content">
             <div class="modal-title">🔐 Admin PIN Required</div>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Enter Admin PIN to permanently delete score from database:</p>
-            <div class="form-group" style="margin-bottom: 16px;">
-                <input type="password" id="delete-pin-input" placeholder="Enter PIN">
-            </div>
+            <div class="form-group" style="margin-bottom: 16px;"><input type="password" id="delete-pin-input" placeholder="Enter PIN"></div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeDeleteAuthModal()">Cancel</button>
                 <button class="btn btn-danger" onclick="confirmDeleteAction()">Authorize Deletion</button>
@@ -978,9 +440,7 @@
         <div class="modal-content" style="max-width: 600px; text-align: center;">
             <div class="modal-title">📷 Scorecard Proof</div>
             <img id="proof-image-display" src="" alt="Scorecard Proof" style="max-width: 100%; max-height: 60vh; border-radius: 8px; margin-bottom: 16px; object-fit: contain;">
-            <div class="modal-actions" style="justify-content: center;">
-                <button class="btn btn-secondary" onclick="closeProofModal()">Close Image</button>
-            </div>
+            <div class="modal-actions" style="justify-content: center;"><button class="btn btn-secondary" onclick="closeProofModal()">Close Image</button></div>
         </div>
     </div>
 
@@ -997,17 +457,12 @@
             archers: JSON.parse(localStorage.getItem('ppl_archers')) || defaultArchers,
             history: JSON.parse(localStorage.getItem('ppl_history')) || [],
             historicalRecords: [], 
-            settings: { 
-                pin: localStorage.getItem('ppl_admin_pin') || "1010", 
-                logo: localStorage.getItem('ppl_logo') || "" 
-            }
+            settings: { pin: localStorage.getItem('ppl_admin_pin') || "1010", logo: localStorage.getItem('ppl_logo') || "" }
         };
 
-        if (!localStorage.getItem('ppl_archers')) {
-            localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
-        }
+        if (!localStorage.getItem('ppl_archers')) localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
 
-        let pendingDeleteCallback = null;
+        let activeDeleteId = null; // New ID-based deletion memory
 
         const gradeMatrix = {
             "Portsmouth": {
@@ -1088,61 +543,36 @@
             if (!dStr) return null;
             let str = String(dStr).trim();
             if (!str || str === "-") return null;
-
             let isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-            if (isoMatch) {
-                return new Date(parseInt(isoMatch[1], 10), parseInt(isoMatch[2], 10) - 1, parseInt(isoMatch[3], 10));
-            }
-
+            if (isoMatch) return new Date(parseInt(isoMatch[1], 10), parseInt(isoMatch[2], 10) - 1, parseInt(isoMatch[3], 10));
             let ukMatch = str.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})/);
-            if (ukMatch) {
-                return new Date(parseInt(ukMatch[3], 10), parseInt(ukMatch[2], 10) - 1, parseInt(ukMatch[1], 10));
-            }
-
+            if (ukMatch) return new Date(parseInt(ukMatch[3], 10), parseInt(ukMatch[2], 10) - 1, parseInt(ukMatch[1], 10));
             let d = new Date(str);
-            if (!isNaN(d.getTime())) {
-                return d;
-            }
-
+            if (!isNaN(d.getTime())) return d;
             return null;
         }
 
         function formatDateISO(dStr) {
             let dateObj = parseToDateObj(dStr);
             if (!dateObj) return "";
-            let y = dateObj.getFullYear();
-            let m = String(dateObj.getMonth() + 1).padStart(2, '0');
-            let d = String(dateObj.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
+            return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
         }
 
         function formatDateDisplay(dStr) {
             let dateObj = parseToDateObj(dStr);
             if (!dateObj) return "-";
-
-            const day = String(dateObj.getDate()).padStart(2, '0');
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const month = months[dateObj.getMonth()];
-            const year = String(dateObj.getFullYear()).slice(-2);
-
-            return `${day} ${month} ${year}`;
+            return `${String(dateObj.getDate()).padStart(2, '0')} ${months[dateObj.getMonth()]} ${String(dateObj.getFullYear()).slice(-2)}`;
         }
 
         function getArcheryGBGrade(score, bow, gender, category, roundType) {
             if (!score || score === 0) return "Unclassified";
             const labels = ["Archer 3rd", "Archer 2nd", "Archer 1st", "Bowman 3rd", "Bowman 2nd", "Bowman 1st", "Master Bowman", "Grand Master"];
-            
             const roundData = gradeMatrix[roundType] || gradeMatrix["Portsmouth"];
-            let key = `${bow}_${gender}_${category}`;
-            let thresholds = roundData[key];
-            
-            if (!thresholds) thresholds = roundData[`${bow}_Male_Senior`];
+            let thresholds = roundData[`${bow}_${gender}_${category}`] || roundData[`${bow}_Male_Senior`];
             if (!thresholds) return "Unclassified";
-
             let achieved = "Unclassified";
-            for (let i = 0; i < thresholds.length; i++) {
-                if (score >= thresholds[i]) achieved = labels[i];
-            }
+            for (let i = 0; i < thresholds.length; i++) if (score >= thresholds[i]) achieved = labels[i];
             return achieved;
         }
 
@@ -1173,10 +603,7 @@
             fetchCloudArchers(() => {
                 populateDropdowns();
                 fetchCloudHistory(() => {
-                    const restored = restoreLiveState();
-                    if (!restored) {
-                        handleLiveRoundChange();
-                    }
+                    if (!restoreLiveState()) handleLiveRoundChange();
                     renderLeaderboard();
                 });
             });
@@ -1189,7 +616,7 @@
             if (tabElement) tabElement.classList.add('active');
             
             const buttons = document.querySelectorAll('.nav-tabs .tab-btn');
-            const map = { 'upload': 0, 'shoot': 1, 'board': 2, 'records': 3, 'history': 4 };
+            const map = { 'upload': 0, 'shoot': 1, 'board': 2, 'records': 3, 'history': 4, 'admin': -1 };
             if (map[tabId] !== undefined && buttons[map[tabId]]) buttons[map[tabId]].classList.add('active');
 
             if (['board', 'records', 'history', 'admin'].includes(tabId)) {
@@ -1204,11 +631,8 @@
 
         function applyBranding() {
             const container = document.getElementById('header-logo-container');
-            if (db.settings.logo) {
-                container.innerHTML = `<div class="header-logo-box"><img src="${db.settings.logo}" alt="League Logo"></div>`;
-            } else {
-                container.innerHTML = `<div class="header-logo-box"><span class="header-logo-emoji">🎯</span></div>`;
-            }
+            if (db.settings.logo) container.innerHTML = `<div class="header-logo-box"><img src="${db.settings.logo}" alt="League Logo"></div>`;
+            else container.innerHTML = `<div class="header-logo-box"><span class="header-logo-emoji">🎯</span></div>`;
         }
 
         function handleLogoUpload(event) {
@@ -1236,40 +660,22 @@
             reader.readAsDataURL(file);
         }
 
-        function resetLeagueLogo() {
-            db.settings.logo = "";
-            localStorage.setItem('ppl_logo', "");
-            applyBranding();
-            document.getElementById('logo-file-input').value = "";
-            alert("Logo reset to default icon.");
-        }
-
+        function resetLeagueLogo() { db.settings.logo = ""; localStorage.setItem('ppl_logo', ""); applyBranding(); document.getElementById('logo-file-input').value = ""; alert("Logo reset to default icon."); }
         function updateAdminPin() {
             const newPin = document.getElementById('new-admin-pin-input').value.trim();
             if (!newPin || newPin.length < 4) { alert("Please enter a valid 4-digit PIN."); return; }
-            db.settings.pin = newPin;
-            localStorage.setItem('ppl_admin_pin', newPin);
-            document.getElementById('new-admin-pin-input').value = '';
-            alert("Master Admin PIN successfully updated!");
+            db.settings.pin = newPin; localStorage.setItem('ppl_admin_pin', newPin);
+            document.getElementById('new-admin-pin-input').value = ''; alert("Master Admin PIN successfully updated!");
         }
-
         function triggerForgotPin() {
-            const recoveryAnswer = prompt("Enter Master Recovery Phrase (default: peacock):");
-            if (recoveryAnswer && recoveryAnswer.toLowerCase() === "peacock") {
-                const tempPin = "1010";
-                db.settings.pin = tempPin;
-                localStorage.setItem('ppl_admin_pin', tempPin);
-                alert("PIN has been reset to default: 1010. Please update it in Admin settings.");
-                closeAdminModal();
-                openAdminModal();
-            } else if (recoveryAnswer !== null) {
-                alert("Incorrect recovery phrase.");
-            }
+            if (prompt("Enter Master Recovery Phrase (default: peacock):")?.toLowerCase() === "peacock") {
+                db.settings.pin = "1010"; localStorage.setItem('ppl_admin_pin', "1010");
+                alert("PIN has been reset to default: 1010."); closeAdminModal(); openAdminModal();
+            } else alert("Incorrect recovery phrase.");
         }
 
         function onUploadArcherChange() {
-            const archerId = document.getElementById('up-archer').value;
-            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            const archer = db.archers.find(a => String(a.id) === String(document.getElementById('up-archer').value));
             if (archer) {
                 if (archer.defaultBow) document.getElementById('up-bow').value = archer.defaultBow;
                 if (archer.gender) document.getElementById('up-gender').value = archer.gender;
@@ -1279,8 +685,7 @@
         }
 
         function onShootArcherChange() {
-            const archerId = document.getElementById('shoot-archer').value;
-            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             if (archer) {
                 if (archer.defaultBow) document.getElementById('shoot-bow').value = archer.defaultBow;
                 if (archer.gender) document.getElementById('shoot-gender').value = archer.gender;
@@ -1291,40 +696,31 @@
 
         function updateUploadStats() {
             const score = parseInt(document.getElementById('up-score').value) || 0;
-            const bow = document.getElementById('up-bow').value;
-            const gender = document.getElementById('up-gender').value;
-            const category = document.getElementById('up-cat').value;
-            const roundType = document.getElementById('up-round').value;
-
-            const config = getRoundConfig(roundType);
+            const config = getRoundConfig(document.getElementById('up-round').value);
             const totalArrows = config.arr * config.ends;
-
             document.getElementById('up-score').max = config.max;
             document.getElementById('up-hits').max = totalArrows;
-            document.getElementById('up-hits').value = document.getElementById('up-hits').value > totalArrows ? totalArrows : document.getElementById('up-hits').value;
+            if (document.getElementById('up-hits').value > totalArrows) document.getElementById('up-hits').value = totalArrows;
             document.getElementById('up-max-stats').innerText = `${config.max} / ${totalArrows}`;
-            document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, gender, category, roundType);
+            document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, document.getElementById('up-bow').value, document.getElementById('up-gender').value, document.getElementById('up-cat').value, document.getElementById('up-round').value);
         }
 
         function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
             if (!archerId) { alert("Please select an archer."); return; }
-
             const archer = db.archers.find(a => String(a.id) === String(archerId));
             const roundType = document.getElementById('up-round').value;
             const config = getRoundConfig(roundType);
-
             const score = parseInt(document.getElementById('up-score').value);
-            if (isNaN(score) || score < 0 || score > config.max) {
-                alert(`Please enter a valid total score between 0 and ${config.max}.`); return;
-            }
+            
+            if (isNaN(score) || score < 0 || score > config.max) { alert(`Please enter a valid total score between 0 and ${config.max}.`); return; }
 
             const record = {
                 id: Date.now(), archerId: archer.id, archerName: archer.name,
                 round: roundType, bow: document.getElementById('up-bow').value,
                 gender: document.getElementById('up-gender').value, category: document.getElementById('up-cat').value,
-                targetFace: document.getElementById('up-face').value,
-                score: score, tens: parseInt(document.getElementById('up-tens').value) || 0,
+                targetFace: document.getElementById('up-face').value, score: score,
+                tens: parseInt(document.getElementById('up-tens').value) || 0,
                 hits: parseInt(document.getElementById('up-hits').value) || (config.arr * config.ends),
                 date: document.getElementById('up-date').value || new Date().toISOString().split('T')[0],
                 screenshot: ""
@@ -1335,9 +731,7 @@
                 const reader = new FileReader();
                 reader.onload = function(e) { record.screenshot = e.target.result; submitRecord(record); };
                 reader.readAsDataURL(file);
-            } else {
-                submitRecord(record);
-            }
+            } else submitRecord(record);
         }
 
         function submitRecord(record) {
@@ -1349,19 +743,12 @@
         }
 
         function saveLiveState() {
-            const state = {
-                archerId: document.getElementById('shoot-archer').value,
-                roundType: document.getElementById('shoot-round').value,
-                bow: document.getElementById('shoot-bow').value,
-                gender: document.getElementById('shoot-gender').value,
-                category: document.getElementById('shoot-cat').value,
-                targetFace: document.getElementById('shoot-face').value,
-                date: document.getElementById('shoot-date').value,
-                currentEnd: currentEnd,
-                endsMatrix: endsMatrix,
-                liveScores: liveScores
-            };
-            localStorage.setItem('ppl_active_shoot_backup', JSON.stringify(state));
+            localStorage.setItem('ppl_active_shoot_backup', JSON.stringify({
+                archerId: document.getElementById('shoot-archer').value, roundType: document.getElementById('shoot-round').value,
+                bow: document.getElementById('shoot-bow').value, gender: document.getElementById('shoot-gender').value,
+                category: document.getElementById('shoot-cat').value, targetFace: document.getElementById('shoot-face').value,
+                date: document.getElementById('shoot-date').value, currentEnd: currentEnd, endsMatrix: endsMatrix, liveScores: liveScores
+            }));
         }
 
         function restoreLiveState() {
@@ -1386,22 +773,12 @@
                     buildDynamicKeypad(state.roundType);
                     renderLiveRoundUI();
                     
-                    if (endsMatrix[currentEnd - 1] && endsMatrix[currentEnd - 1].length === activeRoundConfig.arr) {
-                        document.getElementById('confirm-end-btn').disabled = false;
-                    }
-                    if (liveScores.length >= (activeRoundConfig.arr * activeRoundConfig.ends)) {
-                        document.getElementById('submit-league-container').classList.remove('hidden');
-                    }
+                    if (endsMatrix[currentEnd - 1] && endsMatrix[currentEnd - 1].length === activeRoundConfig.arr) document.getElementById('confirm-end-btn').disabled = false;
+                    if (liveScores.length >= (activeRoundConfig.arr * activeRoundConfig.ends)) document.getElementById('submit-league-container').classList.remove('hidden');
                     return true;
                 }
-            } catch (e) {
-                console.error("Could not restore live state", e);
-            }
+            } catch (e) { console.error(e); }
             return false;
-        }
-
-        function clearLiveBackup() {
-            localStorage.removeItem('ppl_active_shoot_backup');
         }
 
         function buildDynamicKeypad(roundType) {
@@ -1414,7 +791,6 @@
                 if (k === 2 || (k === 1)) return `<button class="key-btn white" onclick="pressScore(${k})">${k}</button>`;
                 if (k === 0) return `<button class="key-btn" style="background:#111827;" onclick="pressScore(0)">M</button>`;
             }).join('');
-            
             keypadHtml += `<button class="key-btn action" onclick="undoArrow()">⌫ Undo Arrow</button>`;
             document.getElementById('dynamic-keypad').innerHTML = keypadHtml;
             document.getElementById('live-total-lbl').innerText = `Total / ${activeRoundConfig.max}`;
@@ -1430,10 +806,7 @@
 
         function pressScore(val) {
             if (currentEnd > activeRoundConfig.ends || endsMatrix[currentEnd - 1].length >= activeRoundConfig.arr) return;
-            endsMatrix[currentEnd - 1].push(val);
-            liveScores.push(val);
-            saveLiveState();
-            renderLiveRoundUI();
+            endsMatrix[currentEnd - 1].push(val); liveScores.push(val); saveLiveState(); renderLiveRoundUI();
             if (endsMatrix[currentEnd - 1].length === activeRoundConfig.arr || (currentEnd === activeRoundConfig.ends && endsMatrix[activeRoundConfig.ends - 1].length === activeRoundConfig.arr)) {
                 document.getElementById('confirm-end-btn').disabled = false;
             }
@@ -1448,16 +821,13 @@
                 if (eIdx < activeRoundConfig.ends) endsMatrix[eIdx].push(s);
             });
             currentEnd = Math.max(1, Math.floor(liveScores.length / activeRoundConfig.arr) + (liveScores.length % activeRoundConfig.arr === 0 && liveScores.length > 0 ? 0 : 1));
-            saveLiveState();
-            renderLiveRoundUI();
+            saveLiveState(); renderLiveRoundUI();
             document.getElementById('confirm-end-btn').disabled = true;
         }
 
         function confirmEnd() {
             if (currentEnd < activeRoundConfig.ends) {
-                currentEnd++;
-                saveLiveState();
-                renderLiveRoundUI();
+                currentEnd++; saveLiveState(); renderLiveRoundUI();
                 document.getElementById('confirm-end-btn').disabled = true;
             } else {
                 document.getElementById('confirm-end-btn').disabled = true;
@@ -1467,39 +837,29 @@
         }
 
         function renderLiveRoundUI() {
-            const archerId = document.getElementById('shoot-archer').value;
-            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             const roundType = document.getElementById('shoot-round').value;
-
             const total = liveScores.reduce((a, b) => a + b, 0);
             const maxVal = roundType === "Worcester" ? 5 : 10;
-            const tens = liveScores.filter(s => s === maxVal).length;
-            const hits = liveScores.filter(s => s > 0).length;
             const arrowsShot = liveScores.length;
 
             document.getElementById('live-total').innerText = total;
-            document.getElementById('live-hits').innerText = hits;
-            document.getElementById('live-tens').innerText = tens;
+            document.getElementById('live-hits').innerText = liveScores.filter(s => s > 0).length;
+            document.getElementById('live-tens').innerText = liveScores.filter(s => s === maxVal).length;
             document.getElementById('live-avg-arrow').innerText = arrowsShot > 0 ? (total / arrowsShot).toFixed(2) : "0.00";
             
             const projectedScore = Math.round((total / Math.max(1, arrowsShot)) * (activeRoundConfig.arr * activeRoundConfig.ends));
-            if (archer) {
-                document.getElementById('live-est-grade').innerText = getArcheryGBGrade(projectedScore, document.getElementById('shoot-bow').value, document.getElementById('shoot-gender').value, document.getElementById('shoot-cat').value, roundType);
-            } else {
-                document.getElementById('live-est-grade').innerText = "Select Archer";
-            }
+            document.getElementById('live-est-grade').innerText = archer ? getArcheryGBGrade(projectedScore, document.getElementById('shoot-bow').value, document.getElementById('shoot-gender').value, document.getElementById('shoot-cat').value, roundType) : "Select Archer";
 
             document.getElementById('live-end-label').innerText = `End ${currentEnd} of ${activeRoundConfig.ends}`;
             document.getElementById('live-arr-label').innerText = `${activeRoundConfig.arr} Arrows Per End`;
 
             const activeEndValues = endsMatrix[currentEnd - 1] || [];
             document.getElementById('live-arrow-slots').innerHTML = Array.from({length: activeRoundConfig.arr}).map((_, i) => {
-                const val = activeEndValues[i];
-                return `<div class="arrow-slot ${val !== undefined ? 'filled' : ''}">${val !== undefined ? (val === 0 ? 'M' : val) : '-'}</div>`;
+                const val = activeEndValues[i]; return `<div class="arrow-slot ${val !== undefined ? 'filled' : ''}">${val !== undefined ? (val === 0 ? 'M' : val) : '-'}</div>`;
             }).join('');
 
-            let sheetHtml = '';
-            let runningTotal = 0;
+            let sheetHtml = '', runningTotal = 0;
             for (let i = 0; i < currentEnd; i++) {
                 const arrs = endsMatrix[i] || [];
                 if (arrs.length === 0 && i === currentEnd - 1) {
@@ -1509,9 +869,7 @@
                     const endSum = arrs.reduce((a, b) => a + b, 0);
                     runningTotal += endSum;
                     let displayStr = arrs.map(a => a === 0 ? 'M' : a).join(' | ');
-                    if (arrs.length < activeRoundConfig.arr) {
-                        displayStr += ' | ' + Array(activeRoundConfig.arr - arrs.length).fill('-').join(' | ');
-                    }
+                    if (arrs.length < activeRoundConfig.arr) displayStr += ' | ' + Array(activeRoundConfig.arr - arrs.length).fill('-').join(' | ');
                     sheetHtml += `<tr><td style="padding:6px; border-bottom:1px solid #1e293b;">${i+1}</td><td style="padding:6px; border-bottom:1px solid #1e293b;">${displayStr}</td><td style="padding:6px; color:var(--accent); border-bottom:1px solid #1e293b;">${endSum}</td><td style="padding:6px; font-weight:bold; color:var(--primary); border-bottom:1px solid #1e293b;">${runningTotal}</td></tr>`;
                 }
             }
@@ -1523,10 +881,8 @@
         function confirmResetRound() { closeResetModal(); resetLiveRound(true); }
 
         function resetLiveRound(forceSilent = false) {
-            currentEnd = 1;
-            endsMatrix = Array(activeRoundConfig.ends).fill(null).map(() => []);
-            liveScores = [];
-            clearLiveBackup();
+            currentEnd = 1; endsMatrix = Array(activeRoundConfig.ends).fill(null).map(() => []); liveScores = [];
+            localStorage.removeItem('ppl_active_shoot_backup');
             document.getElementById('submit-league-container').classList.add('hidden');
             document.getElementById('confirm-end-btn').disabled = true;
             renderLiveRoundUI();
@@ -1536,141 +892,77 @@
 
         function generateDigitalScorecardImage(archerName, round, bow, date, score, hits, tens, ends) {
             const canvas = document.createElement('canvas');
-            canvas.width = 600;
-            canvas.height = 750;
+            canvas.width = 600; canvas.height = 750;
             const ctx = canvas.getContext('2d');
 
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#581c87';
-            ctx.fillRect(0, 0, canvas.width, 100);
+            ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#581c87'; ctx.fillRect(0, 0, canvas.width, 100);
+            ctx.fillStyle = '#f3e8ff'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Peacock Portsmouth League (PPL)', 300, 42);
+            ctx.font = '14px sans-serif'; ctx.fillStyle = '#d8b4fe'; ctx.fillText('VERIFIED LIVE KEYPAD SCORECARD', 300, 72);
 
-            ctx.fillStyle = '#f3e8ff';
-            ctx.font = 'bold 22px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('Peacock Portsmouth League (PPL)', 300, 42);
-            ctx.font = '14px sans-serif';
-            ctx.fillStyle = '#d8b4fe';
-            ctx.fillText('VERIFIED LIVE KEYPAD SCORECARD', 300, 72);
+            ctx.fillStyle = '#1e293b'; ctx.fillRect(20, 115, 560, 110);
+            ctx.strokeStyle = '#6b21a8'; ctx.lineWidth = 2; ctx.strokeRect(20, 115, 560, 110);
 
-            ctx.fillStyle = '#1e293b';
-            ctx.fillRect(20, 115, 560, 110);
-            ctx.strokeStyle = '#6b21a8';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(20, 115, 560, 110);
+            ctx.fillStyle = '#f8fafc'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left'; ctx.fillText(archerName, 35, 145);
+            ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Round: ${round}  |  Bow: ${bow}  |  Date: ${formatDateDisplay(date)}`, 35, 170);
 
-            ctx.fillStyle = '#f8fafc';
-            ctx.font = 'bold 18px sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText(archerName, 35, 145);
+            ctx.textAlign = 'right'; ctx.font = 'bold 30px sans-serif'; ctx.fillStyle = '#d97706'; ctx.fillText(`Total: ${score}`, 560, 152);
+            ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Hits: ${hits}  |  10s/5s: ${tens}`, 560, 182);
 
-            ctx.font = '14px sans-serif';
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillText(`Round: ${round}  |  Bow: ${bow}  |  Date: ${formatDateDisplay(date)}`, 35, 170);
+            ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'left'; ctx.fillText('END BREAKDOWN:', 20, 250);
 
-            ctx.textAlign = 'right';
-            ctx.font = 'bold 30px sans-serif';
-            ctx.fillStyle = '#d97706';
-            ctx.fillText(`Total: ${score}`, 560, 152);
-
-            ctx.font = '14px sans-serif';
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillText(`Hits: ${hits}  |  10s/5s: ${tens}`, 560, 182);
-
-            ctx.font = 'bold 13px sans-serif';
-            ctx.fillStyle = '#38bdf8';
-            ctx.textAlign = 'left';
-            ctx.fillText('END BREAKDOWN:', 20, 250);
-
-            let y = 265;
-            let cumTotal = 0;
-
-            ctx.fillStyle = '#111827';
-            ctx.fillRect(20, y, 560, 22);
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = 'bold 11px sans-serif';
-            ctx.fillText('END', 30, y + 15);
-            ctx.fillText('ARROWS', 120, y + 15);
-            ctx.fillText('END TOTAL', 380, y + 15);
-            ctx.fillText('CUM. TOTAL', 480, y + 15);
+            let y = 265, cumTotal = 0;
+            ctx.fillStyle = '#111827'; ctx.fillRect(20, y, 560, 22);
+            ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 11px sans-serif';
+            ctx.fillText('END', 30, y + 15); ctx.fillText('ARROWS', 120, y + 15); ctx.fillText('END TOTAL', 380, y + 15); ctx.fillText('CUM. TOTAL', 480, y + 15);
 
             y += 22;
-
             for (let i = 0; y < 700 && i < ends.length; i++) {
                 const arrs = ends[i] || [];
                 const endSum = arrs.reduce((a, b) => a + b, 0);
                 cumTotal += endSum;
-
-                ctx.fillStyle = i % 2 === 0 ? '#1e293b' : '#0f172a';
-                ctx.fillRect(20, y, 560, 19);
-
-                ctx.fillStyle = '#f8fafc';
-                ctx.font = '11px sans-serif';
-                ctx.fillText(`End ${i + 1}`, 30, y + 14);
-
-                const arrStr = arrs.map(a => a === 0 ? 'M' : a).join(' - ') || '-';
-                ctx.fillText(arrStr, 120, y + 14);
-                ctx.fillText(`${endSum}`, 380, y + 14);
-                ctx.fillText(`${cumTotal}`, 480, y + 14);
-
+                ctx.fillStyle = i % 2 === 0 ? '#1e293b' : '#0f172a'; ctx.fillRect(20, y, 560, 19);
+                ctx.fillStyle = '#f8fafc'; ctx.font = '11px sans-serif'; ctx.fillText(`End ${i + 1}`, 30, y + 14);
+                ctx.fillText(arrs.map(a => a === 0 ? 'M' : a).join(' - ') || '-', 120, y + 14);
+                ctx.fillText(`${endSum}`, 380, y + 14); ctx.fillText(`${cumTotal}`, 480, y + 14);
                 y += 19;
             }
 
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = 'italic 11px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('Automatically generated & verified by PPL App Live Scoring System', 300, 732);
-
+            ctx.fillStyle = '#94a3b8'; ctx.font = 'italic 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Automatically generated & verified by PPL App Live Scoring System', 300, 732);
             return canvas.toDataURL('image/jpeg', 0.85);
         }
 
         function submitLiveRoundToLeague() {
-            const archerId = document.getElementById('shoot-archer').value;
-            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             if (!archer) { alert("Please select an archer."); return; }
             if (!confirm("Are you sure you want to submit this score?")) return;
 
             const roundType = document.getElementById('shoot-round').value;
-            const maxVal = roundType === "Worcester" ? 5 : 10;
             const total = liveScores.reduce((a, b) => a + b, 0);
             const hits = liveScores.filter(s => s > 0).length;
-            const tens = liveScores.filter(s => s === maxVal).length;
+            const tens = liveScores.filter(s => s === (roundType === "Worcester" ? 5 : 10)).length;
             const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
-            const bowStyle = document.getElementById('shoot-bow').value;
-            const targetFace = document.getElementById('shoot-face').value;
 
-            const autoScorecard = generateDigitalScorecardImage(
-                archer.name, roundType, bowStyle, dateShot, total, hits, tens, endsMatrix
-            );
-            
             submitRecord({
                 id: Date.now(), archerId: archer.id, archerName: archer.name,
-                round: roundType, bow: bowStyle, 
+                round: roundType, bow: document.getElementById('shoot-bow').value, 
                 gender: document.getElementById('shoot-gender').value, category: document.getElementById('shoot-cat').value,
-                targetFace: targetFace,
-                score: total, tens: tens, hits: hits,
-                date: dateShot,
-                screenshot: autoScorecard
+                targetFace: document.getElementById('shoot-face').value, score: total, tens: tens, hits: hits, date: dateShot,
+                screenshot: generateDigitalScorecardImage(archer.name, roundType, document.getElementById('shoot-bow').value, dateShot, total, hits, tens, endsMatrix)
             });
-
             resetLiveRound(true);
         }
 
         async function fetchCloudArchers(callback) {
             const localArchers = JSON.parse(localStorage.getItem('ppl_archers'));
-            if (localArchers && localArchers.length > 0) {
-                db.archers = localArchers;
-            }
+            if (localArchers && localArchers.length > 0) db.archers = localArchers;
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
             try {
                 const res = await fetch(APPS_SCRIPT_URL + "?action=getArchers");
                 const data = await res.json();
                 if (data && data.length > 0) {
-                    let map = {};
-                    db.archers.forEach(a => map[String(a.id)] = a);
-                    data.forEach(a => map[String(a.id)] = a);
-                    db.archers = Object.values(map);
-                    localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
+                    let map = {}; db.archers.forEach(a => map[String(a.id)] = a); data.forEach(a => map[String(a.id)] = a);
+                    db.archers = Object.values(map); localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
                 }
                 if(callback) callback();
             } catch(e) { if(callback) callback(); }
@@ -1679,59 +971,37 @@
         async function fetchCloudHistory(callback) {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
             try {
-                const res = await fetch(APPS_SCRIPT_URL);
-                db.history = await res.json();
-                
-                try {
-                    const histRes = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
-                    db.historicalRecords = await histRes.json();
-                } catch(e) {
-                    db.historicalRecords = [];
-                }
-                
+                db.history = await (await fetch(APPS_SCRIPT_URL)).json();
+                try { db.historicalRecords = await (await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords")).json(); } catch(e) { db.historicalRecords = []; }
                 if(callback) callback();
             } catch(e) { if(callback) callback(); }
         }
 
         async function syncRecordToCloud(record) {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
-                db.history.push(record);
-                localStorage.setItem('ppl_history', JSON.stringify(db.history));
+                db.history.push(record); localStorage.setItem('ppl_history', JSON.stringify(db.history));
                 alert("Score saved locally!"); switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); return;
             }
             try {
                 const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
-                const result = await res.json();
-                if (result.result === 'success') {
-                    alert("Score successfully submitted!");
-                    fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
-                } else {
-                    alert("Error saving score: " + (result.error || "Unknown"));
-                }
+                if ((await res.json()).result === 'success') {
+                    alert("Score successfully submitted!"); fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
+                } else alert("Error saving score.");
             } catch (e) { alert("Network error connecting to cloud."); }
         }
 
         async function forceSyncArchersToCloud() {
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { alert("Cloud URL not configured."); return; }
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) return;
             try {
-                const payload = { action: "syncArchers", archers: db.archers };
-                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-                const result = await res.json();
-                if (result.result === 'success') {
-                    alert("Archers successfully synced to cloud!");
-                } else {
-                    alert("Error syncing archers: " + (result.error || "Unknown"));
-                }
-            } catch (e) {
-                alert("Network error connecting to cloud.");
-            }
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "syncArchers", archers: db.archers }) });
+                if ((await res.json()).result === 'success') alert("Archers successfully synced to cloud!");
+            } catch (e) { alert("Network error connecting to cloud."); }
         }
 
         function populateDropdowns() {
             const sorted = [...db.archers].sort((a, b) => a.name.localeCompare(b.name));
             const options = `<option value="">-- Select Archer --</option>` + sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-            document.getElementById('up-archer').innerHTML = options;
-            document.getElementById('shoot-archer').innerHTML = options;
+            document.getElementById('up-archer').innerHTML = options; document.getElementById('shoot-archer').innerHTML = options;
             document.getElementById('hist-archer-filter').innerHTML = `<option value="All">All Archers</option>` + sorted.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
         }
 
@@ -1745,7 +1015,6 @@
             
             if (monthFilter === 'most-improved') {
                 headersRow.innerHTML = `<th>Pos</th><th>Archer</th><th>Bow Style</th><th>Max Gain vs PB</th><th>PB Baseline</th><th>Best Score</th>`;
-                
                 let archerMap = {};
                 pplHistory.forEach(h => {
                     const archer = db.archers.find(a => String(a.id) === String(h.archerId) || a.name === h.archerName);
@@ -1755,15 +1024,7 @@
                     const gain = score - startingPB;
 
                     if (!archerMap[key] || gain > archerMap[key].gain) {
-                        archerMap[key] = {
-                            archerName: h.archerName,
-                            bow: h.bow,
-                            gain: gain,
-                            pb: startingPB,
-                            bestScore: score,
-                            hits: parseInt(h.hits) || 60,
-                            tens: parseInt(h.tens) || 0
-                        };
+                        archerMap[key] = { archerName: h.archerName, bow: h.bow, gain: gain, pb: startingPB, bestScore: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0 };
                     }
                 });
 
@@ -1771,21 +1032,8 @@
                 if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
                 rows.sort((a, b) => b.gain - a.gain);
 
-                if (rows.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No data available for Most Improved calculation.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = rows.map((r, idx) => `
-                    <tr>
-                        <td><strong>#${idx + 1}</strong></td>
-                        <td class="nowrap">${r.archerName}</td>
-                        <td><span class="badge badge-gold">${r.bow}</span></td>
-                        <td><strong style="color: ${r.gain >= 0 ? 'var(--success)' : 'var(--danger)'};">${r.gain >= 0 ? '+' : ''}${r.gain}</strong></td>
-                        <td>${r.pb}</td>
-                        <td>${r.bestScore}</td>
-                    </tr>
-                `).join('');
+                if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No data available.</td></tr>`; return; }
+                tbody.innerHTML = rows.map((r, idx) => `<tr><td><strong>#${idx + 1}</strong></td><td class="nowrap">${r.archerName}</td><td><span class="badge badge-gold">${r.bow}</span></td><td><strong style="color: ${r.gain >= 0 ? 'var(--success)' : 'var(--danger)'};">${r.gain >= 0 ? '+' : ''}${r.gain}</strong></td><td>${r.pb}</td><td>${r.bestScore}</td></tr>`).join('');
                 return;
             }
 
@@ -1796,104 +1044,41 @@
                 pplHistory.forEach(h => {
                     const isoDate = formatDateISO(h.date);
                     if (!isoDate || !isoDate.startsWith(monthFilter)) return;
-
                     const key = `${h.archerId}_${h.bow}`;
                     const score = parseInt(h.score) || 0;
-                    if (!monthMap[key] || score > monthMap[key].score) {
-                        monthMap[key] = { 
-                            archerName: h.archerName, 
-                            bow: h.bow, 
-                            score: score, 
-                            hits: parseInt(h.hits) || 60, 
-                            tens: parseInt(h.tens) || 0, 
-                            rounds: 1 
-                        };
-                    }
+                    if (!monthMap[key] || score > monthMap[key].score) monthMap[key] = { archerName: h.archerName, bow: h.bow, score: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, rounds: 1 };
                 });
 
                 let rows = Object.values(monthMap);
                 if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
                 rows.sort((a, b) => b.score - a.score);
 
-                if (rows.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No Portsmouth scores recorded for this month.</td></tr>`; 
-                    return;
-                }
-
-                tbody.innerHTML = rows.map((r, idx) => `
-                    <tr>
-                        <td><strong>#${idx + 1}</strong></td>
-                        <td class="nowrap">${r.archerName}</td>
-                        <td><span class="badge badge-gold">${r.bow}</span></td>
-                        <td><strong>${r.score}</strong></td>
-                        <td>${r.hits}</td>
-                        <td>${r.tens}</td>
-                        <td>${r.rounds}</td>
-                    </tr>
-                `).join('');
-
+                if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No scores recorded for this month.</td></tr>`; return; }
+                tbody.innerHTML = rows.map((r, idx) => `<tr><td><strong>#${idx + 1}</strong></td><td class="nowrap">${r.archerName}</td><td><span class="badge badge-gold">${r.bow}</span></td><td><strong>${r.score}</strong></td><td>${r.hits}</td><td>${r.tens}</td><td>${r.rounds}</td></tr>`).join('');
             } else {
                 let archerMonthBests = {};
-
                 pplHistory.forEach(h => {
                     const isoDate = formatDateISO(h.date);
                     if (!isoDate) return;
                     const monthKey = isoDate.substring(0, 7);
                     const comboKey = `${h.archerId}_${h.bow}_${monthKey}`;
                     const score = parseInt(h.score) || 0;
-
-                    if (!archerMonthBests[comboKey] || score > archerMonthBests[comboKey].score) {
-                        archerMonthBests[comboKey] = {
-                            archerId: h.archerId,
-                            archerName: h.archerName,
-                            bow: h.bow,
-                            score: score,
-                            hits: parseInt(h.hits) || 60,
-                            tens: parseInt(h.tens) || 0,
-                            month: monthKey
-                        };
-                    }
+                    if (!archerMonthBests[comboKey] || score > archerMonthBests[comboKey].score) archerMonthBests[comboKey] = { archerId: h.archerId, archerName: h.archerName, bow: h.bow, score: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, month: monthKey };
                 });
 
                 let overallMap = {};
                 Object.values(archerMonthBests).forEach(item => {
                     const archerBowKey = `${item.archerId}_${item.bow}`;
-                    if (!overallMap[archerBowKey]) {
-                        overallMap[archerBowKey] = {
-                            archerName: item.archerName,
-                            bow: item.bow,
-                            scoreSum: 0,
-                            hitsSum: 0,
-                            tensSum: 0,
-                            monthsCount: 0
-                        };
-                    }
-                    overallMap[archerBowKey].scoreSum += item.score;
-                    overallMap[archerBowKey].hitsSum += item.hits;
-                    overallMap[archerBowKey].tensSum += item.tens;
-                    overallMap[archerBowKey].monthsCount += 1;
+                    if (!overallMap[archerBowKey]) overallMap[archerBowKey] = { archerName: item.archerName, bow: item.bow, scoreSum: 0, hitsSum: 0, tensSum: 0, monthsCount: 0 };
+                    overallMap[archerBowKey].scoreSum += item.score; overallMap[archerBowKey].hitsSum += item.hits; overallMap[archerBowKey].tensSum += item.tens; overallMap[archerBowKey].monthsCount += 1;
                 });
 
                 let rows = Object.values(overallMap);
                 if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
                 rows.sort((a, b) => b.scoreSum - a.scoreSum);
 
-                if (rows.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No Portsmouth scores recorded for overall season.</td></tr>`; 
-                    return;
-                }
-
-                tbody.innerHTML = rows.map((r, idx) => `
-                    <tr>
-                        <td><strong>#${idx + 1}</strong></td>
-                        <td class="nowrap">${r.archerName}</td>
-                        <td><span class="badge badge-gold">${r.bow}</span></td>
-                        <td><strong>${r.scoreSum}</strong></td>
-                        <td>${r.hitsSum}</td>
-                        <td>${r.tensSum}</td>
-                        <td>${r.monthsCount}</td>
-                    </tr>
-                `).join('');
+                if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No scores recorded.</td></tr>`; return; }
+                tbody.innerHTML = rows.map((r, idx) => `<tr><td><strong>#${idx + 1}</strong></td><td class="nowrap">${r.archerName}</td><td><span class="badge badge-gold">${r.bow}</span></td><td><strong>${r.scoreSum}</strong></td><td>${r.hitsSum}</td><td>${r.tensSum}</td><td>${r.monthsCount}</td></tr>`).join('');
             }
         }
 
@@ -1904,11 +1089,9 @@
             const catFilter = document.getElementById('rec-cat-filter')?.value || 'All';
 
             let allRecords = [...db.historicalRecords];
-
             const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
             const genders = ["Male", "Female"];
             const categories = ["Senior", "50+", "Under 18"];
-
             let htmlRows = [];
 
             styles.forEach(style => {
@@ -1919,24 +1102,14 @@
                         if (catFilter !== 'All' && category.toLowerCase() !== catFilter.toLowerCase()) return;
                         let best = null;
                         allRecords.forEach(r => {
-                            if ((r.bow || '').toString().trim().toLowerCase() === style.toLowerCase() &&
-                                (r.gender || 'Male').toString().trim().toLowerCase() === gender.toLowerCase() &&
-                                (r.category || 'Senior').toString().trim().toLowerCase() === category.toLowerCase()) {
+                            if ((r.bow || '').toString().trim().toLowerCase() === style.toLowerCase() && (r.gender || 'Male').toString().trim().toLowerCase() === gender.toLowerCase() && (r.category || 'Senior').toString().trim().toLowerCase() === category.toLowerCase()) {
                                 if (!best || parseInt(r.score) > parseInt(best.score)) best = r;
                             }
                         });
-                        htmlRows.push(`<tr>
-                            <td><span class="badge badge-gold">${style}</span></td>
-                            <td>${gender}</td>
-                            <td>${category}</td>
-                            <td class="nowrap"><strong>${best ? best.archerName : "No Record"}</strong></td>
-                            <td>${best ? best.score : "-"}</td>
-                            <td class="nowrap">${best && best.date ? formatDateDisplay(best.date) : "-"}</td>
-                        </tr>`);
+                        htmlRows.push(`<tr><td><span class="badge badge-gold">${style}</span></td><td>${gender}</td><td>${category}</td><td class="nowrap"><strong>${best ? best.archerName : "No Record"}</strong></td><td>${best ? best.score : "-"}</td><td class="nowrap">${best && best.date ? formatDateDisplay(best.date) : "-"}</td></tr>`);
                     });
                 });
             });
-
             tbody.innerHTML = htmlRows.length ? htmlRows.join('') : `<tr><td colspan="6" style="text-align:center;">No records match filter.</td></tr>`;
         }
 
@@ -1947,144 +1120,121 @@
             const bowFilter = document.getElementById('hist-bow-filter').value;
 
             let filtered = db.history.filter(h => {
-                const hRound = h.round || 'Portsmouth';
-                if (roundFilter !== 'All' && hRound !== roundFilter) return false;
+                if (roundFilter !== 'All' && (h.round || 'Portsmouth') !== roundFilter) return false;
                 if (archerFilter !== 'All' && String(h.archerId) !== archerFilter) return false;
                 if (bowFilter !== 'All' && h.bow !== bowFilter) return false;
                 return true;
             }).sort((a, b) => {
-                const idA = Number(a.id) || 0;
-                const idB = Number(b.id) || 0;
-                if (idA !== idB && idA > 0 && idB > 0) {
-                    return idB - idA;
-                }
-                const dateA = new Date(formatDateISO(a.date)).getTime() || 0;
-                const dateB = new Date(formatDateISO(b.date)).getTime() || 0;
-                return dateB - dateA;
+                const idA = Number(a.id) || 0; const idB = Number(b.id) || 0;
+                if (idA !== idB && idA > 0 && idB > 0) return idB - idA;
+                return (new Date(formatDateISO(b.date)).getTime() || 0) - (new Date(formatDateISO(a.date)).getTime() || 0);
             });
             
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No history found matching these filters.</td></tr>`; return;
-            }
+            if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No history found matching these filters.</td></tr>`; return; }
             
             tbody.innerHTML = filtered.map(h => {
                 const archer = db.archers.find(a => String(a.id) === String(h.archerId) || a.name === h.archerName);
                 let pbDisplay = "-";
                 if ((h.round || 'Portsmouth') === 'Portsmouth') {
-                    const startingPB = archer ? (parseInt(archer.startingPB) || 250) : 250;
-                    const diff = parseInt(h.score) - startingPB;
+                    const diff = parseInt(h.score) - (archer ? (parseInt(archer.startingPB) || 250) : 250);
                     pbDisplay = `<span class="badge ${diff >= 0 ? 'badge-success' : 'badge-danger'}">${diff >= 0 ? '+' : ''}${diff}</span>`;
                 }
-
-                const hitsVal = h.hits !== undefined ? h.hits : '60';
-                const tensVal = h.tens !== undefined ? h.tens : '0';
-                const safeName = (h.archerName || '').replace(/'/g, "\\'");
-
-                return `
-                <tr>
+                return `<tr>
                     <td class="nowrap">${formatDateDisplay(h.date)}</td>
                     <td class="nowrap">${h.archerName}</td>
                     <td><span class="badge badge-round">${h.round || 'Portsmouth'}</span></td>
                     <td>${h.bow}</td>
                     <td><strong>${h.score}</strong></td>
                     <td class="nowrap">${pbDisplay}</td>
-                    <td class="nowrap">${hitsVal} / ${tensVal}</td>
+                    <td class="nowrap">${h.hits !== undefined ? h.hits : '60'} / ${h.tens !== undefined ? h.tens : '0'}</td>
                     <td class="nowrap" style="text-align: center;">
                         <div style="display: inline-flex; gap: 4px;">
                             ${h.screenshot ? `<button class="btn btn-secondary" style="padding: 2px 6px; font-size: 0.8rem;" title="View Proof" onclick="viewProof('${h.screenshot}')">📷</button>` : ``}
-                            <button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.8rem;" title="Delete Score" onclick="requestDeleteScore('${h.id}', '${safeName}', '${h.score}', '${h.date}')">🗑️</button>
+                            <button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.8rem;" title="Delete Score" onclick="requestDeleteScore('${h.id}')">🗑️</button>
                         </div>
                     </td>
-                </tr>
-                `;
+                </tr>`;
             }).join('');
         }
 
-function confirmDeleteAction() {
-    const pin = document.getElementById('delete-pin-input').value;
-    if (pin === db.settings.pin) {
-        // 1. Save the delete instruction safely into memory BEFORE closing the modal
-        let executeDelete = pendingDeleteCallback; 
-        
-        // 2. Close the modal and clear the temporary variable
-        document.getElementById('delete-auth-modal').classList.remove('open');
-        pendingDeleteCallback = null;
-        
-        // 3. Fire the deletion request
-        if (executeDelete) {
-            executeDelete();
+        // ==========================================
+        // NEW BULLETPROOF DELETION LOGIC
+        // ==========================================
+
+        function requestDeleteScore(scoreId) {
+            activeDeleteId = scoreId; // Safely stores ID outside the modal closure
+            document.getElementById('delete-pin-input').value = '';
+            document.getElementById('delete-auth-modal').classList.add('open');
         }
-    } else {
-        alert("Incorrect Admin PIN.");
-    }
-}
+
+        function closeDeleteAuthModal() {
+            document.getElementById('delete-auth-modal').classList.remove('open');
+            activeDeleteId = null;
+        }
+
+        async function confirmDeleteAction() {
+            const pin = document.getElementById('delete-pin-input').value;
+            if (pin !== db.settings.pin) {
+                alert("Incorrect Admin PIN.");
+                return;
+            }
+
+            const scoreId = activeDeleteId;
+            
+            // Instantly close the modal to unfreeze the UI
+            document.getElementById('delete-auth-modal').classList.remove('open');
+            activeDeleteId = null;
+
+            if (!scoreId) return;
+
+            // Instantly hide the score locally in the browser so the user sees immediate feedback
+            db.history = db.history.filter(h => String(h.id) !== String(scoreId));
+            localStorage.setItem('ppl_history', JSON.stringify(db.history));
+            renderHistory();
+            renderLeaderboard();
+
+            // Fire the actual POST request to Google Apps Script
+            if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
+                try {
+                    const payload = { action: "deleteScore", id: String(scoreId) };
+                    await fetch(APPS_SCRIPT_URL, { 
+                        method: 'POST', 
+                        body: JSON.stringify(payload) 
+                    });
+                    console.log("Deletion request sent successfully.");
+                } catch(e) {
+                    console.error("Cloud error while deleting:", e);
+                }
+            }
+        }
+
+        // ==========================================
+
         function addNewArcherRegistry() {
             const name = document.getElementById('new-archer-name').value.trim();
             if (!name) { alert("Please enter a valid archer name."); return; }
-            const newArcher = {
-                id: Date.now().toString(),
-                name: name,
-                gender: document.getElementById('new-archer-gender').value,
-                category: document.getElementById('new-archer-cat').value,
-                defaultBow: document.getElementById('new-archer-bow').value,
+            db.archers.push({
+                id: Date.now().toString(), name: name, gender: document.getElementById('new-archer-gender').value,
+                category: document.getElementById('new-archer-cat').value, defaultBow: document.getElementById('new-archer-bow').value,
                 startingPB: parseInt(document.getElementById('new-archer-pb').value) || 250
-            };
-            db.archers.push(newArcher);
+            });
             localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
-            document.getElementById('new-archer-name').value = '';
-            populateDropdowns(); 
-            renderAdminTable();
+            document.getElementById('new-archer-name').value = ''; populateDropdowns(); renderAdminTable();
             alert(`Archer "${name}" added successfully!`);
         }
 
         function updateArcherField(archerId, field, value) {
             const archer = db.archers.find(a => String(a.id) === String(archerId));
-            if (archer) {
-                if (field === 'startingPB') {
-                    archer[field] = parseInt(value) || 250;
-                } else {
-                    archer[field] = value;
-                }
-                localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
-                populateDropdowns();
-            }
+            if (archer) { archer[field] = field === 'startingPB' ? (parseInt(value) || 250) : value; localStorage.setItem('ppl_archers', JSON.stringify(db.archers)); populateDropdowns(); }
         }
 
         function requestDeleteArcher(archerId) {
             const archer = db.archers.find(a => String(a.id) === String(archerId));
-            const name = archer ? archer.name : "Archer";
-            if (confirm(`Are you sure you want to delete ${name} from the database?`)) {
+            if (confirm(`Are you sure you want to delete ${archer ? archer.name : "Archer"}?`)) {
                 db.archers = db.archers.filter(a => String(a.id) !== String(archerId));
-                localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
-                populateDropdowns();
-                renderAdminTable();
-                alert(`${name} successfully deleted.`);
+                localStorage.setItem('ppl_archers', JSON.stringify(db.archers)); populateDropdowns(); renderAdminTable();
             }
         }
-
-        function closeDeleteAuthModal() {
-            document.getElementById('delete-auth-modal').classList.remove('open');
-            pendingDeleteCallback = null;
-        }
-
-       function confirmDeleteAction() {
-    const pin = document.getElementById('delete-pin-input').value;
-    if (pin === db.settings.pin) {
-        // 1. Save the delete instruction safely into memory BEFORE closing the modal
-        let executeDelete = pendingDeleteCallback; 
-        
-        // 2. Close the modal and clear the temporary variable
-        document.getElementById('delete-auth-modal').classList.remove('open');
-        pendingDeleteCallback = null;
-        
-        // 3. Fire the deletion request
-        if (executeDelete) {
-            executeDelete();
-        }
-    } else {
-        alert("Incorrect Admin PIN.");
-    }
-}
 
         function renderAdminTable() {
             const tbody = document.getElementById('admin-archer-table');
@@ -2094,31 +1244,10 @@ function confirmDeleteAction() {
             tbody.innerHTML = sorted.map(a => `
                 <tr>
                     <td class="nowrap"><strong>${a.name}</strong></td>
-                    <td>
-                        <select onchange="updateArcherField('${a.id}', 'gender', this.value)" style="padding:4px; font-size:0.85rem;">
-                            <option value="Male" ${a.gender === 'Male' ? 'selected' : ''}>Male</option>
-                            <option value="Female" ${a.gender === 'Female' ? 'selected' : ''}>Female</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select onchange="updateArcherField('${a.id}', 'category', this.value)" style="padding:4px; font-size:0.85rem;">
-                            <option value="Senior" ${(a.category||'Senior') === 'Senior' ? 'selected' : ''}>Senior</option>
-                            <option value="50+" ${(a.category||'Senior') === '50+' ? 'selected' : ''}>50+</option>
-                            <option value="Under 18" ${(a.category||'Senior') === 'Under 18' ? 'selected' : ''}>Under 18</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select onchange="updateArcherField('${a.id}', 'defaultBow', this.value)" style="padding:4px; font-size:0.85rem;">
-                            <option value="Recurve" ${a.defaultBow === 'Recurve' ? 'selected' : ''}>Recurve</option>
-                            <option value="Compound" ${a.defaultBow === 'Compound' ? 'selected' : ''}>Compound</option>
-                            <option value="Barebow" ${a.defaultBow === 'Barebow' ? 'selected' : ''}>Barebow</option>
-                            <option value="Longbow" ${a.defaultBow === 'Longbow' ? 'selected' : ''}>Longbow</option>
-                            <option value="Asiatic" ${a.defaultBow === 'Asiatic' ? 'selected' : ''}>Asiatic</option>
-                        </select>
-                    </td>
-                    <td>
-                        <input type="number" value="${a.startingPB || 250}" onchange="updateArcherField('${a.id}', 'startingPB', this.value)" style="width: 80px; padding: 4px; font-size: 0.85rem;">
-                    </td>
+                    <td><select onchange="updateArcherField('${a.id}', 'gender', this.value)" style="padding:4px; font-size:0.85rem;"><option value="Male" ${a.gender === 'Male' ? 'selected' : ''}>Male</option><option value="Female" ${a.gender === 'Female' ? 'selected' : ''}>Female</option></select></td>
+                    <td><select onchange="updateArcherField('${a.id}', 'category', this.value)" style="padding:4px; font-size:0.85rem;"><option value="Senior" ${(a.category||'Senior') === 'Senior' ? 'selected' : ''}>Senior</option><option value="50+" ${(a.category||'Senior') === '50+' ? 'selected' : ''}>50+</option><option value="Under 18" ${(a.category||'Senior') === 'Under 18' ? 'selected' : ''}>Under 18</option></select></td>
+                    <td><select onchange="updateArcherField('${a.id}', 'defaultBow', this.value)" style="padding:4px; font-size:0.85rem;"><option value="Recurve" ${a.defaultBow === 'Recurve' ? 'selected' : ''}>Recurve</option><option value="Compound" ${a.defaultBow === 'Compound' ? 'selected' : ''}>Compound</option><option value="Barebow" ${a.defaultBow === 'Barebow' ? 'selected' : ''}>Barebow</option><option value="Longbow" ${a.defaultBow === 'Longbow' ? 'selected' : ''}>Longbow</option><option value="Asiatic" ${a.defaultBow === 'Asiatic' ? 'selected' : ''}>Asiatic</option></select></td>
+                    <td><input type="number" value="${a.startingPB || 250}" onchange="updateArcherField('${a.id}', 'startingPB', this.value)" style="width: 80px; padding: 4px; font-size: 0.85rem;"></td>
                     <td><button class="btn btn-danger" style="padding: 2px 6px;" onclick="requestDeleteArcher('${a.id}')">Del</button></td>
                 </tr>
             `).join('');
@@ -2126,55 +1255,23 @@ function confirmDeleteAction() {
 
         function exportHistoryToCSV() {
             if (!db.history || db.history.length === 0) { alert("No scores available to export."); return; }
-
             let csv = "Round Name,Target Face,Date,Archer Name,Bow Style,Gender,Category,Score,Hits,10s/Xs\n";
             db.history.forEach(h => {
                 const archer = db.archers.find(a => String(a.id) === String(h.archerId) || a.name === h.archerName);
-                csv += [
-                    `"${h.round || 'Portsmouth'}"`,
-                    `"${h.targetFace || 'Full Face'}"`,
-                    formatDateISO(h.date),
-                    `"${h.archerName}"`,
-                    h.bow,
-                    h.gender || (archer ? archer.gender : "Male"),
-                    h.category || (archer ? archer.category : "Senior"),
-                    h.score,
-                    h.hits !== undefined ? h.hits : 60,
-                    h.tens
-                ].join(",") + "\n";
+                csv += [`"${h.round || 'Portsmouth'}"`, `"${h.targetFace || 'Full Face'}"`, formatDateISO(h.date), `"${h.archerName}"`, h.bow, h.gender || (archer ? archer.gender : "Male"), h.category || (archer ? archer.category : "Senior"), h.score, h.hits !== undefined ? h.hits : 60, h.tens].join(",") + "\n";
             });
-
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
-            link.download = "PPL_Indoor_Scores_GoldenRecords.csv";
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })); link.download = "PPL_Indoor_Scores.csv"; document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
         async function submitHistoricalRecord() {
-            const record = {
-                action: "addHistoricalRecord", bow: document.getElementById('hist-bow').value,
-                gender: document.getElementById('hist-gender').value, category: document.getElementById('hist-cat').value,
-                archerName: document.getElementById('hist-name').value.trim(), score: parseInt(document.getElementById('hist-score').value),
-                date: document.getElementById('hist-date').value.trim()
-            };
+            const record = { action: "addHistoricalRecord", bow: document.getElementById('hist-bow').value, gender: document.getElementById('hist-gender').value, category: document.getElementById('hist-cat').value, archerName: document.getElementById('hist-name').value.trim(), score: parseInt(document.getElementById('hist-score').value), date: document.getElementById('hist-date').value.trim() };
             if (!record.archerName || isNaN(record.score)) { alert("Enter valid name and score."); return; }
-            try {
-                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
-                if ((await res.json()).result === 'success') {
-                    alert("Historical record saved!");
-                    document.getElementById('hist-name').value = ''; document.getElementById('hist-score').value = '';
-                    fetchCloudHistory(() => renderRecords());
-                }
-            } catch(e) { alert("Network error saving historical record."); }
+            try { if ((await (await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) })).json()).result === 'success') { alert("Historical record saved!"); document.getElementById('hist-name').value = ''; document.getElementById('hist-score').value = ''; fetchCloudHistory(() => renderRecords()); } } catch(e) { alert("Network error saving historical record."); }
         }
 
         function openAdminModal() { document.getElementById('admin-modal').classList.add('open'); document.getElementById('admin-pin-input').value = ''; }
         function closeAdminModal() { document.getElementById('admin-modal').classList.remove('open'); }
-        function verifyAdminPin() {
-            if (document.getElementById('admin-pin-input').value === db.settings.pin) {
-                closeAdminModal(); switchTab('admin');
-            } else { alert("Incorrect PIN."); }
-        }
+        function verifyAdminPin() { if (document.getElementById('admin-pin-input').value === db.settings.pin) { closeAdminModal(); switchTab('admin'); } else alert("Incorrect PIN."); }
         function viewProof(src) { document.getElementById('proof-image-display').src = src; document.getElementById('proof-modal').classList.add('open'); }
         function closeProofModal() { document.getElementById('proof-modal').classList.remove('open'); }
     </script>
