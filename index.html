@@ -2002,7 +2002,7 @@
 
 function requestDeleteScore(scoreId) {
     pendingDeleteCallback = async function() {
-        // Remove locally from app history first
+        // Remove locally from app history first for instant UI update
         db.history = db.history.filter(h => String(h.id) !== String(scoreId));
         localStorage.setItem('ppl_history', JSON.stringify(db.history));
         renderHistory();
@@ -2010,8 +2010,17 @@ function requestDeleteScore(scoreId) {
 
         if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
             try {
-                const deleteUrl = `${APPS_SCRIPT_URL}?action=deleteScore&id=${encodeURIComponent(String(scoreId))}`;
-                const res = await fetch(deleteUrl);
+                // Submit via POST (just like submitting a new score)
+                const payload = {
+                    action: "deleteScore",
+                    id: String(scoreId)
+                };
+                
+                const res = await fetch(APPS_SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify(payload) 
+                });
+                
                 const result = await res.json();
                 
                 if (result.result === 'success') {
@@ -2021,12 +2030,14 @@ function requestDeleteScore(scoreId) {
                     alert("Score hidden in app, but could not update Google Sheet row.");
                 }
             } catch(e) {
-                alert("Score hidden in app. Cloud update error: verify deployment is set to 'New Version'.");
+                alert("Score hidden locally. Could not connect to Google to write DELETED.");
             }
         } else {
             alert("Score deleted locally!");
         }
     };
+    
+    // Trigger the PIN modal
     document.getElementById('delete-pin-input').value = '';
     document.getElementById('delete-auth-modal').classList.add('open');
 }
