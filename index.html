@@ -2000,51 +2000,37 @@
             }).join('');
         }
 
-        function requestDeleteScore(scoreId, archerName = '', score = '', date = '') {
-            pendingDeleteCallback = async function() {
-                db.history = db.history.filter(h => String(h.id) !== String(scoreId));
-                localStorage.setItem('ppl_history', JSON.stringify(db.history));
-                renderHistory();
-                renderLeaderboard();
+      function requestDeleteScore(scoreId, archerName = '', score = '', date = '') {
+    pendingDeleteCallback = async function() {
+        // Remove locally from app history first
+        db.history = db.history.filter(h => String(h.id) !== String(scoreId));
+        localStorage.setItem('ppl_history', JSON.stringify(db.history));
+        renderHistory();
+        renderLeaderboard();
 
-                if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
-                    try {
-                        const payload = {
-                            action: "deleteScore",
-                            id: String(scoreId),
-                            archerName: archerName,
-                            score: score,
-                            date: date
-                        };
-                        const res = await fetch(APPS_SCRIPT_URL, {
-                            method: 'POST',
-                            body: JSON.stringify(payload)
-                        });
-                        const result = await res.json();
-                        if (result.result === 'success') {
-                            alert("Score permanently deleted from Google Sheet!");
-                            fetchCloudHistory(() => { renderHistory(); renderLeaderboard(); });
-                        } else {
-                            const deleteUrl = `${APPS_SCRIPT_URL}?action=deleteScore&id=${encodeURIComponent(String(scoreId))}&archerName=${encodeURIComponent(archerName)}&score=${encodeURIComponent(score)}&date=${encodeURIComponent(date)}`;
-                            const resGet = await fetch(deleteUrl);
-                            const resultGet = await resGet.json();
-                            if (resultGet.result === 'success') {
-                                alert("Score permanently deleted from Google Sheet!");
-                                fetchCloudHistory(() => { renderHistory(); renderLeaderboard(); });
-                            } else {
-                                alert("Score deleted locally, but could not be matched in Google Sheet.");
-                            }
-                        }
-                    } catch(e) {
-                        alert("Score deleted locally. Cloud update note: ensure Apps Script is re-deployed as New Version.");
-                    }
+        if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
+            try {
+                // Send GET query string to avoid CORS preflight blocking
+                const deleteUrl = `${APPS_SCRIPT_URL}?action=deleteScore&id=${encodeURIComponent(String(scoreId))}&archerName=${encodeURIComponent(archerName)}&score=${encodeURIComponent(score)}`;
+                const res = await fetch(deleteUrl);
+                const result = await res.json();
+                
+                if (result.result === 'success') {
+                    alert("Score soft-deleted! 'DELETED' written to Google Sheet.");
+                    fetchCloudHistory(() => { renderHistory(); renderLeaderboard(); });
                 } else {
-                    alert("Score deleted locally!");
+                    alert("Score hidden in app, but could not locate matching row in Google Sheet.");
                 }
-            };
-            document.getElementById('delete-pin-input').value = '';
-            document.getElementById('delete-auth-modal').classList.add('open');
+            } catch(e) {
+                alert("Score hidden in app. Cloud update error: verify deployment is set to 'New Version'.");
+            }
+        } else {
+            alert("Score deleted locally!");
         }
+    };
+    document.getElementById('delete-pin-input').value = '';
+    document.getElementById('delete-auth-modal').classList.add('open');
+}
 
         function addNewArcherRegistry() {
             const name = document.getElementById('new-archer-name').value.trim();
