@@ -40,7 +40,7 @@
 
         .container {
             width: 100%;
-            max-width: 920px;
+            max-width: 960px;
             background: var(--bg-card);
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -52,7 +52,7 @@
 
         header {
             background: linear-gradient(135deg, #581c87, #3b0764);
-            padding: 24px 20px;
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -62,14 +62,14 @@
         .header-title {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
         }
 
         .header-logo-box {
-            width: 144px;
-            height: 144px;
-            min-width: 144px;
-            min-height: 144px;
+            width: 110px;
+            height: 110px;
+            min-width: 110px;
+            min-height: 110px;
             border-radius: 10px;
             background: #1e1b4b;
             border: 2px solid #a855f7;
@@ -88,11 +88,11 @@
         }
 
         .header-logo-emoji {
-            font-size: 5rem;
+            font-size: 4rem;
         }
 
         .header-text h1 {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             color: #f3e8ff;
             display: flex;
             align-items: center;
@@ -101,16 +101,16 @@
         }
 
         .header-text p {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #d8b4fe;
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
         .admin-btn {
             background: #581c87;
             color: var(--text-main);
             border: 1px solid #9333ea;
-            padding: 10px 18px;
+            padding: 10px 16px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
@@ -133,12 +133,12 @@
 
         .tab-btn {
             flex: 1;
-            padding: 12px 16px;
+            padding: 12px 14px;
             background: none;
             border: none;
             color: var(--text-muted);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             cursor: pointer;
             white-space: nowrap;
             text-align: center;
@@ -159,7 +159,7 @@
 
         .tab-content {
             display: none;
-            padding: 24px;
+            padding: 20px;
             flex: 1;
         }
 
@@ -170,8 +170,8 @@
         /* Forms & Inputs */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 14px;
             margin-bottom: 20px;
         }
 
@@ -182,7 +182,7 @@
         }
 
         label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -193,9 +193,9 @@
             background: var(--bg-input);
             color: var(--text-main);
             border: 1px solid var(--border);
-            padding: 10px 14px;
+            padding: 9px 12px;
             border-radius: 6px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             outline: none;
             transition: border-color 0.2s;
         }
@@ -210,13 +210,13 @@
             border: none;
             font-weight: 600;
             cursor: pointer;
-            padding: 10px 20px;
+            padding: 9px 16px;
             border-radius: 6px;
             transition: background 0.2s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn:hover { background: var(--primary-hover); }
@@ -229,21 +229,20 @@
         .table-container {
             width: 100%;
             overflow-x: auto;
-            margin-top: 16px;
+            margin-top: 14px;
             border-radius: 8px;
             border: 1px solid var(--border);
         }
 
         table {
             width: 100%;
-            min-width: 780px;
             border-collapse: collapse;
             text-align: left;
-            font-size: 0.92rem;
+            font-size: 0.86rem;
         }
 
         th, td {
-            padding: 12px 14px;
+            padding: 8px 10px;
             border-bottom: 1px solid var(--border);
             vertical-align: middle;
         }
@@ -253,7 +252,7 @@
             color: var(--text-muted);
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             letter-spacing: 0.5px;
         }
 
@@ -385,9 +384,9 @@
         /* Badges & Tags */
         .badge {
             display: inline-block;
-            padding: 4px 8px;
+            padding: 3px 6px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 700;
             text-transform: uppercase;
         }
@@ -399,15 +398,15 @@
         .hidden { display: none !important; }
 
         @media (max-width: 650px) {
-            header { flex-direction: column; text-align: center; gap: 16px; padding: 20px 16px; }
-            .header-title { flex-direction: column; gap: 12px; }
-            .header-logo-box { width: 96px; height: 96px; min-width: 96px; min-height: 96px; }
-            .header-logo-emoji { font-size: 3.5rem; }
-            .header-text h1 { font-size: 1.25rem; justify-content: center; text-align: center; }
+            header { flex-direction: column; text-align: center; gap: 14px; padding: 16px; }
+            .header-title { flex-direction: column; gap: 10px; }
+            .header-logo-box { width: 80px; height: 80px; min-width: 80px; min-height: 80px; }
+            .header-logo-emoji { font-size: 3rem; }
+            .header-text h1 { font-size: 1.2rem; justify-content: center; text-align: center; }
             .header-text p { font-size: 0.8rem; }
-            .admin-btn { width: 100%; padding: 12px; }
+            .admin-btn { width: 100%; padding: 10px; }
             .shoot-header-stats { gap: 8px; padding: 12px; }
-            .stat-box .stat-val { font-size: 1.25rem; }
+            .stat-box .stat-val { font-size: 1.2rem; }
             .keypad { grid-template-columns: repeat(4, 1fr); }
             .form-grid { grid-template-columns: 1fr; }
         }
@@ -742,12 +741,12 @@
             </div>
         </div>
 
-        <!-- 5. HISTORY TAB -->
+        <!-- 5. HISTORY TAB (STREAMLINED VIEW) -->
         <div id="tab-history" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Score History</h2>
             
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
-                <div class="form-group" style="flex: 1; min-width: 150px;">
+                <div class="form-group" style="flex: 1; min-width: 140px;">
                     <label>Filter Round</label>
                     <select id="hist-round-filter" onchange="renderHistory()">
                         <option value="All">All Rounds</option>
@@ -759,13 +758,13 @@
                         <option value="Bray I">Bray I</option>
                     </select>
                 </div>
-                <div class="form-group" style="flex: 1; min-width: 150px;">
+                <div class="form-group" style="flex: 1; min-width: 140px;">
                     <label>Filter Archer</label>
                     <select id="hist-archer-filter" onchange="renderHistory()">
                         <option value="All">All Archers</option>
                     </select>
                 </div>
-                <div class="form-group" style="flex: 1; min-width: 150px;">
+                <div class="form-group" style="flex: 1; min-width: 140px;">
                     <label>Filter Bow Style</label>
                     <select id="hist-bow-filter" onchange="renderHistory()">
                         <option value="All">All Bow Styles</option>
@@ -788,10 +787,8 @@
                             <th>Bow</th>
                             <th>Score</th>
                             <th class="nowrap">vs PB</th>
-                            <th>Hits</th>
-                            <th>10s/5s</th>
-                            <th>Proof</th>
-                            <th>Action</th>
+                            <th class="nowrap">Hits / 10s</th>
+                            <th style="text-align: center;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="history-body"></tbody>
@@ -1983,7 +1980,7 @@
             });
             
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color: var(--text-muted);">No history found matching these filters.</td></tr>`; return;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No history found matching these filters.</td></tr>`; return;
             }
             
             tbody.innerHTML = filtered.map(h => {
@@ -1992,8 +1989,11 @@
                 if ((h.round || 'Portsmouth') === 'Portsmouth') {
                     const startingPB = archer ? (parseInt(archer.startingPB) || 250) : 250;
                     const diff = parseInt(h.score) - startingPB;
-                    pbDisplay = `<span class="badge ${diff >= 0 ? 'badge-success' : 'badge-danger'}">${diff >= 0 ? '+' : ''}${diff} vs PB</span>`;
+                    pbDisplay = `<span class="badge ${diff >= 0 ? 'badge-success' : 'badge-danger'}">${diff >= 0 ? '+' : ''}${diff}</span>`;
                 }
+
+                const hitsVal = h.hits !== undefined ? h.hits : '60';
+                const tensVal = h.tens !== undefined ? h.tens : '0';
 
                 return `
                 <tr>
@@ -2003,10 +2003,13 @@
                     <td>${h.bow}</td>
                     <td><strong>${h.score}</strong></td>
                     <td class="nowrap">${pbDisplay}</td>
-                    <td>${h.hits !== undefined ? h.hits : '-'}</td>
-                    <td>${h.tens}</td>
-                    <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 2px 6px;" onclick="viewProof('${h.screenshot}')">📷</button>` : `-`}</td>
-                    <td><button class="btn btn-danger" style="padding: 2px 6px;" onclick="requestDeleteScore('${h.id}')">Del</button></td>
+                    <td class="nowrap">${hitsVal} / ${tensVal}</td>
+                    <td class="nowrap" style="text-align: center;">
+                        <div style="display: inline-flex; gap: 4px;">
+                            ${h.screenshot ? `<button class="btn btn-secondary" style="padding: 2px 6px; font-size: 0.8rem;" title="View Proof" onclick="viewProof('${h.screenshot}')">📷</button>` : ``}
+                            <button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.8rem;" title="Delete Score" onclick="requestDeleteScore('${h.id}')">🗑️</button>
+                        </div>
+                    </td>
                 </tr>
                 `;
             }).join('');
@@ -2021,10 +2024,8 @@
 
                 if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                     try {
-                        const res = await fetch(APPS_SCRIPT_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({ action: "deleteScore", id: String(scoreId) })
-                        });
+                        const deleteUrl = `${APPS_SCRIPT_URL}?action=deleteScore&id=${encodeURIComponent(String(scoreId))}`;
+                        const res = await fetch(deleteUrl);
                         const result = await res.json();
                         if (result.result === 'success') {
                             alert("Score permanently deleted from Google Sheet!");
