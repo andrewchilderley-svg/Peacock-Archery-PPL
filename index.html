@@ -87,9 +87,7 @@
             display: block;
         }
 
-        .header-logo-emoji {
-            font-size: 4rem;
-        }
+        .header-logo-emoji { font-size: 4rem; }
 
         .header-text h1 {
             font-size: 1.5rem;
@@ -163,9 +161,7 @@
             flex: 1;
         }
 
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content.active { display: block; }
 
         /* Forms & Inputs */
         .form-grid {
@@ -200,9 +196,7 @@
             transition: border-color 0.2s;
         }
 
-        select:focus, input:focus {
-            border-color: #a855f7;
-        }
+        select:focus, input:focus { border-color: #a855f7; }
 
         .btn {
             background: var(--primary);
@@ -741,7 +735,7 @@
             </div>
         </div>
 
-        <!-- 5. HISTORY TAB (STREAMLINED VIEW) -->
+        <!-- 5. HISTORY TAB -->
         <div id="tab-history" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Score History</h2>
             
@@ -1524,16 +1518,9 @@
             document.getElementById('live-scoresheet-body').innerHTML = sheetHtml;
         }
 
-        function promptResetRound() { 
-            document.getElementById('reset-modal').classList.add('open'); 
-        }
-        function closeResetModal() { 
-            document.getElementById('reset-modal').classList.remove('open'); 
-        }
-        function confirmResetRound() { 
-            closeResetModal(); 
-            resetLiveRound(true); 
-        }
+        function promptResetRound() { document.getElementById('reset-modal').classList.add('open'); }
+        function closeResetModal() { document.getElementById('reset-modal').classList.remove('open'); }
+        function confirmResetRound() { closeResetModal(); resetLiveRound(true); }
 
         function resetLiveRound(forceSilent = false) {
             currentEnd = 1;
@@ -1545,10 +1532,7 @@
             renderLiveRoundUI();
         }
 
-        function updateLiveStats() { 
-            saveLiveState(); 
-            renderLiveRoundUI(); 
-        }
+        function updateLiveStats() { saveLiveState(); renderLiveRoundUI(); }
 
         function generateDigitalScorecardImage(archerName, round, bow, date, score, hits, tens, ends) {
             const canvas = document.createElement('canvas');
@@ -1994,6 +1978,7 @@
 
                 const hitsVal = h.hits !== undefined ? h.hits : '60';
                 const tensVal = h.tens !== undefined ? h.tens : '0';
+                const safeName = (h.archerName || '').replace(/'/g, "\\'");
 
                 return `
                 <tr>
@@ -2007,7 +1992,7 @@
                     <td class="nowrap" style="text-align: center;">
                         <div style="display: inline-flex; gap: 4px;">
                             ${h.screenshot ? `<button class="btn btn-secondary" style="padding: 2px 6px; font-size: 0.8rem;" title="View Proof" onclick="viewProof('${h.screenshot}')">📷</button>` : ``}
-                            <button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.8rem;" title="Delete Score" onclick="requestDeleteScore('${h.id}')">🗑️</button>
+                            <button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.8rem;" title="Delete Score" onclick="requestDeleteScore('${h.id}', '${safeName}', '${h.score}', '${h.date}')">🗑️</button>
                         </div>
                     </td>
                 </tr>
@@ -2015,7 +2000,7 @@
             }).join('');
         }
 
-        function requestDeleteScore(scoreId) {
+        function requestDeleteScore(scoreId, archerName = '', score = '', date = '') {
             pendingDeleteCallback = async function() {
                 db.history = db.history.filter(h => String(h.id) !== String(scoreId));
                 localStorage.setItem('ppl_history', JSON.stringify(db.history));
@@ -2024,17 +2009,34 @@
 
                 if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                     try {
-                        const deleteUrl = `${APPS_SCRIPT_URL}?action=deleteScore&id=${encodeURIComponent(String(scoreId))}`;
-                        const res = await fetch(deleteUrl);
+                        const payload = {
+                            action: "deleteScore",
+                            id: String(scoreId),
+                            archerName: archerName,
+                            score: score,
+                            date: date
+                        };
+                        const res = await fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            body: JSON.stringify(payload)
+                        });
                         const result = await res.json();
                         if (result.result === 'success') {
                             alert("Score permanently deleted from Google Sheet!");
                             fetchCloudHistory(() => { renderHistory(); renderLeaderboard(); });
                         } else {
-                            alert("Score deleted locally, but could not be located in Google Sheet.");
+                            const deleteUrl = `${APPS_SCRIPT_URL}?action=deleteScore&id=${encodeURIComponent(String(scoreId))}&archerName=${encodeURIComponent(archerName)}&score=${encodeURIComponent(score)}&date=${encodeURIComponent(date)}`;
+                            const resGet = await fetch(deleteUrl);
+                            const resultGet = await resGet.json();
+                            if (resultGet.result === 'success') {
+                                alert("Score permanently deleted from Google Sheet!");
+                                fetchCloudHistory(() => { renderHistory(); renderLeaderboard(); });
+                            } else {
+                                alert("Score deleted locally, but could not be matched in Google Sheet.");
+                            }
                         }
                     } catch(e) {
-                        alert("Score deleted locally, but network error prevented cloud update.");
+                        alert("Score deleted locally. Cloud update note: ensure Apps Script is re-deployed as New Version.");
                     }
                 } else {
                     alert("Score deleted locally!");
