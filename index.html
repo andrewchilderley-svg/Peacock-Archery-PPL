@@ -40,7 +40,7 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 920px;
             background: var(--bg-card);
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -236,14 +236,16 @@
 
         table {
             width: 100%;
+            min-width: 780px;
             border-collapse: collapse;
             text-align: left;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
         }
 
         th, td {
-            padding: 12px 16px;
+            padding: 12px 14px;
             border-bottom: 1px solid var(--border);
+            vertical-align: middle;
         }
 
         th {
@@ -251,12 +253,14 @@
             color: var(--text-muted);
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             letter-spacing: 0.5px;
         }
 
         tr:last-child td { border-bottom: none; }
         tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+        .nowrap { white-space: nowrap; }
 
         /* Keypad Shoot Area */
         .shoot-header-stats {
@@ -431,7 +435,7 @@
             <button class="tab-btn active" onclick="switchTab('upload')">📤 Upload Round</button>
             <button class="tab-btn" onclick="switchTab('shoot')">🎯 Shoot Round</button>
             <button class="tab-btn" onclick="switchTab('board')">🏆 PPL Leaderboard</button>
-            <button class="tab-btn" onclick="switchTab('records')">🎖️ Club Portsmouth Records</button>
+            <button class="tab-btn" onclick="switchTab('records')">🎖️ Club Records (Portsmouth)</button>
             <button class="tab-btn" onclick="switchTab('history')">📜 History</button>
         </nav>
 
@@ -689,7 +693,7 @@
 
         <!-- 4. RECORDS TAB -->
         <div id="tab-records" class="tab-content">
-            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Portsmouth Records <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">(Portsmouth Rounds Only)</span></h2>
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Records (Portsmouth) <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">(Portsmouth Rounds Only)</span></h2>
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                 <div class="form-group" style="flex: 1; min-width: 150px;">
                     <label>Filter Bow Style</label>
@@ -778,12 +782,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Archer</th>
+                            <th class="nowrap">Date</th>
+                            <th class="nowrap">Archer</th>
                             <th>Round</th>
                             <th>Bow</th>
                             <th>Score</th>
-                            <th>vs PB</th>
+                            <th class="nowrap">vs PB</th>
                             <th>Hits</th>
                             <th>10s/5s</th>
                             <th>Proof</th>
@@ -869,7 +873,7 @@
                     </div>
                     <div class="form-group">
                         <label>Date Set</label>
-                        <input type="text" id="hist-date" placeholder="e.g. 2024 or 2024-05-12">
+                        <input type="text" id="hist-date" placeholder="e.g. 04 Nov 26 or 2026-11-04">
                     </div>
                 </div>
                 <button class="btn" onclick="submitHistoricalRecord()">📜 Save Historical Record</button>
@@ -1088,44 +1092,61 @@
             }
         };
 
-        function formatDateClean(dStr) {
+        // Formats dates cleanly as DD MMM YY (e.g. 04 Nov 26)
+        function formatDateDisplay(dStr) {
             if (!dStr) return "-";
             let str = String(dStr).trim();
+            if (str === "" || str === "-") return "-";
 
-            let isoMatch = str.match(/\b(\d{4})[-/](\d{1,2})[-/](\d{1,2})\b/);
-            if (isoMatch) {
-                let y = isoMatch[1];
-                let m = isoMatch[2].padStart(2, '0');
-                let d = isoMatch[3].padStart(2, '0');
-                return `${y}-${m}-${d}`;
-            }
+            let dateObj = null;
 
-            const months = { jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06', jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12' };
-            let nameMatch = str.match(/([a-zA-Z]{3})\s+(\d{1,2})\s+(\d{4})/) || str.match(/(\d{1,2})\s+([a-zA-Z]{3})\s+(\d{4})/);
-            if (nameMatch) {
-                let mStr, dayStr, yrStr;
-                if (isNaN(parseInt(nameMatch[1]))) {
-                    mStr = nameMatch[1].toLowerCase();
-                    dayStr = nameMatch[2];
-                    yrStr = nameMatch[3];
+            // UK Format DD/MM/YYYY or DD-MM-YYYY
+            let ukMatch = str.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
+            if (ukMatch) {
+                let d = parseInt(ukMatch[1], 10);
+                let m = parseInt(ukMatch[2], 10) - 1;
+                let y = parseInt(ukMatch[3], 10);
+                dateObj = new Date(y, m, d);
+            } else {
+                // ISO YYYY-MM-DD
+                let isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+                if (isoMatch) {
+                    let y = parseInt(isoMatch[1], 10);
+                    let m = parseInt(isoMatch[2], 10) - 1;
+                    let d = parseInt(isoMatch[3], 10);
+                    dateObj = new Date(y, m, d);
                 } else {
-                    dayStr = nameMatch[1];
-                    mStr = nameMatch[2].toLowerCase();
-                    yrStr = nameMatch[3];
-                }
-                if (months[mStr]) {
-                    return `${yrStr}-${months[mStr]}-${dayStr.padStart(2, '0')}`;
+                    let parsed = new Date(str);
+                    if (!isNaN(parsed.getTime())) {
+                        dateObj = parsed;
+                    }
                 }
             }
 
-            let d = new Date(str);
-            if (!isNaN(d.getTime())) {
-                let year = d.getFullYear();
-                let month = String(d.getMonth() + 1).padStart(2, '0');
-                let day = String(d.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
+            if (!dateObj || isNaN(dateObj.getTime())) {
+                return str;
             }
 
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const month = months[dateObj.getMonth()];
+            const year = String(dateObj.getFullYear()).slice(-2);
+
+            return `${day} ${month} ${year}`;
+        }
+
+        // Internal YYYY-MM-DD helper for sorting/filtering
+        function formatDateISO(dStr) {
+            if (!dStr) return "";
+            let str = String(dStr).trim();
+            let ukMatch = str.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
+            if (ukMatch) {
+                return `${ukMatch[3]}-${ukMatch[2].padStart(2, '0')}-${ukMatch[1].padStart(2, '0')}`;
+            }
+            let isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+            if (isoMatch) {
+                return `${isoMatch[1]}-${isoMatch[2].padStart(2, '0')}-${isoMatch[3].padStart(2, '0')}`;
+            }
             return str;
         }
 
@@ -1577,7 +1598,7 @@
 
             ctx.font = '14px sans-serif';
             ctx.fillStyle = '#94a3b8';
-            ctx.fillText(`Round: ${round}  |  Bow: ${bow}  |  Date: ${date}`, 35, 170);
+            ctx.fillText(`Round: ${round}  |  Bow: ${bow}  |  Date: ${formatDateDisplay(date)}`, 35, 170);
 
             ctx.textAlign = 'right';
             ctx.font = 'bold 30px sans-serif';
@@ -1790,7 +1811,7 @@
                 tbody.innerHTML = rows.map((r, idx) => `
                     <tr>
                         <td><strong>#${idx + 1}</strong></td>
-                        <td>${r.archerName}</td>
+                        <td class="nowrap">${r.archerName}</td>
                         <td><span class="badge badge-gold">${r.bow}</span></td>
                         <td><strong style="color: ${r.gain >= 0 ? 'var(--success)' : 'var(--danger)'};">${r.gain >= 0 ? '+' : ''}${r.gain}</strong></td>
                         <td>${r.pb}</td>
@@ -1805,8 +1826,8 @@
             if (monthFilter !== 'overall') {
                 let monthMap = {};
                 pplHistory.forEach(h => {
-                    const cleanDate = formatDateClean(h.date);
-                    if (!cleanDate || !cleanDate.startsWith(monthFilter)) return;
+                    const isoDate = formatDateISO(h.date);
+                    if (!isoDate || !isoDate.startsWith(monthFilter)) return;
 
                     const key = `${h.archerId}_${h.bow}`;
                     const score = parseInt(h.score) || 0;
@@ -1834,7 +1855,7 @@
                 tbody.innerHTML = rows.map((r, idx) => `
                     <tr>
                         <td><strong>#${idx + 1}</strong></td>
-                        <td>${r.archerName}</td>
+                        <td class="nowrap">${r.archerName}</td>
                         <td><span class="badge badge-gold">${r.bow}</span></td>
                         <td><strong>${r.score}</strong></td>
                         <td>${r.hits}</td>
@@ -1847,9 +1868,9 @@
                 let archerMonthBests = {};
 
                 pplHistory.forEach(h => {
-                    const cleanDate = formatDateClean(h.date);
-                    if (!cleanDate || cleanDate === "-") return;
-                    const monthKey = cleanDate.substring(0, 7);
+                    const isoDate = formatDateISO(h.date);
+                    if (!isoDate) return;
+                    const monthKey = isoDate.substring(0, 7);
                     const comboKey = `${h.archerId}_${h.bow}_${monthKey}`;
                     const score = parseInt(h.score) || 0;
 
@@ -1897,7 +1918,7 @@
                 tbody.innerHTML = rows.map((r, idx) => `
                     <tr>
                         <td><strong>#${idx + 1}</strong></td>
-                        <td>${r.archerName}</td>
+                        <td class="nowrap">${r.archerName}</td>
                         <td><span class="badge badge-gold">${r.bow}</span></td>
                         <td><strong>${r.scoreSum}</strong></td>
                         <td>${r.hitsSum}</td>
@@ -1930,9 +1951,9 @@
                         if (catFilter !== 'All' && category.toLowerCase() !== catFilter.toLowerCase()) return;
                         let best = null;
                         allRecords.forEach(r => {
-                            if ((r.bow || '').toLowerCase() === style.toLowerCase() &&
-                                (r.gender || 'Male').toLowerCase() === gender.toLowerCase() &&
-                                (r.category || 'Senior').toLowerCase() === category.toLowerCase()) {
+                            if ((r.bow || '').toString().trim().toLowerCase() === style.toLowerCase() &&
+                                (r.gender || 'Male').toString().trim().toLowerCase() === gender.toLowerCase() &&
+                                (r.category || 'Senior').toString().trim().toLowerCase() === category.toLowerCase()) {
                                 if (!best || parseInt(r.score) > parseInt(best.score)) best = r;
                             }
                         });
@@ -1940,9 +1961,9 @@
                             <td><span class="badge badge-gold">${style}</span></td>
                             <td>${gender}</td>
                             <td>${category}</td>
-                            <td><strong>${best ? best.archerName : "No Record"}</strong></td>
+                            <td class="nowrap"><strong>${best ? best.archerName : "No Record"}</strong></td>
                             <td>${best ? best.score : "-"}</td>
-                            <td>${best && best.date ? formatDateClean(best.date) : "-"}</td>
+                            <td class="nowrap">${best && best.date ? formatDateDisplay(best.date) : "-"}</td>
                         </tr>`);
                     });
                 });
@@ -1969,8 +1990,8 @@
                 if (idA !== idB && idA > 0 && idB > 0) {
                     return idB - idA;
                 }
-                const dateA = new Date(formatDateClean(a.date)).getTime() || 0;
-                const dateB = new Date(formatDateClean(b.date)).getTime() || 0;
+                const dateA = new Date(formatDateISO(a.date)).getTime() || 0;
+                const dateB = new Date(formatDateISO(b.date)).getTime() || 0;
                 return dateB - dateA;
             });
             
@@ -1989,12 +2010,12 @@
 
                 return `
                 <tr>
-                    <td>${formatDateClean(h.date)}</td>
-                    <td>${h.archerName}</td>
+                    <td class="nowrap">${formatDateDisplay(h.date)}</td>
+                    <td class="nowrap">${h.archerName}</td>
                     <td><span class="badge badge-round">${h.round || 'Portsmouth'}</span></td>
                     <td>${h.bow}</td>
                     <td><strong>${h.score}</strong></td>
-                    <td>${pbDisplay}</td>
+                    <td class="nowrap">${pbDisplay}</td>
                     <td>${h.hits !== undefined ? h.hits : '-'}</td>
                     <td>${h.tens}</td>
                     <td>${h.screenshot ? `<button class="btn btn-secondary" style="padding: 2px 6px;" onclick="viewProof('${h.screenshot}')">📷</button>` : `-`}</td>
@@ -2085,7 +2106,7 @@
             
             tbody.innerHTML = sorted.map(a => `
                 <tr>
-                    <td><strong>${a.name}</strong></td>
+                    <td class="nowrap"><strong>${a.name}</strong></td>
                     <td>
                         <select onchange="updateArcherField('${a.id}', 'gender', this.value)" style="padding:4px; font-size:0.85rem;">
                             <option value="Male" ${a.gender === 'Male' ? 'selected' : ''}>Male</option>
@@ -2125,7 +2146,7 @@
                 csv += [
                     `"${h.round || 'Portsmouth'}"`,
                     `"${h.targetFace || 'Full Face'}"`,
-                    formatDateClean(h.date),
+                    formatDateISO(h.date),
                     `"${h.archerName}"`,
                     h.bow,
                     h.gender || (archer ? archer.gender : "Male"),
