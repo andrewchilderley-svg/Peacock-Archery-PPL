@@ -2000,37 +2000,23 @@
             }).join('');
         }
 
-function requestDeleteScore(scoreId) {
-    // Grab archer details as a backup matching method
-    const record = db.history.find(h => String(h.id) === String(scoreId));
-    const safeName = record ? encodeURIComponent(record.archerName) : "";
-    const safeScore = record ? encodeURIComponent(record.score) : "";
-
-    pendingDeleteCallback = function() {
-        // 1. CRITICAL UI FIX: Close the PIN modal immediately
-        const modal = document.getElementById('delete-auth-modal');
-        if (modal) modal.classList.remove('open');
-
-        // 2. Instantly hide the score in the app UI without needing a refresh
-        db.history = db.history.filter(h => String(h.id) !== String(scoreId));
-        localStorage.setItem('ppl_history', JSON.stringify(db.history));
-        renderHistory();
-        renderLeaderboard();
-
-        // 3. Send unblockable background GET request to Google Sheets
-        if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
-            const deleteUrl = `${APPS_SCRIPT_URL}?action=deleteScore&id=${scoreId}&archerName=${safeName}&score=${safeScore}`;
-            
-            // 'no-cors' forces the browser to send the command without panicking over security rules
-            fetch(deleteUrl, { method: 'GET', mode: 'no-cors' })
-                .then(() => console.log("Delete instruction sent to Google Sheets"))
-                .catch(e => console.error("Network error:", e));
+function confirmDeleteAction() {
+    const pin = document.getElementById('delete-pin-input').value;
+    if (pin === db.settings.pin) {
+        // 1. Save the delete instruction safely into memory BEFORE closing the modal
+        let executeDelete = pendingDeleteCallback; 
+        
+        // 2. Close the modal and clear the temporary variable
+        document.getElementById('delete-auth-modal').classList.remove('open');
+        pendingDeleteCallback = null;
+        
+        // 3. Fire the deletion request
+        if (executeDelete) {
+            executeDelete();
         }
-    };
-
-    // Open the PIN modal to start
-    document.getElementById('delete-pin-input').value = '';
-    document.getElementById('delete-auth-modal').classList.add('open');
+    } else {
+        alert("Incorrect Admin PIN.");
+    }
 }
         function addNewArcherRegistry() {
             const name = document.getElementById('new-archer-name').value.trim();
@@ -2081,19 +2067,24 @@ function requestDeleteScore(scoreId) {
             pendingDeleteCallback = null;
         }
 
-        function confirmDeleteAction() {
-            const pin = document.getElementById('delete-pin-input').value;
-            if (pin === db.settings.pin) {
-                closeDeleteAuthModal();
-                if (pendingDeleteCallback) {
-                    let cb = pendingDeleteCallback;
-                    pendingDeleteCallback = null;
-                    cb();
-                }
-            } else {
-                alert("Incorrect Admin PIN.");
-            }
+       function confirmDeleteAction() {
+    const pin = document.getElementById('delete-pin-input').value;
+    if (pin === db.settings.pin) {
+        // 1. Save the delete instruction safely into memory BEFORE closing the modal
+        let executeDelete = pendingDeleteCallback; 
+        
+        // 2. Close the modal and clear the temporary variable
+        document.getElementById('delete-auth-modal').classList.remove('open');
+        pendingDeleteCallback = null;
+        
+        // 3. Fire the deletion request
+        if (executeDelete) {
+            executeDelete();
         }
+    } else {
+        alert("Incorrect Admin PIN.");
+    }
+}
 
         function renderAdminTable() {
             const tbody = document.getElementById('admin-archer-table');
