@@ -2000,7 +2000,7 @@
             }).join('');
         }
 
-      function requestDeleteScore(scoreId, archerName = '', score = '', date = '') {
+function requestDeleteScore(scoreId) {
     pendingDeleteCallback = async function() {
         // Remove locally from app history first
         db.history = db.history.filter(h => String(h.id) !== String(scoreId));
@@ -2010,8 +2010,7 @@
 
         if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
             try {
-                // Send GET query string to avoid CORS preflight blocking
-                const deleteUrl = `${APPS_SCRIPT_URL}?action=deleteScore&id=${encodeURIComponent(String(scoreId))}&archerName=${encodeURIComponent(archerName)}&score=${encodeURIComponent(score)}`;
+                const deleteUrl = `${APPS_SCRIPT_URL}?action=deleteScore&id=${encodeURIComponent(String(scoreId))}`;
                 const res = await fetch(deleteUrl);
                 const result = await res.json();
                 
@@ -2019,7 +2018,7 @@
                     alert("Score soft-deleted! 'DELETED' written to Google Sheet.");
                     fetchCloudHistory(() => { renderHistory(); renderLeaderboard(); });
                 } else {
-                    alert("Score hidden in app, but could not locate matching row in Google Sheet.");
+                    alert("Score hidden in app, but could not update Google Sheet row.");
                 }
             } catch(e) {
                 alert("Score hidden in app. Cloud update error: verify deployment is set to 'New Version'.");
