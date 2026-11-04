@@ -2001,46 +2001,34 @@
         }
 
 function requestDeleteScore(scoreId) {
-    // Look up the record first to get fallback match data
+    // Grab archer details as a backup matching method
     const record = db.history.find(h => String(h.id) === String(scoreId));
-    
-    pendingDeleteCallback = async function() {
-        try {
-            // 1. Instantly hide the score in the app UI
-            db.history = db.history.filter(h => String(h.id) !== String(scoreId));
-            localStorage.setItem('ppl_history', JSON.stringify(db.history));
-            renderHistory();
-            renderLeaderboard();
+    const safeName = record ? encodeURIComponent(record.archerName) : "";
+    const safeScore = record ? encodeURIComponent(record.score) : "";
 
-            // 2. Send the exact POST request that adding a score uses
-            if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
-                const payload = { 
-                    action: "deleteScore", 
-                    id: String(scoreId),
-                    archerName: record ? record.archerName : "",
-                    score: record ? record.score : ""
-                };
-                
-                const res = await fetch(APPS_SCRIPT_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify(payload) 
-                });
-                
-                const result = await res.json();
-                
-                if (result.result === 'success') {
-                    alert("Score successfully deleted from Google Sheets.");
-                } else {
-                    alert("Score removed from app, but could not locate matching row in Google Sheets.");
-                }
-            }
-        } catch (err) {
-            alert("Score removed from app. Cloud connection error.");
-            console.error(err);
+    pendingDeleteCallback = function() {
+        // 1. CRITICAL UI FIX: Close the PIN modal immediately
+        const modal = document.getElementById('delete-auth-modal');
+        if (modal) modal.classList.remove('open');
+
+        // 2. Instantly hide the score in the app UI without needing a refresh
+        db.history = db.history.filter(h => String(h.id) !== String(scoreId));
+        localStorage.setItem('ppl_history', JSON.stringify(db.history));
+        renderHistory();
+        renderLeaderboard();
+
+        // 3. Send unblockable background GET request to Google Sheets
+        if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
+            const deleteUrl = `${APPS_SCRIPT_URL}?action=deleteScore&id=${scoreId}&archerName=${safeName}&score=${safeScore}`;
+            
+            // 'no-cors' forces the browser to send the command without panicking over security rules
+            fetch(deleteUrl, { method: 'GET', mode: 'no-cors' })
+                .then(() => console.log("Delete instruction sent to Google Sheets"))
+                .catch(e => console.error("Network error:", e));
         }
     };
 
-    // Open the PIN modal
+    // Open the PIN modal to start
     document.getElementById('delete-pin-input').value = '';
     document.getElementById('delete-auth-modal').classList.add('open');
 }
