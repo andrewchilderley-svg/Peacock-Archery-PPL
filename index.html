@@ -1084,9 +1084,24 @@
                 "Longbow_Male_Senior": [32, 48, 69, 96, 128, 162, 192, 218], "Longbow_Male_50+": [22, 33, 49, 71, 99, 131, 164, 195], "Longbow_Male_Under 18": [15, 23, 34, 51, 73, 101, 134, 167],
                 "Longbow_Female_Senior": [21, 31, 47, 67, 94, 126, 159, 190], "Longbow_Female_50+": [14, 22, 32, 48, 69, 96, 128, 162], "Longbow_Female_Under 18": [10, 15, 22, 33, 49, 71, 99, 131],
                 "Asiatic_Male_Senior": [108, 139, 169, 197, 220, 239, 254, 267], "Asiatic_Male_50+": [83, 111, 141, 172, 199, 222, 240, 256], "Asiatic_Male_Under 18": [62, 85, 113, 144, 174, 201, 223, 242],
-                "Asiatic_Female_Senior": [83, 111, 141, 172, 199, 222, 240, 256], "Asiatic_Female_50+": [62, 85, 113, 144, 174, 201, 223, 242], "Asiatic_Female_Under 18": [45, 64, 87, 116, 146, 176, 203, 225]
+                "Asiatic_Female_Senior": [83, 111, 141, 172, 199, 222, 240, 256], "Asiatic_Female_50+": [71, 97, 128, 160, 191, 217, 240, 257], "Asiatic_Female_Under 18": [45, 64, 87, 116, 146, 176, 203, 225]
             }
         };
+
+        function formatDateClean(dStr) {
+            if (!dStr) return "-";
+            let str = String(dStr).trim();
+            let match = str.match(/^(\d{4}-\d{2}-\d{2})/);
+            if (match) return match[1];
+            
+            let d = new Date(str);
+            if (isNaN(d.getTime())) return str.split('T')[0].split(' ')[0];
+            
+            let year = d.getFullYear();
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
 
         function getArcheryGBGrade(score, bow, gender, category, roundType) {
             if (!score || score === 0) return "Unclassified";
@@ -1761,7 +1776,8 @@
             if (monthFilter !== 'overall') {
                 let monthMap = {};
                 pplHistory.forEach(h => {
-                    if (!h.date || !h.date.startsWith(monthFilter)) return;
+                    const cleanDate = formatDateClean(h.date);
+                    if (!cleanDate || !cleanDate.startsWith(monthFilter)) return;
 
                     const key = `${h.archerId}_${h.bow}`;
                     const score = parseInt(h.score) || 0;
@@ -1802,8 +1818,9 @@
                 let archerMonthBests = {};
 
                 pplHistory.forEach(h => {
-                    if (!h.date) return;
-                    const monthKey = h.date.substring(0, 7);
+                    const cleanDate = formatDateClean(h.date);
+                    if (!cleanDate || cleanDate === "-") return;
+                    const monthKey = cleanDate.substring(0, 7);
                     const comboKey = `${h.archerId}_${h.bow}_${monthKey}`;
                     const score = parseInt(h.score) || 0;
 
@@ -1907,7 +1924,7 @@
                             <td>${category}</td>
                             <td><strong>${best ? best.archerName : "No Record"}</strong></td>
                             <td>${best ? best.score : "-"}</td>
-                            <td>${best && best.date ? best.date.split('T')[0] : "-"}</td>
+                            <td>${best && best.date ? formatDateClean(best.date) : "-"}</td>
                         </tr>`);
                     });
                 });
@@ -1928,7 +1945,11 @@
                 if (archerFilter !== 'All' && String(h.archerId) !== archerFilter) return false;
                 if (bowFilter !== 'All' && h.bow !== bowFilter) return false;
                 return true;
-            }).sort((a, b) => new Date(b.date) - new Date(a.date));
+            }).sort((a, b) => {
+                const idDiff = Number(b.id || 0) - Number(a.id || 0);
+                if (!isNaN(idDiff) && idDiff !== 0) return idDiff;
+                return new Date(formatDateClean(b.date)) - new Date(formatDateClean(a.date));
+            });
             
             if (filtered.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color: var(--text-muted);">No history found matching these filters.</td></tr>`; return;
@@ -1945,7 +1966,7 @@
 
                 return `
                 <tr>
-                    <td>${h.date ? h.date.split('T')[0] : ''}</td>
+                    <td>${formatDateClean(h.date)}</td>
                     <td>${h.archerName}</td>
                     <td><span class="badge badge-round">${h.round || 'Portsmouth'}</span></td>
                     <td>${h.bow}</td>
@@ -2081,7 +2102,7 @@
                 csv += [
                     `"${h.round || 'Portsmouth'}"`,
                     `"${h.targetFace || 'Full Face'}"`,
-                    h.date ? h.date.split('T')[0] : "",
+                    formatDateClean(h.date),
                     `"${h.archerName}"`,
                     h.bow,
                     h.gender || (archer ? archer.gender : "Male"),
