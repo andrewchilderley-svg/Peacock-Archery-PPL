@@ -914,7 +914,7 @@
                     </div>
                     <div class="form-group">
                         <label>Starting PB (Portsmouth)</label>
-                        <input type="number" id="new-archer-pb" value="250" min="0" max="600">
+                        <input type="number" id="new-archer-pb" value="584" min="0" max="600">
                     </div>
                 </div>
                 <button class="btn" onclick="addNewArcherRegistry()">➕ Add Archer to Database</button>
@@ -998,7 +998,8 @@
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRnOF7mRyD1WxWDeQ9dCdHPNf6QsxYdMvdqZocr_H35v8uwWrHnxhBSe0c9OJ7bbHIsA/exec';
 
         let defaultArchers = [
-            { id: "1730000001", name: "Richard Shepherd", gender: "Male", category: "Senior", defaultBow: "Recurve", startingPB: 450 }
+            { id: "1730000001", name: "Andrew Childerley", gender: "Male", category: "Senior", defaultBow: "Compound", startingPB: 584 },
+            { id: "1730000002", name: "Richard Shepherd", gender: "Male", category: "Senior", defaultBow: "Recurve", startingPB: 450 }
         ];
 
         let db = {
@@ -1092,37 +1093,41 @@
             }
         };
 
-        function formatDateDisplay(dStr) {
-            if (!dStr) return "-";
+        function parseToDateObj(dStr) {
+            if (!dStr) return null;
             let str = String(dStr).trim();
-            if (str === "" || str === "-") return "-";
+            if (!str || str === "-") return null;
 
-            let dateObj = null;
+            let isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+            if (isoMatch) {
+                return new Date(parseInt(isoMatch[1], 10), parseInt(isoMatch[2], 10) - 1, parseInt(isoMatch[3], 10));
+            }
 
-            let ukMatch = str.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
+            let ukMatch = str.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})/);
             if (ukMatch) {
-                let d = parseInt(ukMatch[1], 10);
-                let m = parseInt(ukMatch[2], 10) - 1;
-                let y = parseInt(ukMatch[3], 10);
-                dateObj = new Date(y, m, d);
-            } else {
-                let isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-                if (isoMatch) {
-                    let y = parseInt(isoMatch[1], 10);
-                    let m = parseInt(isoMatch[2], 10) - 1;
-                    let d = parseInt(isoMatch[3], 10);
-                    dateObj = new Date(y, m, d);
-                } else {
-                    let parsed = new Date(str);
-                    if (!isNaN(parsed.getTime())) {
-                        dateObj = parsed;
-                    }
-                }
+                return new Date(parseInt(ukMatch[3], 10), parseInt(ukMatch[2], 10) - 1, parseInt(ukMatch[1], 10));
             }
 
-            if (!dateObj || isNaN(dateObj.getTime())) {
-                return str;
+            let d = new Date(str);
+            if (!isNaN(d.getTime())) {
+                return d;
             }
+
+            return null;
+        }
+
+        function formatDateISO(dStr) {
+            let dateObj = parseToDateObj(dStr);
+            if (!dateObj) return "";
+            let y = dateObj.getFullYear();
+            let m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            let d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function formatDateDisplay(dStr) {
+            let dateObj = parseToDateObj(dStr);
+            if (!dateObj) return "-";
 
             const day = String(dateObj.getDate()).padStart(2, '0');
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -1130,20 +1135,6 @@
             const year = String(dateObj.getFullYear()).slice(-2);
 
             return `${day} ${month} ${year}`;
-        }
-
-        function formatDateISO(dStr) {
-            if (!dStr) return "";
-            let str = String(dStr).trim();
-            let ukMatch = str.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
-            if (ukMatch) {
-                return `${ukMatch[3]}-${ukMatch[2].padStart(2, '0')}-${ukMatch[1].padStart(2, '0')}`;
-            }
-            let isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-            if (isoMatch) {
-                return `${isoMatch[1]}-${isoMatch[2].padStart(2, '0')}-${isoMatch[3].padStart(2, '0')}`;
-            }
-            return str;
         }
 
         function getArcheryGBGrade(score, bow, gender, category, roundType) {
@@ -1776,7 +1767,7 @@
                 
                 let archerMap = {};
                 pplHistory.forEach(h => {
-                    const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                    const archer = db.archers.find(a => String(a.id) === String(h.archerId) || a.name === h.archerName);
                     const startingPB = archer ? (parseInt(archer.startingPB) || 250) : 250;
                     const key = `${h.archerId}_${h.bow}`;
                     const score = parseInt(h.score) || 0;
@@ -1996,11 +1987,11 @@
             }
             
             tbody.innerHTML = filtered.map(h => {
-                const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                const archer = db.archers.find(a => String(a.id) === String(h.archerId) || a.name === h.archerName);
                 let pbDisplay = "-";
                 if ((h.round || 'Portsmouth') === 'Portsmouth') {
                     const startingPB = archer ? (parseInt(archer.startingPB) || 250) : 250;
-                    const diff = h.score - startingPB;
+                    const diff = parseInt(h.score) - startingPB;
                     pbDisplay = `<span class="badge ${diff >= 0 ? 'badge-success' : 'badge-danger'}">${diff >= 0 ? '+' : ''}${diff} vs PB</span>`;
                 }
 
@@ -2026,16 +2017,18 @@
                 db.history = db.history.filter(h => String(h.id) !== String(scoreId));
                 localStorage.setItem('ppl_history', JSON.stringify(db.history));
                 renderHistory();
+                renderLeaderboard();
 
                 if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                     try {
                         const res = await fetch(APPS_SCRIPT_URL, {
                             method: 'POST',
-                            body: JSON.stringify({ action: "deleteScore", id: scoreId })
+                            body: JSON.stringify({ action: "deleteScore", id: String(scoreId) })
                         });
                         const result = await res.json();
                         if (result.result === 'success') {
                             alert("Score permanently deleted from Google Sheet!");
+                            fetchCloudHistory(() => { renderHistory(); renderLeaderboard(); });
                         } else {
                             alert("Score deleted locally, but could not be located in Google Sheet.");
                         }
@@ -2156,7 +2149,7 @@
 
             let csv = "Round Name,Target Face,Date,Archer Name,Bow Style,Gender,Category,Score,Hits,10s/Xs\n";
             db.history.forEach(h => {
-                const archer = db.archers.find(a => String(a.id) === String(h.archerId));
+                const archer = db.archers.find(a => String(a.id) === String(h.archerId) || a.name === h.archerName);
                 csv += [
                     `"${h.round || 'Portsmouth'}"`,
                     `"${h.targetFace || 'Full Face'}"`,
