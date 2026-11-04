@@ -1091,16 +1091,42 @@
         function formatDateClean(dStr) {
             if (!dStr) return "-";
             let str = String(dStr).trim();
-            let match = str.match(/^(\d{4}-\d{2}-\d{2})/);
-            if (match) return match[1];
-            
+
+            let isoMatch = str.match(/\b(\d{4})[-/](\d{1,2})[-/](\d{1,2})\b/);
+            if (isoMatch) {
+                let y = isoMatch[1];
+                let m = isoMatch[2].padStart(2, '0');
+                let d = isoMatch[3].padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            }
+
+            const months = { jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06', jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12' };
+            let nameMatch = str.match(/([a-zA-Z]{3})\s+(\d{1,2})\s+(\d{4})/) || str.match(/(\d{1,2})\s+([a-zA-Z]{3})\s+(\d{4})/);
+            if (nameMatch) {
+                let mStr, dayStr, yrStr;
+                if (isNaN(parseInt(nameMatch[1]))) {
+                    mStr = nameMatch[1].toLowerCase();
+                    dayStr = nameMatch[2];
+                    yrStr = nameMatch[3];
+                } else {
+                    dayStr = nameMatch[1];
+                    mStr = nameMatch[2].toLowerCase();
+                    yrStr = nameMatch[3];
+                }
+                if (months[mStr]) {
+                    return `${yrStr}-${months[mStr]}-${dayStr.padStart(2, '0')}`;
+                }
+            }
+
             let d = new Date(str);
-            if (isNaN(d.getTime())) return str.split('T')[0].split(' ')[0];
-            
-            let year = d.getFullYear();
-            let month = String(d.getMonth() + 1).padStart(2, '0');
-            let day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            if (!isNaN(d.getTime())) {
+                let year = d.getFullYear();
+                let month = String(d.getMonth() + 1).padStart(2, '0');
+                let day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            return str;
         }
 
         function getArcheryGBGrade(score, bow, gender, category, roundType) {
@@ -1667,9 +1693,12 @@
                 const res = await fetch(APPS_SCRIPT_URL);
                 db.history = await res.json();
                 
-                const histRes = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
-                const histData = await histRes.text();
-                db.historicalRecords = histData ? JSON.parse(histData) : [];
+                try {
+                    const histRes = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
+                    db.historicalRecords = await histRes.json();
+                } catch(e) {
+                    db.historicalRecords = [];
+                }
                 
                 if(callback) callback();
             } catch(e) { if(callback) callback(); }
@@ -1886,19 +1915,6 @@
             const catFilter = document.getElementById('rec-cat-filter')?.value || 'All';
 
             let allRecords = [...db.historicalRecords];
-            
-            db.history.forEach(h => {
-                if ((h.round || 'Portsmouth') !== 'Portsmouth') return;
-                const archer = db.archers.find(a => String(a.id) === String(h.archerId));
-                allRecords.push({ 
-                    bow: h.bow, 
-                    category: h.category || (archer ? archer.category : "Senior"), 
-                    gender: h.gender || (archer ? archer.gender : "Male"),
-                    archerName: h.archerName, 
-                    score: parseInt(h.score) || 0, 
-                    date: h.date 
-                });
-            });
 
             const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
             const genders = ["Male", "Female"];
@@ -1914,7 +1930,9 @@
                         if (catFilter !== 'All' && category.toLowerCase() !== catFilter.toLowerCase()) return;
                         let best = null;
                         allRecords.forEach(r => {
-                            if (r.bow === style && (r.gender||'Male') === gender && (r.category||'Senior') === category) {
+                            if ((r.bow || '').toLowerCase() === style.toLowerCase() &&
+                                (r.gender || 'Male').toLowerCase() === gender.toLowerCase() &&
+                                (r.category || 'Senior').toLowerCase() === category.toLowerCase()) {
                                 if (!best || parseInt(r.score) > parseInt(best.score)) best = r;
                             }
                         });
@@ -1946,9 +1964,14 @@
                 if (bowFilter !== 'All' && h.bow !== bowFilter) return false;
                 return true;
             }).sort((a, b) => {
-                const idDiff = Number(b.id || 0) - Number(a.id || 0);
-                if (!isNaN(idDiff) && idDiff !== 0) return idDiff;
-                return new Date(formatDateClean(b.date)) - new Date(formatDateClean(a.date));
+                const idA = Number(a.id) || 0;
+                const idB = Number(b.id) || 0;
+                if (idA !== idB && idA > 0 && idB > 0) {
+                    return idB - idA;
+                }
+                const dateA = new Date(formatDateClean(a.date)).getTime() || 0;
+                const dateB = new Date(formatDateClean(b.date)).getTime() || 0;
+                return dateB - dateA;
             });
             
             if (filtered.length === 0) {
