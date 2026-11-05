@@ -988,7 +988,7 @@
 
         function updateLiveStats() { saveLiveState(); renderLiveRoundUI(); }
 
-        function generateDigitalScorecardImage(archerName, round, bow, date, score, hits, tens, xs, ends) {
+function generateDigitalScorecardImage(archerName, round, bow, gender, category, date, score, hits, tens, xs, ends) {
             const canvas = document.createElement('canvas');
             canvas.width = 600; canvas.height = 750;
             const ctx = canvas.getContext('2d');
@@ -1003,6 +1003,11 @@
 
             ctx.fillStyle = '#f8fafc'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left'; ctx.fillText(archerName, 35, 145);
             ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Round: ${round}  |  Bow: ${bow}  |  Date: ${formatDateDisplay(date)}`, 35, 170);
+
+            // Calculate and display classification grade on bottom left of box
+            const grade = getArcheryGBGrade(score, bow, gender, category, round);
+            ctx.font = 'bold 12px sans-serif'; ctx.fillStyle = '#38bdf8';
+            ctx.fillText(`GRADE: ${grade.toUpperCase()}`, 35, 205);
 
             ctx.textAlign = 'right'; ctx.font = 'bold 30px sans-serif'; ctx.fillStyle = '#d97706'; ctx.fillText(`Total: ${score}`, 560, 152);
             ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Hits: ${hits}  |  10s: ${tens}  |  Xs: ${xs}`, 560, 182);
@@ -1038,6 +1043,8 @@
 
             const roundType = document.getElementById('shoot-round').value;
             const bowStyle = document.getElementById('shoot-bow').value;
+            const gender = document.getElementById('shoot-gender').value;
+            const category = document.getElementById('shoot-cat').value;
             const maxVal = roundType === "Worcester" ? 5 : 10;
             const numericScores = liveScores.map(s => s === 'X' ? maxVal : Number(s));
             const total = numericScores.reduce((a, b) => a + b, 0);
@@ -1049,9 +1056,9 @@
             submitRecord({
                 id: Date.now(), archerId: archer.id, archerName: archer.name,
                 round: roundType, bow: bowStyle, 
-                gender: document.getElementById('shoot-gender').value, category: document.getElementById('shoot-cat').value,
+                gender: gender, category: category,
                 targetFace: document.getElementById('shoot-face').value, score: total, tens: tens, xs: xs, hits: hits, date: dateShot,
-                screenshot: generateDigitalScorecardImage(archer.name, roundType, bowStyle, dateShot, total, hits, tens, xs, endsMatrix)
+                screenshot: generateDigitalScorecardImage(archer.name, roundType, bowStyle, gender, category, dateShot, total, hits, tens, xs, endsMatrix)
             });
             resetLiveRound(true);
         }
