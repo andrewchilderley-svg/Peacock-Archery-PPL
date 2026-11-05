@@ -577,7 +577,7 @@
             return achieved;
         }
 
-        function getRoundConfig(roundType, bowStyle, targetFace) {
+       function getRoundConfig(roundType, bowStyle, targetFace) {
             let isCompound = (bowStyle === "Compound");
             switch(roundType) {
                 case "Portsmouth": 
@@ -593,6 +593,7 @@
                     if (targetFace === "5 Spot") {
                         return { arr: 5, ends: 12, max: 300, keys: isCompound ? ['X',5,4,0] : [5,4,0], minVal: 4 };
                     }
+                    // Worcester Full Face uses full 5 to 1 scoring
                     return { arr: 5, ends: 12, max: 300, keys: isCompound ? ['X',5,4,3,2,1,0] : [5,4,3,2,1,0], minVal: 0 };
                 case "Vegas (Triple Face)": 
                     return { arr: 3, ends: 20, max: 600, keys: isCompound ? ['X',10,9,8,7,6,0] : [10,9,8,7,6,0], minVal: 6 };
