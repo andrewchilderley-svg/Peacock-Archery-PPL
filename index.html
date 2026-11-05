@@ -163,6 +163,7 @@
                 <div class="form-group"><label>Date Shot</label><input type="date" id="up-date"></div>
                 <div class="form-group"><label>Total Score</label><input type="number" id="up-score" min="0" max="600" placeholder="e.g. 520" oninput="updateUploadStats()"></div>
                 <div class="form-group"><label>10s Count</label><input type="number" id="up-tens" min="0" max="60" placeholder="e.g. 15" value="0"></div>
+                <div class="form-group"><label>Xs Count</label><input type="number" id="up-xs" min="0" max="60" placeholder="e.g. 5" value="0"></div>
                 <div class="form-group"><label>Hits Count</label><input type="number" id="up-hits" min="0" max="60" placeholder="e.g. 60" value="60"></div>
                 <div class="form-group"><label style="white-space: nowrap; text-transform: none;">upload screenshot for record keeping (optional)</label><input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;"></div>
             </div>
@@ -262,7 +263,7 @@
             </div>
             <div class="table-container">
                 <table>
-                    <thead><tr id="leaderboard-headers"><th>Pos</th><th>Archer</th><th>Bow Style</th><th>Score / Sum</th><th>Hits</th><th>10s</th><th>Rnds</th></tr></thead>
+                    <thead><tr id="leaderboard-headers"><th>Pos</th><th>Archer</th><th>Bow Style</th><th>Score / Sum</th><th>Hits</th><th>10s/Xs</th><th>Rnds</th></tr></thead>
                     <tbody id="leaderboard-body"></tbody>
                 </table>
             </div>
@@ -309,7 +310,7 @@
             </div>
         </div>
 
-        <!-- 5. HISTORY TAB (Reordered: Filter Archer first, then Round, then Bow Style) -->
+        <!-- 5. HISTORY TAB -->
         <div id="tab-history" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Score History</h2>
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
@@ -340,7 +341,7 @@
             </div>
             <div class="table-container">
                 <table>
-                    <thead><tr><th class="nowrap">Date</th><th class="nowrap">Archer</th><th>Round</th><th>Bow</th><th>Score</th><th class="nowrap">vs PB</th><th class="nowrap">Hits / 10s</th><th style="text-align: center;">Actions</th></tr></thead>
+                    <thead><tr><th class="nowrap">Date</th><th class="nowrap">Archer</th><th>Round</th><th>Bow</th><th>Score</th><th class="nowrap">vs PB</th><th class="nowrap">Hits/10s/Xs</th><th style="text-align: center;">Actions</th></tr></thead>
                     <tbody id="history-body"></tbody>
                 </table>
             </div>
@@ -688,7 +689,6 @@
             } else alert("Incorrect recovery phrase.");
         }
 
-        // --- SMART DEFAULTS & DROPDOWNS ---
         function populateFaceDropdown(round, faceSelectId) {
             const faceSelect = document.getElementById(faceSelectId);
             const currentFace = faceSelect.value;
@@ -805,6 +805,7 @@
                 gender: document.getElementById('up-gender').value, category: document.getElementById('up-cat').value,
                 targetFace: face, score: score,
                 tens: parseInt(document.getElementById('up-tens').value) || 0,
+                xs: parseInt(document.getElementById('up-xs').value) || 0,
                 hits: parseInt(document.getElementById('up-hits').value) || (config.arr * config.ends),
                 date: document.getElementById('up-date').value || new Date().toISOString().split('T')[0],
                 screenshot: ""
@@ -822,6 +823,7 @@
             syncRecordToCloud(record);
             if (document.getElementById('up-score')) document.getElementById('up-score').value = '';
             if (document.getElementById('up-tens')) document.getElementById('up-tens').value = '0';
+            if (document.getElementById('up-xs')) document.getElementById('up-xs').value = '0';
             if (document.getElementById('up-hits')) document.getElementById('up-hits').value = '60';
             if (document.getElementById('up-screenshot')) document.getElementById('up-screenshot').value = '';
         }
@@ -847,7 +849,6 @@
                     if (state.gender) document.getElementById('shoot-gender').value = state.gender;
                     if (state.category) document.getElementById('shoot-cat').value = state.category;
                     
-                    // Pre-fill face options and restore previous face selection
                     if (state.roundType && state.targetFace) {
                         populateFaceDropdown(state.roundType, 'shoot-face');
                         document.getElementById('shoot-face').value = state.targetFace;
@@ -873,7 +874,6 @@
         function buildDynamicKeypad(roundType, bowStyle, targetFace) {
             let keypadHtml = activeRoundConfig.keys.map(k => {
                 const arg = (k === 'X') ? "'X'" : k;
-                
                 if (roundType === "Worcester") {
                     if (k === 'X' || k === 5) return `<button class="key-btn white" onclick="pressScore(${arg})">${k}</button>`;
                     if (k !== 0) return `<button class="key-btn black" onclick="pressScore(${arg})">${k}</button>`;
@@ -938,10 +938,12 @@
             const total = numericScores.reduce((a, b) => a + b, 0);
             
             const arrowsShot = liveScores.length;
+            const tensCount = liveScores.filter(s => s === 'X' || s === maxVal).length;
+            const xsCount = liveScores.filter(s => s === 'X').length;
 
             document.getElementById('live-total').innerText = total;
             document.getElementById('live-hits').innerText = numericScores.filter(s => s > 0).length;
-            document.getElementById('live-tens').innerText = liveScores.filter(s => s === 'X' || s === maxVal).length;
+            document.getElementById('live-tens').innerText = bowStyle === "Compound" ? `${tensCount} / ${xsCount}` : tensCount;
             document.getElementById('live-avg-arrow').innerText = arrowsShot > 0 ? (total / arrowsShot).toFixed(2) : "0.00";
             
             const projectedScore = Math.round((total / Math.max(1, arrowsShot)) * (activeRoundConfig.arr * activeRoundConfig.ends));
@@ -986,7 +988,7 @@
 
         function updateLiveStats() { saveLiveState(); renderLiveRoundUI(); }
 
-        function generateDigitalScorecardImage(archerName, round, bow, date, score, hits, tens, ends) {
+        function generateDigitalScorecardImage(archerName, round, bow, date, score, hits, tens, xs, ends) {
             const canvas = document.createElement('canvas');
             canvas.width = 600; canvas.height = 750;
             const ctx = canvas.getContext('2d');
@@ -1003,7 +1005,7 @@
             ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Round: ${round}  |  Bow: ${bow}  |  Date: ${formatDateDisplay(date)}`, 35, 170);
 
             ctx.textAlign = 'right'; ctx.font = 'bold 30px sans-serif'; ctx.fillStyle = '#d97706'; ctx.fillText(`Total: ${score}`, 560, 152);
-            ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Hits: ${hits}  |  10s/Xs: ${tens}`, 560, 182);
+            ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Hits: ${hits}  |  10s: ${tens}  |  Xs: ${xs}`, 560, 182);
 
             ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'left'; ctx.fillText('END BREAKDOWN:', 20, 250);
 
@@ -1041,14 +1043,15 @@
             const total = numericScores.reduce((a, b) => a + b, 0);
             const hits = numericScores.filter(s => s > 0).length;
             const tens = liveScores.filter(s => s === 'X' || s === maxVal).length;
+            const xs = liveScores.filter(s => s === 'X').length;
             const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
 
             submitRecord({
                 id: Date.now(), archerId: archer.id, archerName: archer.name,
                 round: roundType, bow: bowStyle, 
                 gender: document.getElementById('shoot-gender').value, category: document.getElementById('shoot-cat').value,
-                targetFace: document.getElementById('shoot-face').value, score: total, tens: tens, hits: hits, date: dateShot,
-                screenshot: generateDigitalScorecardImage(archer.name, roundType, bowStyle, dateShot, total, hits, tens, endsMatrix)
+                targetFace: document.getElementById('shoot-face').value, score: total, tens: tens, xs: xs, hits: hits, date: dateShot,
+                screenshot: generateDigitalScorecardImage(archer.name, roundType, bowStyle, dateShot, total, hits, tens, xs, endsMatrix)
             });
             resetLiveRound(true);
         }
@@ -1124,7 +1127,7 @@
                     const gain = score - startingPB;
 
                     if (!archerMap[key] || gain > archerMap[key].gain) {
-                        archerMap[key] = { archerName: h.archerName, bow: h.bow, gain: gain, pb: startingPB, bestScore: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0 };
+                        archerMap[key] = { archerName: h.archerName, bow: h.bow, gain: gain, pb: startingPB, bestScore: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, xs: parseInt(h.xs) || 0 };
                     }
                 });
 
@@ -1137,7 +1140,7 @@
                 return;
             }
 
-            headersRow.innerHTML = `<th>Pos</th><th>Archer</th><th>Bow Style</th><th>Score / Sum</th><th>Hits</th><th>10s</th><th>Rnds</th>`;
+            headersRow.innerHTML = `<th>Pos</th><th>Archer</th><th>Bow Style</th><th>Score / Sum</th><th>Hits</th><th>10s/Xs</th><th>Rnds</th>`;
 
             if (monthFilter !== 'overall') {
                 let monthMap = {};
@@ -1146,7 +1149,7 @@
                     if (!isoDate || !isoDate.startsWith(monthFilter)) return;
                     const key = `${h.archerId}_${h.bow}`;
                     const score = parseInt(h.score) || 0;
-                    if (!monthMap[key] || score > monthMap[key].score) monthMap[key] = { archerName: h.archerName, bow: h.bow, score: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, rounds: 1 };
+                    if (!monthMap[key] || score > monthMap[key].score) monthMap[key] = { archerName: h.archerName, bow: h.bow, score: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, xs: parseInt(h.xs) || 0, rounds: 1 };
                 });
 
                 let rows = Object.values(monthMap);
@@ -1154,7 +1157,7 @@
                 rows.sort((a, b) => b.score - a.score);
 
                 if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No scores recorded for this month.</td></tr>`; return; }
-                tbody.innerHTML = rows.map((r, idx) => `<tr><td><strong>#${idx + 1}</strong></td><td class="nowrap">${r.archerName}</td><td><span class="badge badge-gold">${r.bow}</span></td><td><strong>${r.score}</strong></td><td>${r.hits}</td><td>${r.tens}</td><td>${r.rounds}</td></tr>`).join('');
+                tbody.innerHTML = rows.map((r, idx) => `<tr><td><strong>#${idx + 1}</strong></td><td class="nowrap">${r.archerName}</td><td><span class="badge badge-gold">${r.bow}</span></td><td><strong>${r.score}</strong></td><td>${r.hits}</td><td>${r.tens}/${r.xs}</td><td>${r.rounds}</td></tr>`).join('');
             } else {
                 let archerMonthBests = {};
                 pplHistory.forEach(h => {
@@ -1163,14 +1166,14 @@
                     const monthKey = isoDate.substring(0, 7);
                     const comboKey = `${h.archerId}_${h.bow}_${monthKey}`;
                     const score = parseInt(h.score) || 0;
-                    if (!archerMonthBests[comboKey] || score > archerMonthBests[comboKey].score) archerMonthBests[comboKey] = { archerId: h.archerId, archerName: h.archerName, bow: h.bow, score: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, month: monthKey };
+                    if (!archerMonthBests[comboKey] || score > archerMonthBests[comboKey].score) archerMonthBests[comboKey] = { archerId: h.archerId, archerName: h.archerName, bow: h.bow, score: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, xs: parseInt(h.xs) || 0, month: monthKey };
                 });
 
                 let overallMap = {};
                 Object.values(archerMonthBests).forEach(item => {
                     const archerBowKey = `${item.archerId}_${item.bow}`;
-                    if (!overallMap[archerBowKey]) overallMap[archerBowKey] = { archerName: item.archerName, bow: item.bow, scoreSum: 0, hitsSum: 0, tensSum: 0, monthsCount: 0 };
-                    overallMap[archerBowKey].scoreSum += item.score; overallMap[archerBowKey].hitsSum += item.hits; overallMap[archerBowKey].tensSum += item.tens; overallMap[archerBowKey].monthsCount += 1;
+                    if (!overallMap[archerBowKey]) overallMap[archerBowKey] = { archerName: item.archerName, bow: item.bow, scoreSum: 0, hitsSum: 0, tensSum: 0, xsSum: 0, monthsCount: 0 };
+                    overallMap[archerBowKey].scoreSum += item.score; overallMap[archerBowKey].hitsSum += item.hits; overallMap[archerBowKey].tensSum += item.tens; overallMap[archerBowKey].xsSum += item.xs; overallMap[archerBowKey].monthsCount += 1;
                 });
 
                 let rows = Object.values(overallMap);
@@ -1178,7 +1181,7 @@
                 rows.sort((a, b) => b.scoreSum - a.scoreSum);
 
                 if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No scores recorded.</td></tr>`; return; }
-                tbody.innerHTML = rows.map((r, idx) => `<tr><td><strong>#${idx + 1}</strong></td><td class="nowrap">${r.archerName}</td><td><span class="badge badge-gold">${r.bow}</span></td><td><strong>${r.scoreSum}</strong></td><td>${r.hitsSum}</td><td>${r.tensSum}</td><td>${r.monthsCount}</td></tr>`).join('');
+                tbody.innerHTML = rows.map((r, idx) => `<tr><td><strong>#${idx + 1}</strong></td><td class="nowrap">${r.archerName}</td><td><span class="badge badge-gold">${r.bow}</span></td><td><strong>${r.scoreSum}</strong></td><td>${r.hitsSum}</td><td>${r.tensSum}/${r.xsSum}</td><td>${r.monthsCount}</td></tr>`).join('');
             }
         }
 
@@ -1246,7 +1249,7 @@
                     <td>${h.bow}</td>
                     <td><strong>${h.score}</strong></td>
                     <td class="nowrap">${pbDisplay}</td>
-                    <td class="nowrap">${h.hits !== undefined ? h.hits : '60'} / ${h.tens !== undefined ? h.tens : '0'}</td>
+                    <td class="nowrap">${h.hits !== undefined ? h.hits : '60'} / ${h.tens !== undefined ? h.tens : '0'} / ${h.xs !== undefined ? h.xs : '0'}</td>
                     <td class="nowrap" style="text-align: center;">
                         <div style="display: inline-flex; gap: 4px;">
                             ${h.screenshot ? `<button class="btn btn-secondary" style="padding: 2px 6px; font-size: 0.8rem;" title="View Proof" onclick="viewProof('${h.screenshot}')">📷</button>` : ``}
@@ -1344,10 +1347,10 @@
 
         function exportHistoryToCSV() {
             if (!db.history || db.history.length === 0) { alert("No scores available to export."); return; }
-            let csv = "Round Name,Target Face,Date,Archer Name,Bow Style,Gender,Category,Score,Hits,10s/Xs\n";
+            let csv = "Round Name,Target Face,Date,Archer Name,Bow Style,Gender,Category,Score,Hits,10s,Xs\n";
             db.history.forEach(h => {
                 const archer = db.archers.find(a => String(a.id) === String(h.archerId) || a.name === h.archerName);
-                csv += [`"${h.round || 'Portsmouth'}"`, `"${h.targetFace || 'Full Face'}"`, formatDateISO(h.date), `"${h.archerName}"`, h.bow, h.gender || (archer ? archer.gender : "Male"), h.category || (archer ? archer.category : "Senior"), h.score, h.hits !== undefined ? h.hits : 60, h.tens].join(",") + "\n";
+                csv += [`"${h.round || 'Portsmouth'}"`, `"${h.targetFace || 'Full Face'}"`, formatDateISO(h.date), `"${h.archerName}"`, h.bow, h.gender || (archer ? archer.gender : "Male"), h.category || (archer ? archer.category : "Senior"), h.score, h.hits !== undefined ? h.hits : 60, h.tens || 0, h.xs || 0].join(",") + "\n";
             });
             const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })); link.download = "PPL_Indoor_Scores.csv"; document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
