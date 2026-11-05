@@ -138,7 +138,7 @@
                 <div class="form-group"><label>Archer</label><select id="up-archer" onchange="onUploadArcherChange()"></select></div>
                 <div class="form-group">
                     <label>Round Type</label>
-                    <select id="up-round" style="border-color: var(--accent);" onchange="updateUploadStats()">
+                    <select id="up-round" style="border-color: var(--accent);" onchange="onUploadRoundChange()">
                         <option value="Portsmouth" selected>Portsmouth (PPL Official)</option>
                         <option value="WA18">WA18</option>
                         <option value="Worcester">Worcester</option>
@@ -152,7 +152,7 @@
                 <div class="form-group"><label>Age Category</label><select id="up-cat" onchange="updateUploadStats()"><option value="Senior">Senior</option><option value="50+">50+</option><option value="Under 18">Under 18</option></select></div>
                 <div class="form-group">
                     <label>Bow Style</label>
-                    <select id="up-bow" onchange="updateUploadStats()">
+                    <select id="up-bow" onchange="onUploadBowChange()">
                         <option value="Recurve">Recurve</option>
                         <option value="Compound">Compound</option>
                         <option value="Barebow">Barebow</option>
@@ -164,7 +164,7 @@
                 <div class="form-group"><label>Total Score</label><input type="number" id="up-score" min="0" max="600" placeholder="e.g. 520" oninput="updateUploadStats()"></div>
                 <div class="form-group"><label>10s Count</label><input type="number" id="up-tens" min="0" max="60" placeholder="e.g. 15" value="0"></div>
                 <div class="form-group"><label>Hits Count</label><input type="number" id="up-hits" min="0" max="60" placeholder="e.g. 60" value="60"></div>
-                <div class="form-group"><label style="white-space: nowrap; text-transform: none;">Upload screenshot for record keeping (optional)</label><input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;"></div>
+                <div class="form-group"><label style="white-space: nowrap; text-transform: none;">upload screenshot for record keeping (optional)</label><input type="file" id="up-screenshot" accept="image/*" style="padding: 6px;"></div>
             </div>
             <div style="background: #111827; padding: 16px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
                 <div><span style="font-size: 0.8rem; color: var(--text-muted); display: block;">MAX SCORE / ARROWS</span><span id="up-max-stats" style="font-size: 1.1rem; font-weight: 700; color: var(--text-muted);">600 / 60</span></div>
@@ -193,7 +193,7 @@
                 <div class="form-group"><label>Age Category</label><select id="shoot-cat" onchange="updateLiveStats()"><option value="Senior">Senior</option><option value="50+">50+</option><option value="Under 18">Under 18</option></select></div>
                 <div class="form-group">
                     <label>Bow Style</label>
-                    <select id="shoot-bow" onchange="updateLiveStats()">
+                    <select id="shoot-bow" onchange="onLiveBowChange()">
                         <option value="Recurve">Recurve</option>
                         <option value="Compound">Compound</option>
                         <option value="Barebow">Barebow</option>
@@ -206,7 +206,7 @@
             <div class="shoot-header-stats">
                 <div class="stat-box"><div class="stat-val" id="live-total">0</div><div class="stat-lbl" id="live-total-lbl">Total / 600</div></div>
                 <div class="stat-box"><div class="stat-val" id="live-hits">0</div><div class="stat-lbl" id="live-hits-lbl">Hits / 60</div></div>
-                <div class="stat-box"><div class="stat-val" id="live-tens">0</div><div class="stat-lbl">10s (or 5s)</div></div>
+                <div class="stat-box"><div class="stat-val" id="live-tens">0</div><div class="stat-lbl" id="live-tens-lbl">10s (or 5s/Xs)</div></div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
                 <div style="background: #111827; padding: 12px; border-radius: 8px; border: 1px solid var(--border);"><span style="font-size: 0.75rem; color: var(--text-muted); display: block;">AVG. ARROW</span><span id="live-avg-arrow" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">0.00</span></div>
@@ -309,7 +309,7 @@
             </div>
         </div>
 
-<!-- 5. HISTORY TAB -->
+        <!-- 5. HISTORY TAB (Reordered: Filter Archer first, then Round, then Bow Style) -->
         <div id="tab-history" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Score History</h2>
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
@@ -462,7 +462,7 @@
 
         if (!localStorage.getItem('ppl_archers')) localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
 
-        let activeDeleteId = null; // New ID-based deletion memory
+        let activeDeleteId = null;
 
         const gradeMatrix = {
             "Portsmouth": {
@@ -522,7 +522,7 @@
                 "Barebow_Female_Senior": [83, 111, 141, 172, 199, 222, 240, 256], "Barebow_Female_50+": [62, 85, 113, 144, 174, 201, 223, 242], "Barebow_Female_Under 18": [45, 64, 87, 116, 146, 176, 203, 225],
                 "Longbow_Male_Senior": [32, 48, 69, 96, 128, 162, 192, 218], "Longbow_Male_50+": [22, 33, 49, 71, 99, 131, 164, 195], "Longbow_Male_Under 18": [15, 23, 34, 51, 73, 101, 134, 167],
                 "Longbow_Female_Senior": [21, 31, 47, 67, 94, 126, 159, 190], "Longbow_Female_50+": [14, 22, 32, 48, 69, 96, 128, 162], "Longbow_Female_Under 18": [10, 15, 22, 33, 49, 71, 99, 131],
-                "Asiatic_Male_Senior": [331, 387, 433, 472, 503, 528, 549, 565], "Asiatic_Male_50+": [83, 111, 141, 172, 199, 222, 240, 256], "Asiatic_Male_Under 18": [62, 85, 113, 144, 174, 201, 223, 242],
+                "Asiatic_Male_Senior": [134, 172, 205, 232, 252, 268, 280, 289], "Asiatic_Male_50+": [83, 111, 141, 172, 199, 222, 240, 256], "Asiatic_Male_Under 18": [62, 85, 113, 144, 174, 201, 223, 242],
                 "Asiatic_Female_Senior": [83, 111, 141, 172, 199, 222, 240, 256], "Asiatic_Female_50+": [62, 85, 113, 144, 174, 201, 223, 242], "Asiatic_Female_Under 18": [45, 64, 87, 116, 146, 176, 203, 225]
             },
             "Bray I": {
@@ -576,15 +576,26 @@
             return achieved;
         }
 
-        function getRoundConfig(roundType) {
+        function getRoundConfig(roundType, bowStyle, targetFace) {
+            let isCompound = (bowStyle === "Compound");
             switch(roundType) {
-                case "Portsmouth": return { arr: 3, ends: 20, max: 600, keys: [10,9,8,7,6,5,4,3,2,1,0] };
-                case "WA18": return { arr: 3, ends: 20, max: 600, keys: [10,9,8,7,6,5,4,3,2,1,0] };
-                case "Worcester": return { arr: 5, ends: 12, max: 300, keys: [5,4,3,2,1,0] };
-                case "Vegas (Triple Face)": return { arr: 3, ends: 20, max: 600, keys: [10,9,8,7,6,0] };
-                case "Vegas 300": return { arr: 3, ends: 10, max: 300, keys: [10,9,8,7,6,0] };
-                case "Bray I": return { arr: 3, ends: 10, max: 300, keys: [10,9,8,7,6,5,4,3,2,1,0] };
-                default: return { arr: 3, ends: 20, max: 600, keys: [10,9,8,7,6,5,4,3,2,1,0] };
+                case "Portsmouth": 
+                    return { arr: 3, ends: 20, max: 600, keys: isCompound ? ['X',10,9,8,7,6,5,4,3,2,1,0] : [10,9,8,7,6,5,4,3,2,1,0], minVal: (targetFace === "Triple Spot") ? 5 : 0 };
+                case "WA18": 
+                    return { arr: 3, ends: 20, max: 600, keys: isCompound ? ['X',10,9,8,7,6,5,4,3,2,1,0] : [10,9,8,7,6,5,4,3,2,1,0], minVal: (targetFace === "Triple Spot") ? 5 : 0 };
+                case "Worcester": 
+                    if (targetFace === "5 Spot") {
+                        return { arr: 5, ends: 12, max: 300, keys: isCompound ? ['X',5,4,0] : [5,4,0], minVal: 4 };
+                    }
+                    return { arr: 5, ends: 12, max: 300, keys: isCompound ? ['X',5,4,3,2,1,0] : [5,4,3,2,1,0], minVal: 0 };
+                case "Vegas (Triple Face)": 
+                    return { arr: 3, ends: 20, max: 600, keys: isCompound ? ['X',10,9,8,7,6,0] : [10,9,8,7,6,0], minVal: 6 };
+                case "Vegas 300": 
+                    return { arr: 3, ends: 10, max: 300, keys: isCompound ? ['X',10,9,8,7,6,0] : [10,9,8,7,6,0], minVal: 6 };
+                case "Bray I": 
+                    return { arr: 3, ends: 10, max: 300, keys: isCompound ? ['X',10,9,8,7,6,5,4,3,2,1,0] : [10,9,8,7,6,5,4,3,2,1,0], minVal: 0 };
+                default: 
+                    return { arr: 3, ends: 20, max: 600, keys: [10,9,8,7,6,5,4,3,2,1,0], minVal: 0 };
             }
         }
 
@@ -592,7 +603,7 @@
         let currentArrowIndex = 0;
         let endsMatrix = [];
         let liveScores = [];
-        let activeRoundConfig = getRoundConfig("Portsmouth");
+        let activeRoundConfig = getRoundConfig("Portsmouth", "Recurve", "Full Face");
 
         window.onload = function() {
             const today = new Date().toISOString().split('T')[0];
@@ -674,6 +685,28 @@
             } else alert("Incorrect recovery phrase.");
         }
 
+        // Smart Default Handling for Upload Tab
+        function onUploadRoundChange() {
+            const round = document.getElementById('up-round').value;
+            const bow = document.getElementById('up-bow').value;
+            const faceSelect = document.getElementById('up-face');
+            
+            if (round === "Worcester" && bow === "Compound") {
+                faceSelect.value = "5 Spot";
+            } else if (round === "Vegas (Triple Face)" || round === "Vegas 300") {
+                faceSelect.value = "Triple Spot";
+            } else if ((round === "Portsmouth" || round === "WA18") && bow === "Compound") {
+                faceSelect.value = "Triple Spot";
+            } else {
+                faceSelect.value = "Full Face";
+            }
+            updateUploadStats();
+        }
+
+        function onUploadBowChange() {
+            onUploadRoundChange();
+        }
+
         function onUploadArcherChange() {
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('up-archer').value));
             if (archer) {
@@ -681,7 +714,32 @@
                 if (archer.gender) document.getElementById('up-gender').value = archer.gender;
                 if (archer.category) document.getElementById('up-cat').value = archer.category;
             }
-            updateUploadStats();
+            onUploadRoundChange();
+        }
+
+        // Smart Default Handling for Live Shoot Tab
+        function handleLiveRoundChange() {
+            const roundType = document.getElementById('shoot-round').value;
+            const bowStyle = document.getElementById('shoot-bow').value;
+            const faceSelect = document.getElementById('shoot-face');
+
+            if (roundType === "Worcester" && bowStyle === "Compound") {
+                faceSelect.value = "5 Spot";
+            } else if (roundType === "Vegas (Triple Face)" || roundType === "Vegas 300") {
+                faceSelect.value = "Triple Spot";
+            } else if ((roundType === "Portsmouth" || roundType === "WA18") && bowStyle === "Compound") {
+                faceSelect.value = "Triple Spot";
+            } else {
+                faceSelect.value = "Full Face";
+            }
+
+            activeRoundConfig = getRoundConfig(roundType, bowStyle, faceSelect.value);
+            buildDynamicKeypad(roundType, bowStyle, faceSelect.value);
+            resetLiveRound(true);
+        }
+
+        function onLiveBowChange() {
+            handleLiveRoundChange();
         }
 
         function onShootArcherChange() {
@@ -691,18 +749,21 @@
                 if (archer.gender) document.getElementById('shoot-gender').value = archer.gender;
                 if (archer.category) document.getElementById('shoot-cat').value = archer.category;
             }
-            updateLiveStats();
+            handleLiveRoundChange();
         }
 
         function updateUploadStats() {
             const score = parseInt(document.getElementById('up-score').value) || 0;
-            const config = getRoundConfig(document.getElementById('up-round').value);
+            const round = document.getElementById('up-round').value;
+            const bow = document.getElementById('up-bow').value;
+            const face = document.getElementById('up-face').value;
+            const config = getRoundConfig(round, bow, face);
             const totalArrows = config.arr * config.ends;
             document.getElementById('up-score').max = config.max;
             document.getElementById('up-hits').max = totalArrows;
             if (document.getElementById('up-hits').value > totalArrows) document.getElementById('up-hits').value = totalArrows;
             document.getElementById('up-max-stats').innerText = `${config.max} / ${totalArrows}`;
-            document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, document.getElementById('up-bow').value, document.getElementById('up-gender').value, document.getElementById('up-cat').value, document.getElementById('up-round').value);
+            document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, document.getElementById('up-gender').value, document.getElementById('up-cat').value, round);
         }
 
         function processManualScore() {
@@ -710,16 +771,18 @@
             if (!archerId) { alert("Please select an archer."); return; }
             const archer = db.archers.find(a => String(a.id) === String(archerId));
             const roundType = document.getElementById('up-round').value;
-            const config = getRoundConfig(roundType);
+            const bow = document.getElementById('up-bow').value;
+            const face = document.getElementById('up-face').value;
+            const config = getRoundConfig(roundType, bow, face);
             const score = parseInt(document.getElementById('up-score').value);
             
             if (isNaN(score) || score < 0 || score > config.max) { alert(`Please enter a valid total score between 0 and ${config.max}.`); return; }
 
             const record = {
                 id: Date.now(), archerId: archer.id, archerName: archer.name,
-                round: roundType, bow: document.getElementById('up-bow').value,
+                round: roundType, bow: bow,
                 gender: document.getElementById('up-gender').value, category: document.getElementById('up-cat').value,
-                targetFace: document.getElementById('up-face').value, score: score,
+                targetFace: face, score: score,
                 tens: parseInt(document.getElementById('up-tens').value) || 0,
                 hits: parseInt(document.getElementById('up-hits').value) || (config.arr * config.ends),
                 date: document.getElementById('up-date').value || new Date().toISOString().split('T')[0],
@@ -765,12 +828,12 @@
                     if (state.targetFace) document.getElementById('shoot-face').value = state.targetFace;
                     if (state.date) document.getElementById('shoot-date').value = state.date;
                     
-                    activeRoundConfig = getRoundConfig(state.roundType);
+                    activeRoundConfig = getRoundConfig(state.roundType, state.bow, state.targetFace);
                     currentEnd = state.currentEnd || 1;
                     endsMatrix = state.endsMatrix || Array(activeRoundConfig.ends).fill(null).map(() => []);
                     liveScores = state.liveScores || [];
                     
-                    buildDynamicKeypad(state.roundType);
+                    buildDynamicKeypad(state.roundType, state.bow, state.targetFace);
                     renderLiveRoundUI();
                     
                     if (endsMatrix[currentEnd - 1] && endsMatrix[currentEnd - 1].length === activeRoundConfig.arr) document.getElementById('confirm-end-btn').disabled = false;
@@ -781,8 +844,9 @@
             return false;
         }
 
-        function buildDynamicKeypad(roundType) {
+        function buildDynamicKeypad(roundType, bowStyle, targetFace) {
             let keypadHtml = activeRoundConfig.keys.map(k => {
+                if (k === 'X') return `<button class="key-btn gold" onclick="pressScore('X')">X</button>`;
                 if (k === 10 || (k === 5 && roundType === "Worcester")) return `<button class="key-btn gold" onclick="pressScore(${k})">${k}</button>`;
                 if (k === 9 || (k === 4 && roundType === "Worcester")) return `<button class="key-btn gold" onclick="pressScore(${k})">${k}</button>`;
                 if (k === 8 || (k === 7)) return `<button class="key-btn red" onclick="pressScore(${k})">${k}</button>`;
@@ -795,13 +859,7 @@
             document.getElementById('dynamic-keypad').innerHTML = keypadHtml;
             document.getElementById('live-total-lbl').innerText = `Total / ${activeRoundConfig.max}`;
             document.getElementById('live-hits-lbl').innerText = `Hits / ${activeRoundConfig.arr * activeRoundConfig.ends}`;
-        }
-
-        function handleLiveRoundChange() {
-            const roundType = document.getElementById('shoot-round').value;
-            activeRoundConfig = getRoundConfig(roundType);
-            buildDynamicKeypad(roundType);
-            resetLiveRound(true);
+            document.getElementById('live-tens-lbl').innerText = bowStyle === "Compound" ? "10s / Xs" : "10s (or 5s)";
         }
 
         function pressScore(val) {
@@ -839,17 +897,22 @@
         function renderLiveRoundUI() {
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             const roundType = document.getElementById('shoot-round').value;
-            const total = liveScores.reduce((a, b) => a + b, 0);
+            const bowStyle = document.getElementById('shoot-bow').value;
+            
+            // Numeric sum calculation (treating 'X' as 10 or 5 depending on max score)
             const maxVal = roundType === "Worcester" ? 5 : 10;
+            const numericScores = liveScores.map(s => s === 'X' ? maxVal : s);
+            const total = numericScores.reduce((a, b) => a + b, 0);
+            
             const arrowsShot = liveScores.length;
 
             document.getElementById('live-total').innerText = total;
-            document.getElementById('live-hits').innerText = liveScores.filter(s => s > 0).length;
-            document.getElementById('live-tens').innerText = liveScores.filter(s => s === maxVal).length;
+            document.getElementById('live-hits').innerText = numericScores.filter(s => s > 0).length;
+            document.getElementById('live-tens').innerText = liveScores.filter(s => s === 'X' || s === maxVal).length;
             document.getElementById('live-avg-arrow').innerText = arrowsShot > 0 ? (total / arrowsShot).toFixed(2) : "0.00";
             
             const projectedScore = Math.round((total / Math.max(1, arrowsShot)) * (activeRoundConfig.arr * activeRoundConfig.ends));
-            document.getElementById('live-est-grade').innerText = archer ? getArcheryGBGrade(projectedScore, document.getElementById('shoot-bow').value, document.getElementById('shoot-gender').value, document.getElementById('shoot-cat').value, roundType) : "Select Archer";
+            document.getElementById('live-est-grade').innerText = archer ? getArcheryGBGrade(projectedScore, bowStyle, document.getElementById('shoot-gender').value, document.getElementById('shoot-cat').value, roundType) : "Select Archer";
 
             document.getElementById('live-end-label').innerText = `End ${currentEnd} of ${activeRoundConfig.ends}`;
             document.getElementById('live-arr-label').innerText = `${activeRoundConfig.arr} Arrows Per End`;
@@ -866,7 +929,7 @@
                     const dashes = Array(activeRoundConfig.arr).fill('-').join(' | ');
                     sheetHtml += `<tr><td style="padding:6px; color:var(--text-muted);">${i+1}</td><td style="padding:6px; color:var(--text-muted);">${dashes}</td><td style="padding:6px; color:var(--text-muted);">0</td><td style="padding:6px; color:var(--text-muted);">${runningTotal}</td></tr>`;
                 } else if (arrs.length > 0) {
-                    const endSum = arrs.reduce((a, b) => a + b, 0);
+                    const endSum = arrs.reduce((a, b) => a === 'X' ? maxVal : a + b, 0);
                     runningTotal += endSum;
                     let displayStr = arrs.map(a => a === 0 ? 'M' : a).join(' | ');
                     if (arrs.length < activeRoundConfig.arr) displayStr += ' | ' + Array(activeRoundConfig.arr - arrs.length).fill('-').join(' | ');
@@ -907,7 +970,7 @@
             ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Round: ${round}  |  Bow: ${bow}  |  Date: ${formatDateDisplay(date)}`, 35, 170);
 
             ctx.textAlign = 'right'; ctx.font = 'bold 30px sans-serif'; ctx.fillStyle = '#d97706'; ctx.fillText(`Total: ${score}`, 560, 152);
-            ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Hits: ${hits}  |  10s/5s: ${tens}`, 560, 182);
+            ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Hits: ${hits}  |  10s/Xs: ${tens}`, 560, 182);
 
             ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'left'; ctx.fillText('END BREAKDOWN:', 20, 250);
 
@@ -917,9 +980,10 @@
             ctx.fillText('END', 30, y + 15); ctx.fillText('ARROWS', 120, y + 15); ctx.fillText('END TOTAL', 380, y + 15); ctx.fillText('CUM. TOTAL', 480, y + 15);
 
             y += 22;
+            const maxVal = round === "Worcester" ? 5 : 10;
             for (let i = 0; y < 700 && i < ends.length; i++) {
                 const arrs = ends[i] || [];
-                const endSum = arrs.reduce((a, b) => a + b, 0);
+                const endSum = arrs.reduce((a, b) => a === 'X' ? maxVal : a + b, 0);
                 cumTotal += endSum;
                 ctx.fillStyle = i % 2 === 0 ? '#1e293b' : '#0f172a'; ctx.fillRect(20, y, 560, 19);
                 ctx.fillStyle = '#f8fafc'; ctx.font = '11px sans-serif'; ctx.fillText(`End ${i + 1}`, 30, y + 14);
@@ -938,17 +1002,20 @@
             if (!confirm("Are you sure you want to submit this score?")) return;
 
             const roundType = document.getElementById('shoot-round').value;
-            const total = liveScores.reduce((a, b) => a + b, 0);
-            const hits = liveScores.filter(s => s > 0).length;
-            const tens = liveScores.filter(s => s === (roundType === "Worcester" ? 5 : 10)).length;
+            const bowStyle = document.getElementById('shoot-bow').value;
+            const maxVal = roundType === "Worcester" ? 5 : 10;
+            const numericScores = liveScores.map(s => s === 'X' ? maxVal : s);
+            const total = numericScores.reduce((a, b) => a + b, 0);
+            const hits = numericScores.filter(s => s > 0).length;
+            const tens = liveScores.filter(s => s === 'X' || s === maxVal).length;
             const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
 
             submitRecord({
                 id: Date.now(), archerId: archer.id, archerName: archer.name,
-                round: roundType, bow: document.getElementById('shoot-bow').value, 
+                round: roundType, bow: bowStyle, 
                 gender: document.getElementById('shoot-gender').value, category: document.getElementById('shoot-cat').value,
                 targetFace: document.getElementById('shoot-face').value, score: total, tens: tens, hits: hits, date: dateShot,
-                screenshot: generateDigitalScorecardImage(archer.name, roundType, document.getElementById('shoot-bow').value, dateShot, total, hits, tens, endsMatrix)
+                screenshot: generateDigitalScorecardImage(archer.name, roundType, bowStyle, dateShot, total, hits, tens, endsMatrix)
             });
             resetLiveRound(true);
         }
@@ -1157,12 +1224,8 @@
             }).join('');
         }
 
-        // ==========================================
-        // NEW BULLETPROOF DELETION LOGIC
-        // ==========================================
-
         function requestDeleteScore(scoreId) {
-            activeDeleteId = scoreId; // Safely stores ID outside the modal closure
+            activeDeleteId = scoreId;
             document.getElementById('delete-pin-input').value = '';
             document.getElementById('delete-auth-modal').classList.add('open');
         }
@@ -1180,20 +1243,16 @@
             }
 
             const scoreId = activeDeleteId;
-            
-            // Instantly close the modal to unfreeze the UI
             document.getElementById('delete-auth-modal').classList.remove('open');
             activeDeleteId = null;
 
             if (!scoreId) return;
 
-            // Instantly hide the score locally in the browser so the user sees immediate feedback
             db.history = db.history.filter(h => String(h.id) !== String(scoreId));
             localStorage.setItem('ppl_history', JSON.stringify(db.history));
             renderHistory();
             renderLeaderboard();
 
-            // Fire the actual POST request to Google Apps Script
             if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 try {
                     const payload = { action: "deleteScore", id: String(scoreId) };
@@ -1201,14 +1260,11 @@
                         method: 'POST', 
                         body: JSON.stringify(payload) 
                     });
-                    console.log("Deletion request sent successfully.");
                 } catch(e) {
                     console.error("Cloud error while deleting:", e);
                 }
             }
         }
-
-        // ==========================================
 
         function addNewArcherRegistry() {
             const name = document.getElementById('new-archer-name').value.trim();
