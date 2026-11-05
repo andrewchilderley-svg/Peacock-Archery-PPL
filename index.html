@@ -309,10 +309,11 @@
             </div>
         </div>
 
-        <!-- 5. HISTORY TAB -->
+<!-- 5. HISTORY TAB -->
         <div id="tab-history" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Score History</h2>
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 140px;"><label>Filter Archer</label><select id="hist-archer-filter" onchange="renderHistory()"><option value="All">All Archers</option></select></div>
                 <div class="form-group" style="flex: 1; min-width: 140px;">
                     <label>Filter Round</label>
                     <select id="hist-round-filter" onchange="renderHistory()">
@@ -325,7 +326,6 @@
                         <option value="Bray I">Bray I</option>
                     </select>
                 </div>
-                <div class="form-group" style="flex: 1; min-width: 140px;"><label>Filter Archer</label><select id="hist-archer-filter" onchange="renderHistory()"><option value="All">All Archers</option></select></div>
                 <div class="form-group" style="flex: 1; min-width: 140px;">
                     <label>Filter Bow Style</label>
                     <select id="hist-bow-filter" onchange="renderHistory()">
