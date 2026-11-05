@@ -894,14 +894,13 @@
             }
         }
 
-        function renderLiveRoundUI() {
+     function renderLiveRoundUI() {
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             const roundType = document.getElementById('shoot-round').value;
             const bowStyle = document.getElementById('shoot-bow').value;
             
-            // Numeric sum calculation (treating 'X' as 10 or 5 depending on max score)
             const maxVal = roundType === "Worcester" ? 5 : 10;
-            const numericScores = liveScores.map(s => s === 'X' ? maxVal : s);
+            const numericScores = liveScores.map(s => s === 'X' ? maxVal : Number(s));
             const total = numericScores.reduce((a, b) => a + b, 0);
             
             const arrowsShot = liveScores.length;
@@ -929,7 +928,8 @@
                     const dashes = Array(activeRoundConfig.arr).fill('-').join(' | ');
                     sheetHtml += `<tr><td style="padding:6px; color:var(--text-muted);">${i+1}</td><td style="padding:6px; color:var(--text-muted);">${dashes}</td><td style="padding:6px; color:var(--text-muted);">0</td><td style="padding:6px; color:var(--text-muted);">${runningTotal}</td></tr>`;
                 } else if (arrs.length > 0) {
-                    const endSum = arrs.reduce((a, b) => a === 'X' ? maxVal : a + b, 0);
+                    // FIX: Ensure numeric addition by mapping 'X' to maxVal and wrapping in Number()
+                    const endSum = arrs.reduce((sum, a) => sum + (a === 'X' ? maxVal : Number(a)), 0);
                     runningTotal += endSum;
                     let displayStr = arrs.map(a => a === 0 ? 'M' : a).join(' | ');
                     if (arrs.length < activeRoundConfig.arr) displayStr += ' | ' + Array(activeRoundConfig.arr - arrs.length).fill('-').join(' | ');
