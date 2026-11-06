@@ -276,10 +276,21 @@
             </div>
         </div>
 
-        <!-- 4. RECORDS TAB -->
+     <!-- 4. RECORDS TAB -->
         <div id="tab-records" class="tab-content">
-            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Records (Portsmouth) <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">(Portsmouth Rounds Only)</span></h2>
+            <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Records</h2>
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Filter Round</label>
+                    <select id="rec-round-filter" onchange="renderRecords()">
+                        <option value="Portsmouth">Portsmouth</option>
+                        <option value="WA18">WA18</option>
+                        <option value="Worcester">Worcester</option>
+                        <option value="Vegas (Triple Face)">Vegas (Triple Face)</option>
+                        <option value="Vegas 300">Vegas 300</option>
+                        <option value="Bray I">Bray I</option>
+                    </select>
+                </div>
                 <div class="form-group" style="flex: 1; min-width: 150px;">
                     <label>Filter Bow Style</label>
                     <select id="rec-bow-filter" onchange="renderRecords()">
@@ -377,8 +388,19 @@
                 <button class="btn btn-secondary" onclick="resetLeagueLogo()">Reset to Default Icon</button>
             </div>
             <div style="background: #111827; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
-                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add Historical Club Record (Portsmouth)</h3>
+                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary);">Add Historical Club Record</h3>
                 <div class="form-grid">
+                    <div class="form-group">
+                        <label>Round Type</label>
+                        <select id="hist-round">
+                            <option value="Portsmouth">Portsmouth</option>
+                            <option value="WA18">WA18</option>
+                            <option value="Worcester">Worcester</option>
+                            <option value="Vegas (Triple Face)">Vegas (Triple Face)</option>
+                            <option value="Vegas 300">Vegas 300</option>
+                            <option value="Bray I">Bray I</option>
+                        </select>
+                    </div>
                     <div class="form-group"><label>Bow Style</label><select id="hist-bow"><option value="Recurve">Recurve</option><option value="Compound">Compound</option><option value="Barebow">Barebow</option><option value="Longbow">Longbow</option><option value="Asiatic">Asiatic</option></select></div>
                     <div class="form-group"><label>Gender</label><select id="hist-gender"><option value="Male">Male</option><option value="Female">Female</option></select></div>
                     <div class="form-group"><label>Age / Category</label><select id="hist-cat"><option value="Senior">Senior</option><option value="50+">50+</option><option value="Under 18">Under 18</option></select></div>
@@ -1213,6 +1235,7 @@
 
         function renderRecords() {
             const tbody = document.getElementById('records-body');
+            const roundFilter = document.getElementById('rec-round-filter')?.value || 'Portsmouth';
             const bowFilter = document.getElementById('rec-bow-filter')?.value || 'All';
             const genderFilter = document.getElementById('rec-gender-filter')?.value || 'All';
             const catFilter = document.getElementById('rec-cat-filter')?.value || 'All';
@@ -1231,7 +1254,9 @@
                         if (catFilter !== 'All' && category.toLowerCase() !== catFilter.toLowerCase()) return;
                         let best = null;
                         allRecords.forEach(r => {
-                            if ((r.bow || '').toString().trim().toLowerCase() === style.toLowerCase() && (r.gender || 'Male').toString().trim().toLowerCase() === gender.toLowerCase() && (r.category || 'Senior').toString().trim().toLowerCase() === category.toLowerCase()) {
+                            const recRound = r.round || 'Portsmouth';
+                            // Ensure the record matches the currently selected Round tab
+                            if (recRound === roundFilter && (r.bow || '').toString().trim().toLowerCase() === style.toLowerCase() && (r.gender || 'Male').toString().trim().toLowerCase() === gender.toLowerCase() && (r.category || 'Senior').toString().trim().toLowerCase() === category.toLowerCase()) {
                                 if (!best || parseInt(r.score) > parseInt(best.score)) best = r;
                             }
                         });
@@ -1381,10 +1406,26 @@
             const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })); link.download = "PPL_Indoor_Scores.csv"; document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        async function submitHistoricalRecord() {
-            const record = { action: "addHistoricalRecord", bow: document.getElementById('hist-bow').value, gender: document.getElementById('hist-gender').value, category: document.getElementById('hist-cat').value, archerName: document.getElementById('hist-name').value.trim(), score: parseInt(document.getElementById('hist-score').value), date: document.getElementById('hist-date').value.trim() };
+       async function submitHistoricalRecord() {
+            const record = { 
+                action: "addHistoricalRecord", 
+                round: document.getElementById('hist-round').value,
+                bow: document.getElementById('hist-bow').value, 
+                gender: document.getElementById('hist-gender').value, 
+                category: document.getElementById('hist-cat').value, 
+                archerName: document.getElementById('hist-name').value.trim(), 
+                score: parseInt(document.getElementById('hist-score').value), 
+                date: document.getElementById('hist-date').value.trim() 
+            };
             if (!record.archerName || isNaN(record.score)) { alert("Enter valid name and score."); return; }
-            try { if ((await (await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) })).json()).result === 'success') { alert("Historical record saved!"); document.getElementById('hist-name').value = ''; document.getElementById('hist-score').value = ''; fetchCloudHistory(() => renderRecords()); } } catch(e) { alert("Network error saving historical record."); }
+            try { 
+                if ((await (await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) })).json()).result === 'success') { 
+                    alert("Historical record saved!"); 
+                    document.getElementById('hist-name').value = ''; 
+                    document.getElementById('hist-score').value = ''; 
+                    fetchCloudHistory(() => renderRecords()); 
+                } 
+            } catch(e) { alert("Network error saving historical record."); }
         }
 
         function openAdminModal() { document.getElementById('admin-modal').classList.add('open'); document.getElementById('admin-pin-input').value = ''; }
