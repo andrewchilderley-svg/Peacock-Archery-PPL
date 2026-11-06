@@ -172,6 +172,9 @@
                 <div><span style="font-size: 0.8rem; color: var(--text-muted); display: block;">EST. CLASSIFICATION GRADE</span><span id="up-est-grade" style="font-size: 1.3rem; font-weight: 700; color: var(--accent);">Unclassified</span></div>
             </div>
             <button class="btn" onclick="processManualScore()">💾 Save & Submit Score</button>
+<p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 12px; margin-bottom: 10px;">
+    By submitting, you agree to your name and score being displayed on the club leaderboard. Data is stored securely via Google Workspace.
+</p>
         </div>
 
         <!-- 2. SHOOT TAB -->
@@ -229,8 +232,12 @@
                     <tbody id="live-scoresheet-body"></tbody>
                 </table>
             </div>
-            <div id="submit-league-container" class="hidden" style="margin-top: 16px;"><button class="btn gold" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="submitLiveRoundToLeague()">🏆 Submit Live Round</button></div>
-        </div>
+            <div id="submit-league-container" class="hidden" style="margin-top: 16px;">
+    <button class="btn gold" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="submitLiveRoundToLeague()">🏆 Submit Live Round</button>
+    <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 12px; margin-bottom: 10px;">
+        By submitting, you agree to your name and score being displayed on the club leaderboard. Data is stored securely via Google Workspace.
+    </p>
+</div>
 
         <!-- 3. LEADERBOARD TAB -->
         <div id="tab-board" class="tab-content">
