@@ -424,7 +424,7 @@
             <h3 style="font-size: 1rem; margin-bottom: 12px;">Registered Archers Database (Editable)</h3>
             <div class="table-container">
                 <table>
-                    <thead><tr><th>Name</th><th>Gender</th><th>Category</th><th>Default Bow</th><th>Starting PB</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Name</th><th>Gender</th><th>Category</th><th>Default Bow</th><th>Starting PB</th><th>PIN</th><th>Action</th></tr></thead>
                     <tbody id="admin-archer-table"></tbody>
                 </table>
             </div>
@@ -821,10 +821,15 @@
             document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, document.getElementById('up-gender').value, document.getElementById('up-cat').value, round);
         }
 
-        function processManualScore() {
+       function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
             if (!archerId) { alert("Please select an archer."); return; }
             const archer = db.archers.find(a => String(a.id) === String(archerId));
+            
+            // NEW: Prompt for PIN
+            const archerPin = prompt(`Please enter the 4-digit PIN for ${archer.name}\n(Default is 0000):`);
+            if (archerPin === null) return; // User clicked Cancel
+            
             const roundType = document.getElementById('up-round').value;
             const bow = document.getElementById('up-bow').value;
             const face = document.getElementById('up-face').value;
@@ -834,7 +839,7 @@
             if (isNaN(score) || score < 0 || score > config.max) { alert(`Please enter a valid total score between 0 and ${config.max}.`); return; }
 
             const record = {
-                id: Date.now(), archerId: archer.id, archerName: archer.name,
+                id: Date.now(), archerId: archer.id, archerName: archer.name, archerPin: archerPin, // <-- PIN added here
                 round: roundType, bow: bow,
                 gender: document.getElementById('up-gender').value, category: document.getElementById('up-cat').value,
                 targetFace: face, score: score,
@@ -1077,10 +1082,13 @@
             return canvas.toDataURL('image/jpeg', 0.85);
         }
 
-        function submitLiveRoundToLeague() {
+       function submitLiveRoundToLeague() {
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             if (!archer) { alert("Please select an archer."); return; }
-            if (!confirm("Are you sure you want to submit this score?")) return;
+            
+            // NEW: Prompt for PIN
+            const archerPin = prompt(`Please enter the 4-digit PIN for ${archer.name}\n(Default is 0000):`);
+            if (archerPin === null) return; // User clicked Cancel
 
             const roundType = document.getElementById('shoot-round').value;
             const bowStyle = document.getElementById('shoot-bow').value;
@@ -1095,7 +1103,7 @@
             const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
 
             submitRecord({
-                id: Date.now(), archerId: archer.id, archerName: archer.name,
+                id: Date.now(), archerId: archer.id, archerName: archer.name, archerPin: archerPin, // <-- PIN added here
                 round: roundType, bow: bowStyle, 
                 gender: gender, category: category,
                 targetFace: document.getElementById('shoot-face').value, score: total, tens: tens, xs: xs, hits: hits, date: dateShot,
@@ -1128,16 +1136,22 @@
             } catch(e) { if(callback) callback(); }
         }
 
-        async function syncRecordToCloud(record) {
+       async function syncRecordToCloud(record) {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 db.history.push(record); localStorage.setItem('ppl_history', JSON.stringify(db.history));
                 alert("Score saved locally!"); switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); return;
             }
             try {
                 const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
-                if ((await res.json()).result === 'success') {
-                    alert("Score successfully submitted!"); fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
-                } else alert("Error saving score.");
+                const responseData = await res.json();
+                
+                if (responseData.result === 'success') {
+                    alert("Score successfully submitted!"); 
+                    fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
+                } else {
+                    // This will pop up if the PIN is incorrect
+                    alert("❌ " + (responseData.message || "Error saving score.")); 
+                }
             } catch (e) { alert("Network error connecting to cloud."); }
         }
 
@@ -1353,17 +1367,37 @@
             }
         }
 
-        function addNewArcherRegistry() {
+       function addNewArcherRegistry() {
             const name = document.getElementById('new-archer-name').value.trim();
             if (!name) { alert("Please enter a valid archer name."); return; }
             db.archers.push({
                 id: Date.now().toString(), name: name, gender: document.getElementById('new-archer-gender').value,
                 category: document.getElementById('new-archer-cat').value, defaultBow: document.getElementById('new-archer-bow').value,
-                startingPB: parseInt(document.getElementById('new-archer-pb').value) || 250
+                startingPB: parseInt(document.getElementById('new-archer-pb').value) || 250,
+                pin: "0000" // NEW: Default PIN assigned on creation
             });
             localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
             document.getElementById('new-archer-name').value = ''; populateDropdowns(); renderAdminTable();
             alert(`Archer "${name}" added successfully!`);
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-archer-table');
+            const sorted = [...db.archers].sort((a, b) => a.name.localeCompare(b.name));
+            if (sorted.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No archers in database.</td></tr>`; return; }
+            
+            // NEW: Added a PIN column
+            tbody.innerHTML = sorted.map(a => `
+                <tr>
+                    <td class="nowrap"><strong>${a.name}</strong></td>
+                    <td><select onchange="updateArcherField('${a.id}', 'gender', this.value)" style="padding:4px; font-size:0.85rem;"><option value="Male" ${a.gender === 'Male' ? 'selected' : ''}>Male</option><option value="Female" ${a.gender === 'Female' ? 'selected' : ''}>Female</option></select></td>
+                    <td><select onchange="updateArcherField('${a.id}', 'category', this.value)" style="padding:4px; font-size:0.85rem;"><option value="Senior" ${(a.category||'Senior') === 'Senior' ? 'selected' : ''}>Senior</option><option value="50+" ${(a.category||'Senior') === '50+' ? 'selected' : ''}>50+</option><option value="Under 18" ${(a.category||'Senior') === 'Under 18' ? 'selected' : ''}>Under 18</option></select></td>
+                    <td><select onchange="updateArcherField('${a.id}', 'defaultBow', this.value)" style="padding:4px; font-size:0.85rem;"><option value="Recurve" ${a.defaultBow === 'Recurve' ? 'selected' : ''}>Recurve</option><option value="Compound" ${a.defaultBow === 'Compound' ? 'selected' : ''}>Compound</option><option value="Barebow" ${a.defaultBow === 'Barebow' ? 'selected' : ''}>Barebow</option><option value="Longbow" ${a.defaultBow === 'Longbow' ? 'selected' : ''}>Longbow</option><option value="Asiatic" ${a.defaultBow === 'Asiatic' ? 'selected' : ''}>Asiatic</option></select></td>
+                    <td><input type="number" value="${a.startingPB || 250}" onchange="updateArcherField('${a.id}', 'startingPB', this.value)" style="width: 70px; padding: 4px; font-size: 0.85rem;"></td>
+                    <td><input type="text" value="${a.pin || '0000'}" onchange="updateArcherField('${a.id}', 'pin', this.value)" style="width: 60px; padding: 4px; font-size: 0.85rem; text-align: center;"></td>
+                    <td><button class="btn btn-danger" style="padding: 2px 6px;" onclick="requestDeleteArcher('${a.id}')">Del</button></td>
+                </tr>
+            `).join('');
         }
 
         function updateArcherField(archerId, field, value) {
