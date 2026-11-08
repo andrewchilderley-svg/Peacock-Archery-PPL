@@ -827,7 +827,7 @@
             const archer = db.archers.find(a => String(a.id) === String(archerId));
             
             // NEW: Prompt for PIN
-            const archerPin = prompt(`Please enter the 4-digit PIN for ${archer.name}\n(Default is 0000) To change to your own personal pin, email it to andrew.childerley@gmail.com:`);
+            const archerPin = prompt(`Please enter the 4-digit PIN for ${archer.name}\n(Default is 0000)\n To change to your own personal pin, email it to andrew.childerley@gmail.com:`);
             if (archerPin === null) return; // User clicked Cancel
             
             const roundType = document.getElementById('up-round').value;
