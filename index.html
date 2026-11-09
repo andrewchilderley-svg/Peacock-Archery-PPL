@@ -443,6 +443,20 @@
         </div>
     </div>
 
+    <div class="modal" id="archer-pin-modal">
+        <div class="modal-content">
+            <div class="modal-title">🎯 League Organiser</div>
+            <p id="archer-pin-message" style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4;"></p>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <input type="password" id="archer-pin-input" placeholder="Enter PIN">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeArcherPinModal()">Cancel</button>
+                <button class="btn" onclick="submitArcherPin()">Submit Score</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="modal" id="delete-auth-modal">
         <div class="modal-content">
             <div class="modal-title">🔐 Admin PIN Required</div>
@@ -821,41 +835,65 @@
             document.getElementById('up-est-grade').innerText = getArcheryGBGrade(score, bow, document.getElementById('up-gender').value, document.getElementById('up-cat').value, round);
         }
 
-       function processManualScore() {
+        // --- CUSTOM PIN MODAL LOGIC ---
+        let pendingScoreSubmission = null;
+
+        function requestArcherPin(archerName, callback) {
+            document.getElementById('archer-pin-message').innerHTML = `Please enter the 4-digit PIN for <strong>${archerName}</strong>.<br><br><span style="font-size: 0.8rem;">(Default is 0000)<br>Request your own personal PIN to protect your scores via mailto:andrew.childerley@gmail.com</span>`;
+            document.getElementById('archer-pin-input').value = '';
+            pendingScoreSubmission = callback;
+            document.getElementById('archer-pin-modal').classList.add('open');
+            document.getElementById('archer-pin-input').focus();
+        }
+
+        function closeArcherPinModal() {
+            document.getElementById('archer-pin-modal').classList.remove('open');
+            pendingScoreSubmission = null;
+        }
+
+        function submitArcherPin() {
+            const pin = document.getElementById('archer-pin-input').value;
+            closeArcherPinModal();
+            if (pendingScoreSubmission) {
+                pendingScoreSubmission(pin);
+            }
+        }
+        // ------------------------------
+        
+     function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
             if (!archerId) { alert("Please select an archer."); return; }
             const archer = db.archers.find(a => String(a.id) === String(archerId));
             
-            // NEW: Prompt for PIN
-            const archerPin = prompt(`Please enter the 4-digit PIN for ${archer.name}\n(Default is 0000)\n Request your own personal pin to protect your scores via andrew.childerley@gmail.com`);
-            if (archerPin === null) return; // User clicked Cancel
-            
-            const roundType = document.getElementById('up-round').value;
-            const bow = document.getElementById('up-bow').value;
-            const face = document.getElementById('up-face').value;
-            const config = getRoundConfig(roundType, bow, face);
-            const score = parseInt(document.getElementById('up-score').value);
-            
-            if (isNaN(score) || score < 0 || score > config.max) { alert(`Please enter a valid total score between 0 and ${config.max}.`); return; }
+            // Trigger the new custom modal
+            requestArcherPin(archer.name, function(archerPin) {
+                const roundType = document.getElementById('up-round').value;
+                const bow = document.getElementById('up-bow').value;
+                const face = document.getElementById('up-face').value;
+                const config = getRoundConfig(roundType, bow, face);
+                const score = parseInt(document.getElementById('up-score').value);
+                
+                if (isNaN(score) || score < 0 || score > config.max) { alert(`Please enter a valid total score between 0 and ${config.max}.`); return; }
 
-            const record = {
-                id: Date.now(), archerId: archer.id, archerName: archer.name, archerPin: archerPin, // <-- PIN added here
-                round: roundType, bow: bow,
-                gender: document.getElementById('up-gender').value, category: document.getElementById('up-cat').value,
-                targetFace: face, score: score,
-                tens: parseInt(document.getElementById('up-tens').value) || 0,
-                xs: parseInt(document.getElementById('up-xs').value) || 0,
-                hits: parseInt(document.getElementById('up-hits').value) || (config.arr * config.ends),
-                date: document.getElementById('up-date').value || new Date().toISOString().split('T')[0],
-                screenshot: ""
-            };
+                const record = {
+                    id: Date.now(), archerId: archer.id, archerName: archer.name, archerPin: archerPin, 
+                    round: roundType, bow: bow,
+                    gender: document.getElementById('up-gender').value, category: document.getElementById('up-cat').value,
+                    targetFace: face, score: score,
+                    tens: parseInt(document.getElementById('up-tens').value) || 0,
+                    xs: parseInt(document.getElementById('up-xs').value) || 0,
+                    hits: parseInt(document.getElementById('up-hits').value) || (config.arr * config.ends),
+                    date: document.getElementById('up-date').value || new Date().toISOString().split('T')[0],
+                    screenshot: ""
+                };
 
-            const file = document.getElementById('up-screenshot').files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) { record.screenshot = e.target.result; submitRecord(record); };
-                reader.readAsDataURL(file);
-            } else submitRecord(record);
+                const file = document.getElementById('up-screenshot').files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) { record.screenshot = e.target.result; submitRecord(record); };
+                    reader.readAsDataURL(file);
+                } else submitRecord(record);
+            });
         }
 
         function submitRecord(record) {
@@ -1086,30 +1124,29 @@
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             if (!archer) { alert("Please select an archer."); return; }
             
-            // NEW: Prompt for PIN
-            const archerPin = prompt(`Please enter the 4-digit PIN for ${archer.name}\n(Default is 0000):`);
-            if (archerPin === null) return; // User clicked Cancel
+            // Trigger the new custom modal
+            requestArcherPin(archer.name, function(archerPin) {
+                const roundType = document.getElementById('shoot-round').value;
+                const bowStyle = document.getElementById('shoot-bow').value;
+                const gender = document.getElementById('shoot-gender').value;
+                const category = document.getElementById('shoot-cat').value;
+                const maxVal = roundType === "Worcester" ? 5 : 10;
+                const numericScores = liveScores.map(s => s === 'X' ? maxVal : Number(s));
+                const total = numericScores.reduce((a, b) => a + b, 0);
+                const hits = numericScores.filter(s => s > 0).length;
+                const tens = liveScores.filter(s => s === 'X' || s === maxVal).length;
+                const xs = liveScores.filter(s => s === 'X').length;
+                const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
 
-            const roundType = document.getElementById('shoot-round').value;
-            const bowStyle = document.getElementById('shoot-bow').value;
-            const gender = document.getElementById('shoot-gender').value;
-            const category = document.getElementById('shoot-cat').value;
-            const maxVal = roundType === "Worcester" ? 5 : 10;
-            const numericScores = liveScores.map(s => s === 'X' ? maxVal : Number(s));
-            const total = numericScores.reduce((a, b) => a + b, 0);
-            const hits = numericScores.filter(s => s > 0).length;
-            const tens = liveScores.filter(s => s === 'X' || s === maxVal).length;
-            const xs = liveScores.filter(s => s === 'X').length;
-            const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
-
-            submitRecord({
-                id: Date.now(), archerId: archer.id, archerName: archer.name, archerPin: archerPin, // <-- PIN added here
-                round: roundType, bow: bowStyle, 
-                gender: gender, category: category,
-                targetFace: document.getElementById('shoot-face').value, score: total, tens: tens, xs: xs, hits: hits, date: dateShot,
-                screenshot: generateDigitalScorecardImage(archer.name, roundType, bowStyle, gender, category, dateShot, total, hits, tens, xs, endsMatrix)
+                submitRecord({
+                    id: Date.now(), archerId: archer.id, archerName: archer.name, archerPin: archerPin,
+                    round: roundType, bow: bowStyle, 
+                    gender: gender, category: category,
+                    targetFace: document.getElementById('shoot-face').value, score: total, tens: tens, xs: xs, hits: hits, date: dateShot,
+                    screenshot: generateDigitalScorecardImage(archer.name, roundType, bowStyle, gender, category, dateShot, total, hits, tens, xs, endsMatrix)
+                });
+                resetLiveRound(true);
             });
-            resetLiveRound(true);
         }
 
         async function fetchCloudArchers(callback) {
