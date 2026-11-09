@@ -854,16 +854,18 @@
         function closeArcherPinModal() {
             document.getElementById('archer-pin-modal').classList.remove('open');
             pendingScoreSubmission = null;
-        }
-
-        function submitArcherPin() {
+       
+            function submitArcherPin() {
             const pin = document.getElementById('archer-pin-input').value;
-            closeArcherPinModal();
+            
+            // Fire the actual submission FIRST while the app still remembers it
             if (pendingScoreSubmission) {
                 pendingScoreSubmission(pin);
             }
+            
+            // Then close the modal and clear the memory
+            closeArcherPinModal(); 
         }
-        // ------------------------------
         
      function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
