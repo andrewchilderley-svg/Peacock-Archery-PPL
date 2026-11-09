@@ -1372,7 +1372,7 @@
             const isAuthorizedArcher = (archer && archer.pin && archer.pin !== "0000" && pin === archer.pin);
 
             if (!isAdmin && !isAuthorizedArcher) {
-                alert("❌ Unauthorised PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions). Request your custom pin via andrew.childerley@gmail.com");
+                alert("❌ Unauthorized PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions).");
                 return;
             }
 
@@ -1380,34 +1380,34 @@
             document.getElementById('delete-auth-modal').classList.remove('open');
             activeDeleteId = null;
 
-            // Type-safe local deletion
+            // Remove locally and update UI instantly
             const targetIdStr = String(scoreId);
             db.history = db.history.filter(h => String(h.id) !== targetIdStr);
             localStorage.setItem('ppl_history', JSON.stringify(db.history));
-
-            // Refresh tables immediately
             renderHistory();
             renderLeaderboard();
 
-            // Send deletion to Google Apps Script
+            // Cloud Sync
             if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 try {
-                    const payload = { action: "deleteScore", id: targetIdStr };
                     const res = await fetch(APPS_SCRIPT_URL, {
                         method: 'POST',
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify({ action: "deleteScore", id: targetIdStr })
                     });
                     const data = await res.json();
+                    
                     if (data.result === 'success') {
+                        // Confirm deletion against refreshed cloud state
                         fetchCloudHistory(() => {
                             renderHistory();
                             renderLeaderboard();
                         });
                     } else {
-                        console.warn("Cloud deletion message:", data.message);
+                        alert("⚠️ Cloud Deletion Failed: " + (data.message || "Unknown server response"));
                     }
                 } catch(e) {
                     console.error("Cloud delete error:", e);
+                    alert("⚠️ Network Error: Could not reach Google Sheet server.");
                 }
             }
         }
