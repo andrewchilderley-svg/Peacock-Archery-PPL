@@ -107,7 +107,7 @@
                     <div class="header-logo-box"><span class="header-logo-emoji">🎯</span></div>
                 </div>
                 <div class="header-text">
-                    <h1 id="brand-title">Peacock Portsmouth League (PPL).</h1>
+                    <h1 id="brand-title">Peacock Portsmouth League (PPL)</h1>
                     <p>Winter League & Indoor Scoring App</p>
                 </div>
             </div>
@@ -1342,16 +1342,21 @@
             }).join('');
         }
 
-        function requestDeleteScore(scoreId) {
-            activeDeleteId = scoreId;
-            document.getElementById('delete-pin-input').value = '';
-            document.getElementById('delete-auth-modal').classList.add('open');
-        }
+       let activeDeleteId = null;
 
-        function closeDeleteAuthModal() {
-            document.getElementById('delete-auth-modal').classList.remove('open');
-            activeDeleteId = null;
-        }
+function requestDeleteScore(scoreId) {
+    activeDeleteId = String(scoreId).trim();
+    const pinInput = document.getElementById('delete-pin-input');
+    if (pinInput) pinInput.value = '';
+    const modal = document.getElementById('delete-auth-modal');
+    if (modal) modal.classList.add('open');
+}
+
+function closeDeleteAuthModal() {
+    activeDeleteId = null;
+    const modal = document.getElementById('delete-auth-modal');
+    if (modal) modal.classList.remove('open');
+}
 
 async function confirmDeleteAction() {
             const pinInput = document.getElementById('delete-pin-input');
