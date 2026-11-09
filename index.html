@@ -839,7 +839,7 @@
         let pendingScoreSubmission = null;
 
         function requestArcherPin(archerName, callback) {
-            document.getElementById('archer-pin-message').innerHTML = `Please enter the 4-digit PIN for <strong>${archerName}</strong>.<br><br><span style="font-size: 0.8rem;">(Default is 0000 unless you have asked the Admin to change it) <br>Request your own personal PIN to protect your scores via mailto:andrew.childerley@gmail.com</span>`;
+            document.getElementById('archer-pin-message').innerHTML = `Please enter the 4-digit PIN for <strong>${archerName}</strong>.<br><br><span style="font-size: 0.8rem;">(Default is 0000 unless you have asked the Admin to change it) <br>Request your own personal PIN to protect your scores via andrew.childerley@gmail.com</span>`;
             document.getElementById('archer-pin-input').value = '';
             pendingScoreSubmission = callback;
             document.getElementById('archer-pin-modal').classList.add('open');
