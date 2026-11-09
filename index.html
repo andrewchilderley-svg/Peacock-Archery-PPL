@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peacock Portsmouth Archery League</title>
+    <title>Peacock Portsmouth Archery League 2026</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <style>
         :root {
@@ -441,7 +441,7 @@
         </div>
     </div>
     
-   <div class="modal" id="delete-auth-modal">
+   <div class="modal" id="delete--modal">
     <div class="modal-content">
         <div class="modal-title">🗑️ Delete Score</div>
         <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
@@ -452,8 +452,8 @@
             <input type="password" id="delete-pin-input" placeholder="Enter PIN">
         </div>
         <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeDeleteAuthModal()">Cancel</button>
-            <button type="button" class="btn btn-danger" onclick="()">Authorise Deletion</button>
+            <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+            <button type="button" class="btn btn-danger" onclick="()">orise Deletion</button>
         </div>
     </div>
 </div>
@@ -1374,7 +1374,7 @@ async function confirmDeleteAction() {
             const isAuthorizedArcher = (archer && archer.pin && archer.pin !== "0000" && pin === archer.pin);
 
             if (!isAdmin && !isAuthorizedArcher) {
-                alert("❌ Unauthorized PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions).");
+                alert("❌ Unauthorised PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions).");
                 return;
             }
 
