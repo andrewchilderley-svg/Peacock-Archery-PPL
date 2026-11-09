@@ -1353,60 +1353,58 @@
             activeDeleteId = null;
         }
 
-     async function confirmDeleteAction() {
+    async function confirmDeleteAction() {
             const pinInput = document.getElementById('delete-pin-input');
             const pin = pinInput ? pinInput.value.trim() : '';
             const scoreId = activeDeleteId;
 
             if (!scoreId) {
-                closeDeleteAuthModal();
+                document.getElementById('delete-auth-modal').classList.remove('open');
                 return;
             }
 
+            if (!db.history) db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
+            
             const scoreRecord = db.history.find(h => String(h.id) === String(scoreId));
             const archer = scoreRecord ? db.archers.find(a => String(a.id) === String(scoreRecord.archerId)) : null;
 
             const isAdmin = (pin === db.settings.pin);
             const isAuthorizedArcher = (archer && archer.pin && archer.pin !== "0000" && pin === archer.pin);
 
-            // 1. PIN Validation Check
             if (!isAdmin && !isAuthorizedArcher) {
                 alert("❌ Unauthorized PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions).");
-                return; // Leaves modal open so user can re-try the PIN without losing state
+                return;
             }
 
-            // 2. CLOSE MODAL IMMEDIATELY ON SUCCESSFUL PIN
-            closeDeleteAuthModal();
+            // Close modal instantly upon valid PIN entry
+            document.getElementById('delete-auth-modal').classList.remove('open');
+            activeDeleteId = null;
 
-            // 3. Remove score locally & save back to LocalStorage
+            // Remove locally and update storage
             db.history = db.history.filter(h => String(h.id) !== String(scoreId));
             localStorage.setItem('ppl_history', JSON.stringify(db.history));
 
-            // 4. Update the screen tables immediately
+            // Refresh tables immediately
             renderHistory();
             renderLeaderboard();
 
-            // 5. Sync deletion with Google Cloud Apps Script
+            // Background cloud sync
             if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 try {
                     const payload = { action: "deleteScore", id: String(scoreId) };
-                    const res = await fetch(APPS_SCRIPT_URL, {
+                    fetch(APPS_SCRIPT_URL, {
                         method: 'POST',
                         body: JSON.stringify(payload)
-                    });
-                    const data = await res.json();
-                    
-                    if (data.result === 'success') {
-                        // Refresh history from cloud to guarantee client/server sync
-                        fetchCloudHistory(() => {
-                            renderHistory();
-                            renderLeaderboard();
-                        });
-                    } else {
-                        console.warn("Cloud deletion notice:", data.message);
-                    }
+                    }).then(res => res.json()).then(data => {
+                        if (data.result === 'success') {
+                            fetchCloudHistory(() => {
+                                renderHistory();
+                                renderLeaderboard();
+                            });
+                        }
+                    }).catch(e => console.error("Cloud delete error:", e));
                 } catch(e) {
-                    console.error("Cloud network error during deletion:", e);
+                    console.error("Cloud request error:", e);
                 }
             }
         }
