@@ -441,22 +441,22 @@
         </div>
     </div>
     
-    <div class="modal" id="delete-auth-modal">
-        <div class="modal-content">
-            <div class="modal-title">🗑️ Delete Score</div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
-                Enter the Master Admin PIN, or the Archer's custom PIN to delete this score. Request your Archer PIN via andrew.childerley@gmail.com<br><br>
-                <span style="font-size: 0.8rem;">(Note: The default 0000 PIN cannot be used for deletions).</span>
-            </p>
-            <div class="form-group" style="margin-bottom: 16px;">
-                <input type="password" id="delete-pin-input" placeholder="Enter PIN">
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeDeleteAuthModal()">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="()">Authorise Deletion</button>
-            </div>
+   <div class="modal" id="delete-auth-modal">
+    <div class="modal-content">
+        <div class="modal-title">🗑️ Delete Score</div>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
+            Enter the Master Admin PIN, or the Archer's custom PIN to delete this score. Request your Archer PIN via andrew.childerley@gmail.com<br><br>
+            <span style="font-size: 0.8rem;">(Note: The default 0000 PIN cannot be used for deletions).</span>
+        </p>
+        <div class="form-group" style="margin-bottom: 16px;">
+            <input type="password" id="delete-pin-input" placeholder="Enter PIN">
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeDeleteAuthModal()">Cancel</button>
+            <button type="button" class="btn btn-danger" onclick="confirmDeleteAction()">Authorize Deletion</button>
         </div>
     </div>
+</div>
 
     <div class="modal" id="reset-modal">
         <div class="modal-content">
