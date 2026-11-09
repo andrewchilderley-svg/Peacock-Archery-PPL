@@ -1163,7 +1163,7 @@
             }
         }
                     
-        async function fetchCloudArchers(callback) {
+       async function fetchCloudArchers(callback) {
             const localArchers = JSON.parse(localStorage.getItem('ppl_archers'));
             if (localArchers && localArchers.length > 0) db.archers = localArchers;
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
@@ -1174,17 +1174,24 @@
                     let map = {}; db.archers.forEach(a => map[String(a.id)] = a); data.forEach(a => map[String(a.id)] = a);
                     db.archers = Object.values(map); localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
                 }
-                if(callback) callback();
-            } catch(e) { if(callback) callback(); }
+            } catch(e) { console.error("Archer fetch error:", e); }
+            if(callback) callback(); // GUARANTEES app continues loading tabs and UI
         }
 
         async function fetchCloudHistory(callback) {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
             try {
-                db.history = await (await fetch(APPS_SCRIPT_URL)).json();
-                try { db.historicalRecords = await (await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords")).json(); } catch(e) { db.historicalRecords = []; }
-                if(callback) callback();
-            } catch(e) { if(callback) callback(); }
+                const res = await fetch(APPS_SCRIPT_URL);
+                db.history = await res.json();
+                try { 
+                    const recRes = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
+                    db.historicalRecords = await recRes.json(); 
+                } catch(e) { db.historicalRecords = []; }
+            } catch(e) { 
+                console.error("History fetch error:", e);
+                db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
+            }
+            if(callback) callback(); // GUARANTEES app continues loading tabs and UI
         }
       
         async function forceSyncArchersToCloud() {
