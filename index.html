@@ -441,7 +441,7 @@
         </div>
     </div>
     
-   <div class="modal" id="delete--modal">
+   <div class="modal" id="delete-auth-modal">
     <div class="modal-content">
         <div class="modal-title">🗑️ Delete Score</div>
         <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
@@ -452,8 +452,8 @@
             <input type="password" id="delete-pin-input" placeholder="Enter PIN">
         </div>
         <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-            <button type="button" class="btn btn-danger" onclick="()">orise Deletion</button>
+            <button type="button" class="btn btn-secondary" onclick="closeDeleteAuthModal()">Cancel</button>
+            <button type="button" class="btn btn-danger" onclick="confirmDeleteAction()">Authorise Deletion</button>
         </div>
     </div>
 </div>
@@ -1341,7 +1341,7 @@
                 </tr>`;
             }).join('');
         }
-        }
+
        let activeDeleteId = null;
 
 function requestDeleteScore(scoreId) {
