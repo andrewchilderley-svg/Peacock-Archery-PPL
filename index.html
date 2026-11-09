@@ -1125,12 +1125,19 @@
             if (document.getElementById('up-screenshot')) document.getElementById('up-screenshot').value = '';
         }
 
+        function clearManualUploadForm() {
+            if (document.getElementById('up-score')) document.getElementById('up-score').value = '';
+            if (document.getElementById('up-tens')) document.getElementById('up-tens').value = '0';
+            if (document.getElementById('up-xs')) document.getElementById('up-xs').value = '0';
+            if (document.getElementById('up-hits')) document.getElementById('up-hits').value = '60';
+            if (document.getElementById('up-screenshot')) document.getElementById('up-screenshot').value = '';
+        }
+
         function submitRecord(record) {
             syncRecordToCloud(record);
-            // Form is intentionally NOT cleared here; it waits for cloud PIN confirmation
-        }         
+        }
 
-              async function syncRecordToCloud(record) {
+        async function syncRecordToCloud(record) {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 db.history.push(record); 
                 localStorage.setItem('ppl_history', JSON.stringify(db.history));
@@ -1146,16 +1153,16 @@
                 
                 if (responseData.result === 'success') {
                     alert("🏆 Score successfully submitted!"); 
-                    clearManualUploadForm(); // Clears manual inputs ONLY on valid PIN / successful submission
-                    resetLiveRound(true);    // Resets live keypad ONLY on valid PIN / successful submission
+                    clearManualUploadForm();
+                    resetLiveRound(true);
                     fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
                 } else {
                     alert("❌ " + (responseData.message || "Upload failed. Score retained on screen—please try submitting again with the correct PIN.")); 
                 }
             } catch (e) { 
-                alert("⚠️ Network error connecting to cloud. Your score is STILL SAVED on your phone! Check your connection and tap Submit again."); 
+                alert("⚠️ Network error connecting to cloud. Your score is STILL SAVED on screen! Check your connection and tap Submit again."); 
             }
-        }  
+        }
                     
         async function fetchCloudArchers(callback) {
             const localArchers = JSON.parse(localStorage.getItem('ppl_archers'));
