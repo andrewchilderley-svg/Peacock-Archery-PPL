@@ -113,7 +113,6 @@
             </div>
             <button class="admin-btn" onclick="openAdminModal()">🔒 Admin</button>
         </header>
-
         <!-- Navigation Tabs -->
         <nav class="nav-tabs">
             <button class="tab-btn active" onclick="switchTab('upload')">📤 Upload Round</button>
@@ -122,7 +121,6 @@
             <button class="tab-btn" onclick="switchTab('records')">🎖️ Club Records</button>
             <button class="tab-btn" onclick="switchTab('history')">📜 History</button>
         </nav>
-
         <!-- 1. UPLOAD TAB -->
         <div id="tab-upload" class="tab-content active">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Manual Score Submission</h2>
@@ -168,7 +166,6 @@
                 By submitting, you agree to your name and score being displayed on the club leaderboard. Data is stored securely via Google Workspace.
             </p>
         </div>
-
         <!-- 2. SHOOT TAB -->
         <div id="tab-shoot" class="tab-content">
             <div class="form-grid" style="margin-bottom: 12px;">
@@ -231,7 +228,6 @@
                 </p>
             </div>
         </div>
-
         <!-- 3. LEADERBOARD TAB -->
         <div id="tab-board" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">PPL Leaderboard <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">(Portsmouth Rounds Only)</span></h2>
@@ -268,7 +264,6 @@
                 </table>
             </div>
         </div>
-
         <!-- 4. RECORDS TAB -->
         <div id="tab-records" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Records</h2>
@@ -320,7 +315,6 @@
                 </table>
             </div>
         </div>
-
         <!-- 5. HISTORY TAB -->
         <div id="tab-history" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Score History</h2>
@@ -357,7 +351,6 @@
                 </table>
             </div>
         </div>
-
         <!-- 6. ADMIN TAB -->
         <div id="tab-admin" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">League Administration</h2>
@@ -423,7 +416,6 @@
             </div>
         </div>
     </div>
-
     <!-- MODALS -->
     <div class="modal" id="admin-modal">
         <div class="modal-content">
@@ -435,7 +427,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal" id="archer-pin-modal">
         <div class="modal-content">
             <div class="modal-title">🎯 League Organiser</div>
@@ -466,7 +457,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal" id="reset-modal">
         <div class="modal-content">
             <div class="modal-title">⚠️ Reset Round?</div>
@@ -477,7 +467,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal" id="proof-modal">
         <div class="modal-content" style="max-width: 600px; text-align: center;">
             <div class="modal-title">📷 Scorecard Proof</div>
@@ -494,17 +483,14 @@
             { id: "173001", name: "Andrew Childerley", gender: "Male", category: "Senior", defaultBow: "Compound", startingPB: 584, pin: "0000" },
             { id: "1730000002", name: "Richard Shepherd", gender: "Male", category: "Senior", defaultBow: "Recurve", startingPB: 450, pin: "0000" }
         ];
-
         let db = {
             archers: JSON.parse(localStorage.getItem('ppl_archers')) || defaultArchers,
             history: JSON.parse(localStorage.getItem('ppl_history')) || [],
             historicalRecords: [], 
             settings: { pin: localStorage.getItem('ppl_admin_pin') || "1010", logo: localStorage.getItem('ppl_logo') || "" }
         };
-
         if (!localStorage.getItem('ppl_archers')) localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
         let activeDeleteId = null;
-
         const gradeMatrix = {
             "Portsmouth": {
                 "Recurve_Male_Senior": [378, 437, 483, 518, 546, 566, 582, 593], "Recurve_Male_50+": [316, 387, 444, 488, 522, 549, 569, 583], "Recurve_Male_Under 18": [316, 387, 444, 488, 522, 549, 569, 583],
@@ -557,7 +543,7 @@
             "Vegas 300": {
                 "Recurve_Male_Senior": [134, 172, 205, 232, 252, 268, 280, 289], "Recurve_Male_50+": [101, 139, 176, 209, 235, 254, 270, 281], "Recurve_Male_Under 18": [73, 106, 144, 181, 213, 238, 257, 271],
                 "Recurve_Female_Senior": [108, 146, 183, 215, 239, 258, 272, 283], "Recurve_Female_50+": [79, 113, 152, 188, 218, 242, 260, 274], "Recurve_Female_Under 18": [55, 83, 118, 157, 192, 222, 244, 262],
-                "Compound_Male_Senior": [201, 230, 252, 269, 281, 290, 297, 300], "Compound_Male_50+": [174, 209, 236, 257, 272, 284, 292, 298], "Compound_Male_Under 18": [144, 183, 216, 242, 261, 275, 286, 294],
+                "Compound_Male_Senior": [201, 230, 252, 269, 281, 290, 300, 300], "Compound_Male_50+": [174, 209, 236, 257, 272, 284, 292, 298], "Compound_Male_Under 18": [144, 183, 216, 242, 261, 275, 286, 294],
                 "Compound_Female_Senior": [183, 216, 242, 261, 275, 286, 294, 299], "Compound_Female_50+": [154, 192, 223, 247, 265, 278, 288, 295], "Compound_Female_Under 18": [123, 164, 201, 230, 252, 269, 281, 290],
                 "Barebow_Male_Senior": [108, 139, 169, 197, 220, 239, 254, 267], "Barebow_Male_50+": [83, 111, 141, 172, 199, 222, 240, 256], "Barebow_Male_Under 18": [62, 85, 113, 144, 174, 201, 223, 242],
                 "Barebow_Female_Senior": [83, 111, 141, 172, 199, 222, 240, 256], "Barebow_Female_50+": [62, 85, 113, 144, 174, 201, 223, 242], "Barebow_Female_Under 18": [45, 64, 87, 116, 146, 176, 203, 225],
@@ -677,7 +663,6 @@
             const buttons = document.querySelectorAll('.nav-tabs .tab-btn');
             const map = { 'upload': 0, 'shoot': 1, 'board': 2, 'records': 3, 'history': 4, 'admin': -1 };
             if (map[tabId] !== undefined && buttons[map[tabId]]) buttons[map[tabId]].classList.add('active');
-
             if (['board', 'records', 'history', 'admin'].includes(tabId)) {
                 fetchCloudHistory(() => {
                     if (tabId === 'board') renderLeaderboard();
@@ -720,6 +705,7 @@
         }
 
         function resetLeagueLogo() { db.settings.logo = ""; localStorage.setItem('ppl_logo', ""); applyBranding(); document.getElementById('logo-file-input').value = ""; alert("Logo reset to default icon."); }
+
         function updateAdminPin() {
             const newPin = document.getElementById('new-admin-pin-input').value.trim();
             if (!newPin || newPin.length < 4) { alert("Please enter a valid 4-digit PIN."); return; }
@@ -772,6 +758,7 @@
         }
 
         function onUploadBowChange() { onUploadRoundChange(); }
+
         function onUploadArcherChange() {
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('up-archer').value));
             if (archer) {
@@ -799,10 +786,10 @@
         }
 
         function onLiveBowChange() { handleLiveRoundChange(); }
-         function onShootArcherChange() {
+
+        function onShootArcherChange() {
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             if (archer) {
-                // Only set default bow if no arrows have been shot yet
                 if (archer.defaultBow && liveScores.length === 0) {
                     document.getElementById('shoot-bow').value = archer.defaultBow;
                     const roundType = document.getElementById('shoot-round').value;
@@ -814,7 +801,7 @@
                 if (archer.category) document.getElementById('shoot-cat').value = archer.category;
             }
             saveLiveState();
-            renderLiveRoundUI(); // Updates stats without wiping liveScores
+            renderLiveRoundUI(); 
         }
 
         function updateUploadStats() {
@@ -833,6 +820,7 @@
 
         // --- CUSTOM PIN MODAL LOGIC ---
         let pendingScoreSubmission = null;
+
         function requestArcherPin(archerName, callback) {
             document.getElementById('archer-pin-message').innerHTML = `Please enter the 4-digit PIN for <strong>${archerName}</strong>.<br><br><span style="font-size: 0.8rem;">(Default is 0000 unless you have asked the Admin to change it)<br>Request your own personal PIN to protect your scores via andrew.childerley@gmail.com</span>`;
             document.getElementById('archer-pin-input').value = '';
@@ -853,7 +841,7 @@
             }
             closeArcherPinModal(); 
         }
-        
+
         function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
             if (!archerId) { alert("Please select an archer."); return; }
@@ -885,15 +873,6 @@
                     reader.readAsDataURL(file);
                 } else submitRecord(record);
             });
-        }
-
-        function submitRecord(record) {
-            syncRecordToCloud(record);
-            if (document.getElementById('up-score')) document.getElementById('up-score').value = '';
-            if (document.getElementById('up-tens')) document.getElementById('up-tens').value = '0';
-            if (document.getElementById('up-xs')) document.getElementById('up-xs').value = '0';
-            if (document.getElementById('up-hits')) document.getElementById('up-hits').value = '60';
-            if (document.getElementById('up-screenshot')) document.getElementById('up-screenshot').value = '';
         }
 
         function saveLiveState() {
@@ -1043,6 +1022,7 @@
         function promptResetRound() { document.getElementById('reset-modal').classList.add('open'); }
         function closeResetModal() { document.getElementById('reset-modal').classList.remove('open'); }
         function confirmResetRound() { closeResetModal(); resetLiveRound(true); }
+
         function resetLiveRound(forceSilent = false) {
             currentEnd = 1; endsMatrix = Array(activeRoundConfig.ends).fill(null).map(() => []); liveScores = [];
             localStorage.removeItem('ppl_active_shoot_backup');
@@ -1099,6 +1079,7 @@
             return canvas.toDataURL('image/jpeg', 0.85);
         }
 
+        // --- LIVE ROUND SUBMISSION ---
         function submitLiveRoundToLeague() {
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             if (!archer) { alert("Please select an archer."); return; }
@@ -1108,6 +1089,7 @@
                 const bowStyle = document.getElementById('shoot-bow').value;
                 const gender = document.getElementById('shoot-gender').value;
                 const category = document.getElementById('shoot-cat').value;
+                const targetFace = document.getElementById('shoot-face').value;
                 const maxVal = roundType === "Worcester" ? 5 : 10;
                 const numericScores = liveScores.map(s => s === 'X' ? maxVal : Number(s));
                 const total = numericScores.reduce((a, b) => a + b, 0);
@@ -1116,15 +1098,31 @@
                 const xs = liveScores.filter(s => s === 'X').length;
                 const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
                 
-       // --- FORM CLEANUP & SUBMISSION FAIL-SAFES ---
-        function clearManualUploadForm() {
-            if (document.getElementById('up-score')) document.getElementById('up-score').value = '';
-            if (document.getElementById('up-tens')) document.getElementById('up-tens').value = '0';
-            if (document.getElementById('up-xs')) document.getElementById('up-xs').value = '0';
-            if (document.getElementById('up-hits')) document.getElementById('up-hits').value = '60';
-            if (document.getElementById('up-screenshot')) document.getElementById('up-screenshot').value = '';
+                const proofImage = generateDigitalScorecardImage(archer.name, roundType, bowStyle, gender, category, dateShot, total, hits, tens, xs, endsMatrix);
+
+                const record = {
+                    id: Date.now(),
+                    archerId: archer.id,
+                    archerName: archer.name,
+                    archerPin: archerPin,
+                    round: roundType,
+                    bow: bowStyle,
+                    gender: gender,
+                    category: category,
+                    targetFace: targetFace,
+                    score: total,
+                    tens: tens,
+                    xs: xs,
+                    hits: hits,
+                    date: dateShot,
+                    screenshot: proofImage
+                };
+
+                submitRecord(record);
+            });
         }
 
+        // --- FORM CLEANUP & FAIL-SAFE CLOUD SUBMISSION ---
         function clearManualUploadForm() {
             if (document.getElementById('up-score')) document.getElementById('up-score').value = '';
             if (document.getElementById('up-tens')) document.getElementById('up-tens').value = '0';
@@ -1153,8 +1151,8 @@
                 
                 if (responseData.result === 'success') {
                     alert("🏆 Score successfully submitted!"); 
-                    clearManualUploadForm();
-                    resetLiveRound(true);
+                    clearManualUploadForm(); // Wipes manual fields ONLY on verified PIN!
+                    resetLiveRound(true);    // Resets live round ONLY on verified PIN!
                     fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
                 } else {
                     alert("❌ " + (responseData.message || "Upload failed. Score retained on screen—please try submitting again with the correct PIN.")); 
