@@ -799,14 +799,22 @@
         }
 
         function onLiveBowChange() { handleLiveRoundChange(); }
-        function onShootArcherChange() {
+         function onShootArcherChange() {
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             if (archer) {
-                if (archer.defaultBow) document.getElementById('shoot-bow').value = archer.defaultBow;
+                // Only set default bow if no arrows have been shot yet
+                if (archer.defaultBow && liveScores.length === 0) {
+                    document.getElementById('shoot-bow').value = archer.defaultBow;
+                    const roundType = document.getElementById('shoot-round').value;
+                    const faceSelect = document.getElementById('shoot-face').value;
+                    activeRoundConfig = getRoundConfig(roundType, archer.defaultBow, faceSelect);
+                    buildDynamicKeypad(roundType, archer.defaultBow, faceSelect);
+                }
                 if (archer.gender) document.getElementById('shoot-gender').value = archer.gender;
                 if (archer.category) document.getElementById('shoot-cat').value = archer.category;
             }
-            handleLiveRoundChange();
+            saveLiveState();
+            renderLiveRoundUI(); // Updates stats without wiping liveScores
         }
 
         function updateUploadStats() {
@@ -1108,16 +1116,47 @@
                 const xs = liveScores.filter(s => s === 'X').length;
                 const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
                 
-                submitRecord({
-                    id: Date.now(), archerId: archer.id, archerName: archer.name, archerPin: archerPin,
-                    round: roundType, bow: bowStyle, 
-                    gender: gender, category: category,
-                    targetFace: document.getElementById('shoot-face').value, score: total, tens: tens, xs: xs, hits: hits, date: dateShot,
-                    screenshot: generateDigitalScorecardImage(archer.name, roundType, bowStyle, gender, category, dateShot, total, hits, tens, xs, endsMatrix)
-                });
-            });
+       // --- FORM CLEANUP & SUBMISSION FAIL-SAFES ---
+        function clearManualUploadForm() {
+            if (document.getElementById('up-score')) document.getElementById('up-score').value = '';
+            if (document.getElementById('up-tens')) document.getElementById('up-tens').value = '0';
+            if (document.getElementById('up-xs')) document.getElementById('up-xs').value = '0';
+            if (document.getElementById('up-hits')) document.getElementById('up-hits').value = '60';
+            if (document.getElementById('up-screenshot')) document.getElementById('up-screenshot').value = '';
         }
 
+        function submitRecord(record) {
+            syncRecordToCloud(record);
+            // Form is intentionally NOT cleared here; it waits for cloud PIN confirmation
+        }         
+
+              async function syncRecordToCloud(record) {
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
+                db.history.push(record); 
+                localStorage.setItem('ppl_history', JSON.stringify(db.history));
+                alert("Score saved locally!"); 
+                clearManualUploadForm();
+                resetLiveRound(true); 
+                switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); 
+                return;
+            }
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
+                const responseData = await res.json();
+                
+                if (responseData.result === 'success') {
+                    alert("🏆 Score successfully submitted!"); 
+                    clearManualUploadForm(); // Clears manual inputs ONLY on valid PIN / successful submission
+                    resetLiveRound(true);    // Resets live keypad ONLY on valid PIN / successful submission
+                    fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
+                } else {
+                    alert("❌ " + (responseData.message || "Upload failed. Score retained on screen—please try submitting again with the correct PIN.")); 
+                }
+            } catch (e) { 
+                alert("⚠️ Network error connecting to cloud. Your score is STILL SAVED on your phone! Check your connection and tap Submit again."); 
+            }
+        }  
+                    
         async function fetchCloudArchers(callback) {
             const localArchers = JSON.parse(localStorage.getItem('ppl_archers'));
             if (localArchers && localArchers.length > 0) db.archers = localArchers;
@@ -1141,32 +1180,7 @@
                 if(callback) callback();
             } catch(e) { if(callback) callback(); }
         }
-
-        async function syncRecordToCloud(record) {
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
-                db.history.push(record); 
-                localStorage.setItem('ppl_history', JSON.stringify(db.history));
-                alert("Score saved locally!"); 
-                resetLiveRound(true);
-                switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); 
-                return;
-            }
-            try {
-                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
-                const responseData = await res.json();
-                
-                if (responseData.result === 'success') {
-                    alert("🏆 Score successfully submitted!"); 
-                    resetLiveRound(true);
-                    fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
-                } else {
-                    alert("❌ " + (responseData.message || "Upload failed. Your score is still safely stored on your phone! Please try submitting again.")); 
-                }
-            } catch (e) { 
-                alert("⚠️ Network error connecting to cloud. Your score is STILL SAVED on your phone! Check your connection and tap Submit again."); 
-            }
-        }
-
+      
         async function forceSyncArchersToCloud() {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) return;
             try {
