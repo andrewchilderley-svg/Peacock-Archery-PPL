@@ -1365,7 +1365,7 @@
             if (modal) modal.classList.remove('open');
         }
 
-        async function confirmDeleteAction() {
+async function confirmDeleteAction() {
             const pinInput = document.getElementById('delete-pin-input');
             const pin = pinInput ? pinInput.value.trim() : '';
             const scoreId = activeDeleteId;
@@ -1373,27 +1373,31 @@
                 document.getElementById('delete-auth-modal').classList.remove('open');
                 return;
             }
-            if (!db.history) db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
             
             const targetIdStr = String(scoreId).trim();
             const scoreRecord = db.history.find(h => String(h.id).trim() === targetIdStr);
             const archer = scoreRecord ? db.archers.find(a => String(a.id).trim() === String(scoreRecord.archerId).trim()) : null;
+            
             const isAdmin = (pin === db.settings.pin);
             const isAuthorizedArcher = (archer && archer.pin && archer.pin !== "0000" && pin === archer.pin);
+            
             if (!isAdmin && !isAuthorizedArcher) {
-                alert("❌ Unauthorised PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions).");
+                alert("❌ Unauthorised PIN. Please enter the Master Admin PIN or the Archer's custom PIN.");
                 return;
             }
             
+            // 1. Close modal instantly
             document.getElementById('delete-auth-modal').classList.remove('open');
             activeDeleteId = null;
             
+            // 2. Remove locally from memory array without crashing browser quota
             db.history = db.history.filter(h => String(h.id).trim() !== targetIdStr);
-            localStorage.setItem('ppl_history', JSON.stringify(db.history));
             
+            // Redraw tables instantly
             renderHistory();
             renderLeaderboard();
             
+            // 3. Send request to Google Apps Script to update Column N to DELETED
             if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 try {
                     const res = await fetch(APPS_SCRIPT_URL, {
@@ -1401,16 +1405,21 @@
                         body: JSON.stringify({ action: "deleteScore", id: targetIdStr })
                     });
                     const data = await res.json();
+                    
                     if (data.result === 'success') {
+                        // Background sync ensures cloud sheet matches screen cleanly
                         setTimeout(() => {
                             fetchCloudHistory(() => {
                                 renderHistory();
                                 renderLeaderboard();
                             });
                         }, 500);
+                    } else {
+                        alert("⚠️ Cloud Deletion Notice: " + (data.message || "Could not mark row as deleted."));
                     }
                 } catch(e) {
                     console.error("Cloud delete error:", e);
+                    alert("⚠️ Network Error: Could not reach Google Sheet server to delete.");
                 }
             }
         }
