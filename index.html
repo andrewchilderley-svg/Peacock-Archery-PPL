@@ -981,6 +981,10 @@
         }
 
         function pressScore(val) {
+            const maxTotalArrows = activeRoundConfig.arr * activeRoundConfig.ends;
+            // LOCK KEYPAD: Prevent extra taps if round is complete
+            if (liveScores.length >= maxTotalArrows) return; 
+
             if (currentEnd > activeRoundConfig.ends || endsMatrix[currentEnd - 1].length >= activeRoundConfig.arr) return;
             endsMatrix[currentEnd - 1].push(val); liveScores.push(val); saveLiveState(); renderLiveRoundUI();
             if (endsMatrix[currentEnd - 1].length === activeRoundConfig.arr || (currentEnd === activeRoundConfig.ends && endsMatrix[activeRoundConfig.ends - 1].length === activeRoundConfig.arr)) {
@@ -1131,7 +1135,6 @@
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             if (!archer) { alert("Please select an archer."); return; }
             
-            // Trigger the new custom modal
             requestArcherPin(archer.name, function(archerPin) {
                 const roundType = document.getElementById('shoot-round').value;
                 const bowStyle = document.getElementById('shoot-bow').value;
@@ -1145,6 +1148,7 @@
                 const xs = liveScores.filter(s => s === 'X').length;
                 const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
 
+                // Submit record without wiping local state beforehand
                 submitRecord({
                     id: Date.now(), archerId: archer.id, archerName: archer.name, archerPin: archerPin,
                     round: roundType, bow: bowStyle, 
@@ -1152,7 +1156,6 @@
                     targetFace: document.getElementById('shoot-face').value, score: total, tens: tens, xs: xs, hits: hits, date: dateShot,
                     screenshot: generateDigitalScorecardImage(archer.name, roundType, bowStyle, gender, category, dateShot, total, hits, tens, xs, endsMatrix)
                 });
-                resetLiveRound(true);
             });
         }
 
@@ -1180,23 +1183,29 @@
             } catch(e) { if(callback) callback(); }
         }
 
-       async function syncRecordToCloud(record) {
+      async function syncRecordToCloud(record) {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
-                db.history.push(record); localStorage.setItem('ppl_history', JSON.stringify(db.history));
-                alert("Score saved locally!"); switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); return;
+                db.history.push(record); 
+                localStorage.setItem('ppl_history', JSON.stringify(db.history));
+                alert("Score saved locally!"); 
+                resetLiveRound(true); // Resets ONLY on success
+                switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); 
+                return;
             }
             try {
                 const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(record) });
                 const responseData = await res.json();
                 
                 if (responseData.result === 'success') {
-                    alert("Score successfully submitted!"); 
+                    alert("🏆 Score successfully submitted!"); 
+                    resetLiveRound(true); // Resets ONLY when Google confirms receipt!
                     fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
                 } else {
-                    // This will pop up if the PIN is incorrect
-                    alert("❌ " + (responseData.message || "Error saving score.")); 
+                    alert("❌ " + (responseData.message || "Upload failed. Your score is still safely stored on your phone! Please try submitting again.")); 
                 }
-            } catch (e) { alert("Network error connecting to cloud."); }
+            } catch (e) { 
+                alert("⚠️ Network error connecting to cloud. Your score is STILL SAVED on your phone! Check your connection and tap Submit again."); 
+            }
         }
 
         async function forceSyncArchersToCloud() {
