@@ -457,11 +457,16 @@
         </div>
     </div>
     
-    <div class="modal" id="delete-auth-modal">
+   <div class="modal" id="delete-auth-modal">
         <div class="modal-content">
-            <div class="modal-title">🔐 Admin PIN Required</div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Enter Admin PIN to permanently delete score from database:</p>
-            <div class="form-group" style="margin-bottom: 16px;"><input type="password" id="delete-pin-input" placeholder="Enter PIN"></div>
+            <div class="modal-title">🗑️ Delete Score</div>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
+                Enter the Master Admin PIN, or the Archer's custom PIN to delete this score.<br><br>
+                <span style="font-size: 0.8rem;">(Note: The default 0000 PIN cannot be used for deletions).</span>
+            </p>
+            <div class="form-group" style="margin-bottom: 16px;">
+                <input type="password" id="delete-pin-input" placeholder="Enter PIN">
+            </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeDeleteAuthModal()">Cancel</button>
                 <button class="btn btn-danger" onclick="confirmDeleteAction()">Authorize Deletion</button>
@@ -1374,17 +1379,26 @@
         }
 
         async function confirmDeleteAction() {
-            const pin = document.getElementById('delete-pin-input').value;
-            if (pin !== db.settings.pin) {
-                alert("Incorrect Admin PIN.");
+            const pin = document.getElementById('delete-pin-input').value.trim();
+            const scoreId = activeDeleteId;
+            if (!scoreId) return;
+
+            // Find the score being deleted and the archer it belongs to
+            const scoreRecord = db.history.find(h => String(h.id) === String(scoreId));
+            const archer = scoreRecord ? db.archers.find(a => String(a.id) === String(scoreRecord.archerId)) : null;
+
+            // Authorization Logic
+            const isAdmin = (pin === db.settings.pin);
+            const isAuthorizedArcher = (archer && archer.pin !== "0000" && pin === archer.pin);
+
+            if (!isAdmin && !isAuthorizedArcher) {
+                alert("❌ Unauthorized. You must use the Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used to delete scores).");
                 return;
             }
 
-            const scoreId = activeDeleteId;
+            // If authorized, proceed with deletion
             document.getElementById('delete-auth-modal').classList.remove('open');
             activeDeleteId = null;
-
-            if (!scoreId) return;
 
             db.history = db.history.filter(h => String(h.id) !== String(scoreId));
             localStorage.setItem('ppl_history', JSON.stringify(db.history));
