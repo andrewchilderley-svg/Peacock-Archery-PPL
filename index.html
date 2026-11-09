@@ -453,7 +453,7 @@
         </div>
         <div class="modal-actions">
             <button type="button" class="btn btn-secondary" onclick="closeDeleteAuthModal()">Cancel</button>
-            <button type="button" class="btn btn-danger" onclick="confirmDeleteAction()">Authorize Deletion</button>
+            <button type="button" class="btn btn-danger" onclick="()">Authorize Deletion</button>
         </div>
     </div>
 </div>
@@ -1365,17 +1365,16 @@ async function confirmDeleteAction() {
 
             if (!db.history) db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
             
-            // Clean IDs for perfect matching
-            const targetIdClean = String(scoreId).replace(/[^0-9]/g, '');
+            const targetIdStr = String(scoreId).trim();
             
-            const scoreRecord = db.history.find(h => String(h.id).replace(/[^0-9]/g, '') === targetIdClean);
-            const archer = scoreRecord ? db.archers.find(a => String(a.id).replace(/[^0-9]/g, '') === String(scoreRecord.archerId).replace(/[^0-9]/g, '')) : null;
+            const scoreRecord = db.history.find(h => String(h.id).trim() === targetIdStr);
+            const archer = scoreRecord ? db.archers.find(a => String(a.id).trim() === String(scoreRecord.archerId).trim()) : null;
 
             const isAdmin = (pin === db.settings.pin);
             const isAuthorizedArcher = (archer && archer.pin && archer.pin !== "0000" && pin === archer.pin);
 
             if (!isAdmin && !isAuthorizedArcher) {
-                alert("❌ Unauthorized PIN. Please enter the Master Admin PIN or the Archer's custom PIN.");
+                alert("❌ Unauthorized PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions).");
                 return;
             }
 
@@ -1383,33 +1382,36 @@ async function confirmDeleteAction() {
             document.getElementById('delete-auth-modal').classList.remove('open');
             activeDeleteId = null;
 
-            // 2. Remove locally and UPDATE UI INSTANTLY
-            db.history = db.history.filter(h => String(h.id).replace(/[^0-9]/g, '') !== targetIdClean);
+            // 2. Wipe from local storage array immediately
+            db.history = db.history.filter(h => String(h.id).trim() !== targetIdStr);
             localStorage.setItem('ppl_history', JSON.stringify(db.history));
+            
+            // 3. Redraw tables instantly
             renderHistory();
             renderLeaderboard();
 
-            // 3. Send delete command to cloud safely
+            // 4. Send request to Google Apps Script
             if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 try {
                     const res = await fetch(APPS_SCRIPT_URL, {
                         method: 'POST',
-                        body: JSON.stringify({ action: "deleteScore", id: targetIdClean })
+                        body: JSON.stringify({ action: "deleteScore", id: targetIdStr })
                     });
                     const data = await res.json();
                     
                     if (data.result === 'success') {
-                        // Background sync ensures sheet matches the screen
-                        fetchCloudHistory(() => {
-                            renderHistory();
-                            renderLeaderboard();
-                        });
+                        // Force a clean fetch from cloud after a short buffer
+                        setTimeout(() => {
+                            fetchCloudHistory(() => {
+                                renderHistory();
+                                renderLeaderboard();
+                            });
+                        }, 500);
                     } else {
-                        alert("⚠️ Cloud Deletion Error: " + (data.message || "Unknown error"));
+                        alert("⚠️ Cloud Deletion Notice: " + (data.message || "Could not mark row as deleted."));
                     }
                 } catch(e) {
                     console.error("Cloud delete error:", e);
-                    alert("⚠️ Network Error: Could not reach Google Sheet server to delete.");
                 }
             }
         }
