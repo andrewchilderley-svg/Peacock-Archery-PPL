@@ -20,7 +20,6 @@
             --success: #22c55e;
             --border: #6b21a8;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         .container { width: 100%; max-width: 960px; background: var(--bg-card); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
@@ -40,7 +39,6 @@
         .tab-btn.active { color: #c084fc; border-bottom-color: #a855f7; background: rgba(147, 51, 234, 0.1); }
         .tab-content { display: none; padding: 20px; flex: 1; }
         .tab-content.active { display: block; }
-
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 20px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -52,7 +50,6 @@
         .btn-secondary:hover { background: var(--border); }
         .btn-danger { background: var(--danger); }
         .btn-danger:hover { background: var(--danger-hover); }
-
         .table-container { width: 100%; overflow-x: auto; margin-top: 14px; border-radius: 8px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem; }
         th, td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
@@ -60,7 +57,6 @@
         tr:last-child td { border-bottom: none; }
         tr:hover td { background: rgba(255, 255, 255, 0.02); }
         .nowrap { white-space: nowrap; }
-
         .shoot-header-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; background: #111827; padding: 16px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }
         .stat-box .stat-val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
         .stat-box .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
@@ -78,20 +74,17 @@
         .key-btn.black { background:#1f2937; border-color:#374151; }
         .key-btn.white { background:#f8fafc; color:#0f172a; border-color:#cbd5e1; }
         .key-btn.action { background: #374151; font-size: 1rem; grid-column: span 2; }
-
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
         .modal.open { display: flex; }
         .modal-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 450px; padding: 24px; box-shadow: 0 20px 25px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
         .modal-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
         .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
-
         .badge { display: inline-block; padding: 3px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
         .badge-gold { background: rgba(217, 119, 6, 0.2); color: #fbbf24; border: 1px solid rgba(217, 119, 6, 0.4); }
         .badge-success { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
         .badge-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
         .badge-round { background: #312e81; color: #a5b4fc; border: 1px solid #4f46e5; }
         .hidden { display: none !important; }
-
         @media (max-width: 650px) {
             header { flex-direction: column; text-align: center; gap: 14px; padding: 16px; }
             .header-title { flex-direction: column; gap: 10px; }
@@ -106,7 +99,6 @@
     </style>
 </head>
 <body>
-
     <div class="container">
         <!-- Header -->
         <header>
@@ -172,9 +164,9 @@
                 <div><span style="font-size: 0.8rem; color: var(--text-muted); display: block;">EST. CLASSIFICATION GRADE</span><span id="up-est-grade" style="font-size: 1.3rem; font-weight: 700; color: var(--accent);">Unclassified</span></div>
             </div>
             <button class="btn" onclick="processManualScore()">💾 Save & Submit Score</button>
-<p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 12px; margin-bottom: 10px;">
-    By submitting, you agree to your name and score being displayed on the club leaderboard. Data is stored securely via Google Workspace.
-</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 12px; margin-bottom: 10px;">
+                By submitting, you agree to your name and score being displayed on the club leaderboard. Data is stored securely via Google Workspace.
+            </p>
         </div>
 
         <!-- 2. SHOOT TAB -->
@@ -233,12 +225,13 @@
                 </table>
             </div>
             <div id="submit-league-container" class="hidden" style="margin-top: 16px;">
-    <button class="btn gold" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="submitLiveRoundToLeague()">🏆 Submit Live Round</button>
-    <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 12px; margin-bottom: 10px;">
-        By submitting, you agree to your name and score being displayed on the club leaderboard. Data is stored securely via Google Workspace.
-    </p>
-</div>
+                <button class="btn gold" style="width: 100%; padding: 14px; font-size: 1.1rem;" onclick="submitLiveRoundToLeague()">🏆 Submit Live Round</button>
+                <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 12px; margin-bottom: 10px;">
+                    By submitting, you agree to your name and score being displayed on the club leaderboard. Data is stored securely via Google Workspace.
+                </p>
+            </div>
         </div>
+
         <!-- 3. LEADERBOARD TAB -->
         <div id="tab-board" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">PPL Leaderboard <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">(Portsmouth Rounds Only)</span></h2>
@@ -276,7 +269,7 @@
             </div>
         </div>
 
-     <!-- 4. RECORDS TAB -->
+        <!-- 4. RECORDS TAB -->
         <div id="tab-records" class="tab-content">
             <h2 style="margin-bottom: 16px; font-size: 1.2rem;">Club Records</h2>
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
@@ -457,11 +450,11 @@
         </div>
     </div>
     
-   <div class="modal" id="delete-auth-modal">
+    <div class="modal" id="delete-auth-modal">
         <div class="modal-content">
             <div class="modal-title">🗑️ Delete Score</div>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
-                Enter the Master Admin PIN, or the Archer's custom PIN to delete this score. Request your Archer pin via andrew.childerley@gmail.com<br><br>
+                Enter the Master Admin PIN, or the Archer's custom PIN to delete this score. Request your Archer PIN via andrew.childerley@gmail.com<br><br>
                 <span style="font-size: 0.8rem;">(Note: The default 0000 PIN cannot be used for deletions).</span>
             </p>
             <div class="form-group" style="margin-bottom: 16px;">
@@ -496,10 +489,10 @@
     <!-- SCRIPT -->
     <script>
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRnOF7mRyD1WxWDeQ9dCdHPNf6QsxYdMvdqZocr_H35v8uwWrHnxhBSe0c9OJ7bbHIsA/exec';
-
+        
         let defaultArchers = [
-            { id: "173001", name: "Andrew Childerley", gender: "Male", category: "Senior", defaultBow: "Compound", startingPB: 584 },
-            { id: "1730000002", name: "Richard Shepherd", gender: "Male", category: "Senior", defaultBow: "Recurve", startingPB: 450 }
+            { id: "173001", name: "Andrew Childerley", gender: "Male", category: "Senior", defaultBow: "Compound", startingPB: 584, pin: "0000" },
+            { id: "1730000002", name: "Richard Shepherd", gender: "Male", category: "Senior", defaultBow: "Recurve", startingPB: 450, pin: "0000" }
         ];
 
         let db = {
@@ -510,7 +503,6 @@
         };
 
         if (!localStorage.getItem('ppl_archers')) localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
-
         let activeDeleteId = null;
 
         const gradeMatrix = {
@@ -631,7 +623,6 @@
                 case "Portsmouth": 
                 case "WA18": 
                 case "Bray I": 
-                    // No X scoring for Portsmouth, WA18, or Bray I
                     if (targetFace === "Triple Spot") {
                         return { arr: 3, ends: roundType === "Bray I" ? 10 : 20, max: roundType === "Bray I" ? 300 : 600, keys: [10,9,8,7,6,0], minVal: 6 };
                     }
@@ -735,6 +726,7 @@
             db.settings.pin = newPin; localStorage.setItem('ppl_admin_pin', newPin);
             document.getElementById('new-admin-pin-input').value = ''; alert("Master Admin PIN successfully updated!");
         }
+
         function triggerForgotPin() {
             if (prompt("Enter Master Recovery Phrase (default: peacock):")?.toLowerCase() === "peacock") {
                 db.settings.pin = "1010"; localStorage.setItem('ppl_admin_pin', "1010");
@@ -779,10 +771,7 @@
             updateUploadStats();
         }
 
-        function onUploadBowChange() {
-            onUploadRoundChange();
-        }
-
+        function onUploadBowChange() { onUploadRoundChange(); }
         function onUploadArcherChange() {
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('up-archer').value));
             if (archer) {
@@ -797,25 +786,19 @@
             const roundType = document.getElementById('shoot-round').value;
             const bowStyle = document.getElementById('shoot-bow').value;
             const faceSelect = document.getElementById('shoot-face');
-
             populateFaceDropdown(roundType, 'shoot-face');
-
             if (roundType === "Worcester" && bowStyle === "Compound") {
                 faceSelect.value = "5 Spot";
             } else if ((roundType === "Portsmouth" || roundType === "WA18" || roundType === "Bray I") && bowStyle === "Compound") {
                 faceSelect.value = "Triple Spot";
             }
-
             activeRoundConfig = getRoundConfig(roundType, bowStyle, faceSelect.value);
             buildDynamicKeypad(roundType, bowStyle, faceSelect.value);
             resetLiveRound(true);
             updateLiveStats();
         }
 
-        function onLiveBowChange() {
-            handleLiveRoundChange();
-        }
-
+        function onLiveBowChange() { handleLiveRoundChange(); }
         function onShootArcherChange() {
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             if (archer) {
@@ -842,9 +825,8 @@
 
         // --- CUSTOM PIN MODAL LOGIC ---
         let pendingScoreSubmission = null;
-
         function requestArcherPin(archerName, callback) {
-            document.getElementById('archer-pin-message').innerHTML = `Please enter the 4-digit PIN for <strong>${archerName}</strong>.<br><br><span style="font-size: 0.8rem;">(Default is 0000 unless you have asked the Admin to change it) <br>Request your own personal PIN to protect your scores via andrew.childerley@gmail.com</span>`;
+            document.getElementById('archer-pin-message').innerHTML = `Please enter the 4-digit PIN for <strong>${archerName}</strong>.<br><br><span style="font-size: 0.8rem;">(Default is 0000 unless you have asked the Admin to change it)<br>Request your own personal PIN to protect your scores via andrew.childerley@gmail.com</span>`;
             document.getElementById('archer-pin-input').value = '';
             pendingScoreSubmission = callback;
             document.getElementById('archer-pin-modal').classList.add('open');
@@ -854,25 +836,21 @@
         function closeArcherPinModal() {
             document.getElementById('archer-pin-modal').classList.remove('open');
             pendingScoreSubmission = null;
-       
-            function submitArcherPin() {
+        }
+
+        function submitArcherPin() {
             const pin = document.getElementById('archer-pin-input').value;
-            
-            // Fire the actual submission FIRST while the app still remembers it
             if (pendingScoreSubmission) {
                 pendingScoreSubmission(pin);
             }
-            
-            // Then close the modal and clear the memory
             closeArcherPinModal(); 
         }
         
-     function processManualScore() {
+        function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
             if (!archerId) { alert("Please select an archer."); return; }
             const archer = db.archers.find(a => String(a.id) === String(archerId));
             
-            // Trigger the new custom modal
             requestArcherPin(archer.name, function(archerPin) {
                 const roundType = document.getElementById('up-round').value;
                 const bow = document.getElementById('up-bow').value;
@@ -881,7 +859,6 @@
                 const score = parseInt(document.getElementById('up-score').value);
                 
                 if (isNaN(score) || score < 0 || score > config.max) { alert(`Please enter a valid total score between 0 and ${config.max}.`); return; }
-
                 const record = {
                     id: Date.now(), archerId: archer.id, archerName: archer.name, archerPin: archerPin, 
                     round: roundType, bow: bow,
@@ -893,7 +870,6 @@
                     date: document.getElementById('up-date').value || new Date().toISOString().split('T')[0],
                     screenshot: ""
                 };
-
                 const file = document.getElementById('up-screenshot').files[0];
                 if (file) {
                     const reader = new FileReader();
@@ -982,9 +958,7 @@
 
         function pressScore(val) {
             const maxTotalArrows = activeRoundConfig.arr * activeRoundConfig.ends;
-            // LOCK KEYPAD: Prevent extra taps if round is complete
             if (liveScores.length >= maxTotalArrows) return; 
-
             if (currentEnd > activeRoundConfig.ends || endsMatrix[currentEnd - 1].length >= activeRoundConfig.arr) return;
             endsMatrix[currentEnd - 1].push(val); liveScores.push(val); saveLiveState(); renderLiveRoundUI();
             if (endsMatrix[currentEnd - 1].length === activeRoundConfig.arr || (currentEnd === activeRoundConfig.ends && endsMatrix[activeRoundConfig.ends - 1].length === activeRoundConfig.arr)) {
@@ -1028,7 +1002,6 @@
             const arrowsShot = liveScores.length;
             const tensCount = liveScores.filter(s => s === 'X' || s === maxVal).length;
             const xsCount = liveScores.filter(s => s === 'X').length;
-
             document.getElementById('live-total').innerText = total;
             document.getElementById('live-hits').innerText = numericScores.filter(s => s > 0).length;
             document.getElementById('live-tens').innerText = (bowStyle === "Compound" && activeRoundConfig.keys.includes('X')) ? `${tensCount} / ${xsCount}` : tensCount;
@@ -1036,15 +1009,12 @@
             
             const projectedScore = Math.round((total / Math.max(1, arrowsShot)) * (activeRoundConfig.arr * activeRoundConfig.ends));
             document.getElementById('live-est-grade').innerText = archer ? getArcheryGBGrade(projectedScore, bowStyle, document.getElementById('shoot-gender').value, document.getElementById('shoot-cat').value, roundType) : "Select Archer";
-
             document.getElementById('live-end-label').innerText = `End ${currentEnd} of ${activeRoundConfig.ends}`;
             document.getElementById('live-arr-label').innerText = `${activeRoundConfig.arr} Arrows Per End`;
-
             const activeEndValues = endsMatrix[currentEnd - 1] || [];
             document.getElementById('live-arrow-slots').innerHTML = Array.from({length: activeRoundConfig.arr}).map((_, i) => {
                 const val = activeEndValues[i]; return `<div class="arrow-slot ${val !== undefined ? 'filled' : ''}">${val !== undefined ? (val === 0 ? 'M' : val) : '-'}</div>`;
             }).join('');
-
             let sheetHtml = '', runningTotal = 0;
             for (let i = 0; i < currentEnd; i++) {
                 const arrs = endsMatrix[i] || [];
@@ -1065,7 +1035,6 @@
         function promptResetRound() { document.getElementById('reset-modal').classList.add('open'); }
         function closeResetModal() { document.getElementById('reset-modal').classList.remove('open'); }
         function confirmResetRound() { closeResetModal(); resetLiveRound(true); }
-
         function resetLiveRound(forceSilent = false) {
             currentEnd = 1; endsMatrix = Array(activeRoundConfig.ends).fill(null).map(() => []); liveScores = [];
             localStorage.removeItem('ppl_active_shoot_backup');
@@ -1088,32 +1057,24 @@
             const canvas = document.createElement('canvas');
             canvas.width = 600; canvas.height = 750;
             const ctx = canvas.getContext('2d');
-
             ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#581c87'; ctx.fillRect(0, 0, canvas.width, 100);
             ctx.fillStyle = '#f3e8ff'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Peacock Portsmouth League (PPL)', 300, 42);
             ctx.font = '14px sans-serif'; ctx.fillStyle = '#d8b4fe'; ctx.fillText('VERIFIED LIVE KEYPAD SCORECARD', 300, 72);
-
             ctx.fillStyle = '#1e293b'; ctx.fillRect(20, 115, 560, 110);
             ctx.strokeStyle = '#6b21a8'; ctx.lineWidth = 2; ctx.strokeRect(20, 115, 560, 110);
-
             ctx.fillStyle = '#f8fafc'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left'; ctx.fillText(archerName, 35, 145);
             ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Round: ${round}  |  Bow: ${bow}  |  Date: ${formatDateDisplay(date)}`, 35, 170);
-
             const grade = getArcheryGBGrade(score, bow, gender, category, round);
             ctx.font = 'bold 12px sans-serif'; ctx.fillStyle = '#38bdf8';
             ctx.fillText(`GRADE: ${grade.toUpperCase()}`, 35, 205);
-
             ctx.textAlign = 'right'; ctx.font = 'bold 30px sans-serif'; ctx.fillStyle = '#d97706'; ctx.fillText(`Total: ${score}`, 560, 152);
             ctx.font = '14px sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.fillText(`Hits: ${hits}  |  10s: ${tens}  |  Xs: ${xs}`, 560, 182);
-
             ctx.font = 'bold 13px sans-serif'; ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'left'; ctx.fillText('END BREAKDOWN:', 20, 250);
-
             let y = 265, cumTotal = 0;
             ctx.fillStyle = '#111827'; ctx.fillRect(20, y, 560, 22);
             ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 11px sans-serif';
             ctx.fillText('END', 30, y + 15); ctx.fillText('ARROWS', 120, y + 15); ctx.fillText('END TOTAL', 380, y + 15); ctx.fillText('CUM. TOTAL', 480, y + 15);
-
             y += 22;
             const maxVal = round === "Worcester" ? 5 : 10;
             for (let i = 0; y < 700 && i < ends.length; i++) {
@@ -1126,12 +1087,11 @@
                 ctx.fillText(`${endSum}`, 380, y + 14); ctx.fillText(`${cumTotal}`, 480, y + 14);
                 y += 19;
             }
-
             ctx.fillStyle = '#94a3b8'; ctx.font = 'italic 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Automatically generated & verified by PPL App Live Scoring System', 300, 732);
             return canvas.toDataURL('image/jpeg', 0.85);
         }
 
-       function submitLiveRoundToLeague() {
+        function submitLiveRoundToLeague() {
             const archer = db.archers.find(a => String(a.id) === String(document.getElementById('shoot-archer').value));
             if (!archer) { alert("Please select an archer."); return; }
             
@@ -1147,8 +1107,7 @@
                 const tens = liveScores.filter(s => s === 'X' || s === maxVal).length;
                 const xs = liveScores.filter(s => s === 'X').length;
                 const dateShot = document.getElementById('shoot-date').value || new Date().toISOString().split('T')[0];
-
-                // Submit record without wiping local state beforehand
+                
                 submitRecord({
                     id: Date.now(), archerId: archer.id, archerName: archer.name, archerPin: archerPin,
                     round: roundType, bow: bowStyle, 
@@ -1183,12 +1142,12 @@
             } catch(e) { if(callback) callback(); }
         }
 
-      async function syncRecordToCloud(record) {
+        async function syncRecordToCloud(record) {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 db.history.push(record); 
                 localStorage.setItem('ppl_history', JSON.stringify(db.history));
                 alert("Score saved locally!"); 
-                resetLiveRound(true); // Resets ONLY on success
+                resetLiveRound(true);
                 switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); 
                 return;
             }
@@ -1198,7 +1157,7 @@
                 
                 if (responseData.result === 'success') {
                     alert("🏆 Score successfully submitted!"); 
-                    resetLiveRound(true); // Resets ONLY when Google confirms receipt!
+                    resetLiveRound(true);
                     fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
                 } else {
                     alert("❌ " + (responseData.message || "Upload failed. Your score is still safely stored on your phone! Please try submitting again.")); 
@@ -1228,7 +1187,6 @@
             const bowFilter = document.getElementById('lb-bow-filter').value;
             const monthFilter = document.getElementById('lb-month-filter').value;
             const headersRow = document.getElementById('leaderboard-headers');
-
             let pplHistory = db.history.filter(h => (h.round || 'Portsmouth') === 'Portsmouth');
             
             if (monthFilter === 'most-improved') {
@@ -1240,23 +1198,18 @@
                     const key = `${h.archerId}_${h.bow}`;
                     const score = parseInt(h.score) || 0;
                     const gain = score - startingPB;
-
                     if (!archerMap[key] || gain > archerMap[key].gain) {
                         archerMap[key] = { archerName: h.archerName, bow: h.bow, gain: gain, pb: startingPB, bestScore: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, xs: parseInt(h.xs) || 0 };
                     }
                 });
-
                 let rows = Object.values(archerMap);
                 if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
                 rows.sort((a, b) => b.gain - a.gain);
-
                 if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No data available.</td></tr>`; return; }
                 tbody.innerHTML = rows.map((r, idx) => `<tr><td><strong>#${idx + 1}</strong></td><td class="nowrap">${r.archerName}</td><td><span class="badge badge-gold">${r.bow}</span></td><td><strong style="color: ${r.gain >= 0 ? 'var(--success)' : 'var(--danger)'};">${r.gain >= 0 ? '+' : ''}${r.gain}</strong></td><td>${r.pb}</td><td>${r.bestScore}</td></tr>`).join('');
                 return;
             }
-
             headersRow.innerHTML = `<th>Pos</th><th>Archer</th><th>Bow Style</th><th>Score / Sum</th><th>Hits</th><th>10s/Xs</th><th>Rnds</th>`;
-
             if (monthFilter !== 'overall') {
                 let monthMap = {};
                 pplHistory.forEach(h => {
@@ -1266,11 +1219,9 @@
                     const score = parseInt(h.score) || 0;
                     if (!monthMap[key] || score > monthMap[key].score) monthMap[key] = { archerName: h.archerName, bow: h.bow, score: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, xs: parseInt(h.xs) || 0, rounds: 1 };
                 });
-
                 let rows = Object.values(monthMap);
                 if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
                 rows.sort((a, b) => b.score - a.score);
-
                 if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No scores recorded for this month.</td></tr>`; return; }
                 tbody.innerHTML = rows.map((r, idx) => `<tr><td><strong>#${idx + 1}</strong></td><td class="nowrap">${r.archerName}</td><td><span class="badge badge-gold">${r.bow}</span></td><td><strong>${r.score}</strong></td><td>${r.hits}</td><td>${r.tens}/${r.xs}</td><td>${r.rounds}</td></tr>`).join('');
             } else {
@@ -1283,18 +1234,15 @@
                     const score = parseInt(h.score) || 0;
                     if (!archerMonthBests[comboKey] || score > archerMonthBests[comboKey].score) archerMonthBests[comboKey] = { archerId: h.archerId, archerName: h.archerName, bow: h.bow, score: score, hits: parseInt(h.hits) || 60, tens: parseInt(h.tens) || 0, xs: parseInt(h.xs) || 0, month: monthKey };
                 });
-
                 let overallMap = {};
                 Object.values(archerMonthBests).forEach(item => {
                     const archerBowKey = `${item.archerId}_${item.bow}`;
                     if (!overallMap[archerBowKey]) overallMap[archerBowKey] = { archerName: item.archerName, bow: item.bow, scoreSum: 0, hitsSum: 0, tensSum: 0, xsSum: 0, monthsCount: 0 };
                     overallMap[archerBowKey].scoreSum += item.score; overallMap[archerBowKey].hitsSum += item.hits; overallMap[archerBowKey].tensSum += item.tens; overallMap[archerBowKey].xsSum += item.xs; overallMap[archerBowKey].monthsCount += 1;
                 });
-
                 let rows = Object.values(overallMap);
                 if (bowFilter !== 'All') rows = rows.filter(r => r.bow === bowFilter);
                 rows.sort((a, b) => b.scoreSum - a.scoreSum);
-
                 if (rows.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No scores recorded.</td></tr>`; return; }
                 tbody.innerHTML = rows.map((r, idx) => `<tr><td><strong>#${idx + 1}</strong></td><td class="nowrap">${r.archerName}</td><td><span class="badge badge-gold">${r.bow}</span></td><td><strong>${r.scoreSum}</strong></td><td>${r.hitsSum}</td><td>${r.tensSum}/${r.xsSum}</td><td>${r.monthsCount}</td></tr>`).join('');
             }
@@ -1306,13 +1254,11 @@
             const bowFilter = document.getElementById('rec-bow-filter')?.value || 'All';
             const genderFilter = document.getElementById('rec-gender-filter')?.value || 'All';
             const catFilter = document.getElementById('rec-cat-filter')?.value || 'All';
-
             let allRecords = [...db.historicalRecords];
             const styles = ["Recurve", "Compound", "Barebow", "Longbow", "Asiatic"];
             const genders = ["Male", "Female"];
             const categories = ["Senior", "50+", "Under 18"];
             let htmlRows = [];
-
             styles.forEach(style => {
                 if (bowFilter !== 'All' && style.toLowerCase() !== bowFilter.toLowerCase()) return;
                 genders.forEach(gender => {
@@ -1322,7 +1268,6 @@
                         let best = null;
                         allRecords.forEach(r => {
                             const recRound = r.round || 'Portsmouth';
-                            // Ensure the record matches the currently selected Round tab
                             if (recRound === roundFilter && (r.bow || '').toString().trim().toLowerCase() === style.toLowerCase() && (r.gender || 'Male').toString().trim().toLowerCase() === gender.toLowerCase() && (r.category || 'Senior').toString().trim().toLowerCase() === category.toLowerCase()) {
                                 if (!best || parseInt(r.score) > parseInt(best.score)) best = r;
                             }
@@ -1339,7 +1284,6 @@
             const roundFilter = document.getElementById('hist-round-filter').value;
             const archerFilter = document.getElementById('hist-archer-filter').value;
             const bowFilter = document.getElementById('hist-bow-filter').value;
-
             let filtered = db.history.filter(h => {
                 if (roundFilter !== 'All' && (h.round || 'Portsmouth') !== roundFilter) return false;
                 if (archerFilter !== 'All' && String(h.archerId) !== archerFilter) return false;
@@ -1393,29 +1337,24 @@
             const pin = document.getElementById('delete-pin-input').value.trim();
             const scoreId = activeDeleteId;
             if (!scoreId) return;
-
-            // Find the score being deleted and the archer it belongs to
+            
             const scoreRecord = db.history.find(h => String(h.id) === String(scoreId));
             const archer = scoreRecord ? db.archers.find(a => String(a.id) === String(scoreRecord.archerId)) : null;
-
-            // Authorization Logic
+            
             const isAdmin = (pin === db.settings.pin);
             const isAuthorizedArcher = (archer && archer.pin !== "0000" && pin === archer.pin);
-
             if (!isAdmin && !isAuthorizedArcher) {
                 alert("❌ Unauthorized. You must use the Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used to delete scores).");
                 return;
             }
-
-            // If authorized, proceed with deletion
+            
             document.getElementById('delete-auth-modal').classList.remove('open');
             activeDeleteId = null;
-
             db.history = db.history.filter(h => String(h.id) !== String(scoreId));
             localStorage.setItem('ppl_history', JSON.stringify(db.history));
             renderHistory();
             renderLeaderboard();
-
+            
             if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 try {
                     const payload = { action: "deleteScore", id: String(scoreId) };
@@ -1429,14 +1368,14 @@
             }
         }
 
-       function addNewArcherRegistry() {
+        function addNewArcherRegistry() {
             const name = document.getElementById('new-archer-name').value.trim();
             if (!name) { alert("Please enter a valid archer name."); return; }
             db.archers.push({
                 id: Date.now().toString(), name: name, gender: document.getElementById('new-archer-gender').value,
                 category: document.getElementById('new-archer-cat').value, defaultBow: document.getElementById('new-archer-bow').value,
                 startingPB: parseInt(document.getElementById('new-archer-pb').value) || 250,
-                pin: "0000" // NEW: Default PIN assigned on creation
+                pin: "0000"
             });
             localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
             document.getElementById('new-archer-name').value = ''; populateDropdowns(); renderAdminTable();
@@ -1448,7 +1387,6 @@
             const sorted = [...db.archers].sort((a, b) => a.name.localeCompare(b.name));
             if (sorted.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No archers in database.</td></tr>`; return; }
             
-            // NEW: Added a PIN column
             tbody.innerHTML = sorted.map(a => `
                 <tr>
                     <td class="nowrap"><strong>${a.name}</strong></td>
@@ -1475,23 +1413,6 @@
             }
         }
 
-        function renderAdminTable() {
-            const tbody = document.getElementById('admin-archer-table');
-            const sorted = [...db.archers].sort((a, b) => a.name.localeCompare(b.name));
-            if (sorted.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No archers in database.</td></tr>`; return; }
-            
-            tbody.innerHTML = sorted.map(a => `
-                <tr>
-                    <td class="nowrap"><strong>${a.name}</strong></td>
-                    <td><select onchange="updateArcherField('${a.id}', 'gender', this.value)" style="padding:4px; font-size:0.85rem;"><option value="Male" ${a.gender === 'Male' ? 'selected' : ''}>Male</option><option value="Female" ${a.gender === 'Female' ? 'selected' : ''}>Female</option></select></td>
-                    <td><select onchange="updateArcherField('${a.id}', 'category', this.value)" style="padding:4px; font-size:0.85rem;"><option value="Senior" ${(a.category||'Senior') === 'Senior' ? 'selected' : ''}>Senior</option><option value="50+" ${(a.category||'Senior') === '50+' ? 'selected' : ''}>50+</option><option value="Under 18" ${(a.category||'Senior') === 'Under 18' ? 'selected' : ''}>Under 18</option></select></td>
-                    <td><select onchange="updateArcherField('${a.id}', 'defaultBow', this.value)" style="padding:4px; font-size:0.85rem;"><option value="Recurve" ${a.defaultBow === 'Recurve' ? 'selected' : ''}>Recurve</option><option value="Compound" ${a.defaultBow === 'Compound' ? 'selected' : ''}>Compound</option><option value="Barebow" ${a.defaultBow === 'Barebow' ? 'selected' : ''}>Barebow</option><option value="Longbow" ${a.defaultBow === 'Longbow' ? 'selected' : ''}>Longbow</option><option value="Asiatic" ${a.defaultBow === 'Asiatic' ? 'selected' : ''}>Asiatic</option></select></td>
-                    <td><input type="number" value="${a.startingPB || 250}" onchange="updateArcherField('${a.id}', 'startingPB', this.value)" style="width: 80px; padding: 4px; font-size: 0.85rem;"></td>
-                    <td><button class="btn btn-danger" style="padding: 2px 6px;" onclick="requestDeleteArcher('${a.id}')">Del</button></td>
-                </tr>
-            `).join('');
-        }
-
         function exportHistoryToCSV() {
             if (!db.history || db.history.length === 0) { alert("No scores available to export."); return; }
             let csv = "Round Name,Target Face,Date,Archer Name,Bow Style,Gender,Category,Score,Hits,10s,Xs\n";
@@ -1502,7 +1423,7 @@
             const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })); link.download = "PPL_Indoor_Scores.csv"; document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-       async function submitHistoricalRecord() {
+        async function submitHistoricalRecord() {
             const record = { 
                 action: "addHistoricalRecord", 
                 round: document.getElementById('hist-round').value,
