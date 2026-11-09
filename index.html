@@ -1352,56 +1352,60 @@
             activeDeleteId = null;
         }
 
-      async function confirmDeleteAction() {
-            const pin = document.getElementById('delete-pin-input').value.trim();
+     async function confirmDeleteAction() {
+            const pinInput = document.getElementById('delete-pin-input');
+            const pin = pinInput ? pinInput.value.trim() : '';
             const scoreId = activeDeleteId;
-            if (!scoreId) return;
-            
-            const scoreRecord = db.history.find(h => String(h.id) === String(scoreId));
-            const archer = scoreRecord ? db.archers.find(a => String(a.id) === String(scoreRecord.archerId)) : null;
-            
-            const isAdmin = (pin === db.settings.pin);
-            const isAuthorizedArcher = (archer && archer.pin !== "0000" && pin === archer.pin);
-            
-            if (!isAdmin && !isAuthorizedArcher) {
-                alert("❌ Unauthorised. You must use the Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used to delete scores).");
+
+            if (!scoreId) {
+                closeDeleteAuthModal();
                 return;
             }
-            
-            // 1. Close modal and clean up state immediately
-            document.getElementById('delete-auth-modal').classList.remove('open');
-            activeDeleteId = null;
-            
-            // 2. Remove score locally & immediately update LocalStorage
+
+            const scoreRecord = db.history.find(h => String(h.id) === String(scoreId));
+            const archer = scoreRecord ? db.archers.find(a => String(a.id) === String(scoreRecord.archerId)) : null;
+
+            const isAdmin = (pin === db.settings.pin);
+            const isAuthorizedArcher = (archer && archer.pin && archer.pin !== "0000" && pin === archer.pin);
+
+            // 1. PIN Validation Check
+            if (!isAdmin && !isAuthorizedArcher) {
+                alert("❌ Unauthorized PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions).");
+                return; // Leaves modal open so user can re-try the PIN without losing state
+            }
+
+            // 2. CLOSE MODAL IMMEDIATELY ON SUCCESSFUL PIN
+            closeDeleteAuthModal();
+
+            // 3. Remove score locally & save back to LocalStorage
             db.history = db.history.filter(h => String(h.id) !== String(scoreId));
             localStorage.setItem('ppl_history', JSON.stringify(db.history));
-            
-            // 3. Immediately re-render UI views so the score disappears visually
+
+            // 4. Update the screen tables immediately
             renderHistory();
             renderLeaderboard();
-            
-            // 4. Send delete request to Google Apps Script backend
+
+            // 5. Sync deletion with Google Cloud Apps Script
             if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 try {
                     const payload = { action: "deleteScore", id: String(scoreId) };
-                    const res = await fetch(APPS_SCRIPT_URL, { 
-                        method: 'POST', 
-                        body: JSON.stringify(payload) 
+                    const res = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
                     });
                     const data = await res.json();
                     
                     if (data.result === 'success') {
-                        // Refresh history from cloud to ensure local and cloud are completely in sync
+                        // Refresh history from cloud to guarantee client/server sync
                         fetchCloudHistory(() => {
                             renderHistory();
                             renderLeaderboard();
                         });
                     } else {
-                        alert("⚠️ Local score deleted, but cloud sync returned an error: " + (data.message || "Unknown error"));
+                        console.warn("Cloud deletion notice:", data.message);
                     }
                 } catch(e) {
-                    console.error("Cloud error while deleting:", e);
-                    alert("⚠️ Deleted locally, but could not reach cloud server to delete remote record. Check connection.");
+                    console.error("Cloud network error during deletion:", e);
                 }
             }
         }
