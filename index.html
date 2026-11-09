@@ -453,7 +453,7 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="closeDeleteAuthModal()">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDeleteAction()">Authorize Deletion</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDeleteAction()">Authorise Deletion</button>
             </div>
         </div>
     </div>
@@ -1372,7 +1372,7 @@
             const isAuthorizedArcher = (archer && archer.pin && archer.pin !== "0000" && pin === archer.pin);
 
             if (!isAdmin && !isAuthorizedArcher) {
-                alert("❌ Unauthorised PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions).");
+                alert("❌ Unauthorised PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions). Request your custom pin via andrew.childerley@gmail.com");
                 return;
             }
 
