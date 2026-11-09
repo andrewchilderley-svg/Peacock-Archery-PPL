@@ -1365,14 +1365,17 @@ async function confirmDeleteAction() {
 
             if (!db.history) db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
             
-            const scoreRecord = db.history.find(h => String(h.id) === String(scoreId));
-            const archer = scoreRecord ? db.archers.find(a => String(a.id) === String(scoreRecord.archerId)) : null;
+            // Clean IDs for perfect matching
+            const targetIdClean = String(scoreId).replace(/[^0-9]/g, '');
+            
+            const scoreRecord = db.history.find(h => String(h.id).replace(/[^0-9]/g, '') === targetIdClean);
+            const archer = scoreRecord ? db.archers.find(a => String(a.id).replace(/[^0-9]/g, '') === String(scoreRecord.archerId).replace(/[^0-9]/g, '')) : null;
 
             const isAdmin = (pin === db.settings.pin);
             const isAuthorizedArcher = (archer && archer.pin && archer.pin !== "0000" && pin === archer.pin);
 
             if (!isAdmin && !isAuthorizedArcher) {
-                alert("❌ Unauthorized PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions).");
+                alert("❌ Unauthorized PIN. Please enter the Master Admin PIN or the Archer's custom PIN.");
                 return;
             }
 
@@ -1380,30 +1383,28 @@ async function confirmDeleteAction() {
             document.getElementById('delete-auth-modal').classList.remove('open');
             activeDeleteId = null;
 
-            // 2. Remove locally and update UI instantly
-            const targetIdStr = String(scoreId);
-            db.history = db.history.filter(h => String(h.id) !== targetIdStr);
+            // 2. Remove locally and UPDATE UI INSTANTLY
+            db.history = db.history.filter(h => String(h.id).replace(/[^0-9]/g, '') !== targetIdClean);
             localStorage.setItem('ppl_history', JSON.stringify(db.history));
             renderHistory();
             renderLeaderboard();
 
-            // 3. Cloud Sync with explicit error reporting
+            // 3. Send delete command to cloud safely
             if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 try {
                     const res = await fetch(APPS_SCRIPT_URL, {
                         method: 'POST',
-                        body: JSON.stringify({ action: "deleteScore", id: targetIdStr })
+                        body: JSON.stringify({ action: "deleteScore", id: targetIdClean })
                     });
                     const data = await res.json();
                     
                     if (data.result === 'success') {
-                        // Background sync to ensure sheet matches screen
+                        // Background sync ensures sheet matches the screen
                         fetchCloudHistory(() => {
                             renderHistory();
                             renderLeaderboard();
                         });
                     } else {
-                        // Pops up if the sheet couldn't find the ID!
                         alert("⚠️ Cloud Deletion Error: " + (data.message || "Unknown error"));
                     }
                 } catch(e) {
@@ -1412,7 +1413,7 @@ async function confirmDeleteAction() {
                 }
             }
         }
-
+        
         function addNewArcherRegistry() {
             const name = document.getElementById('new-archer-name').value.trim();
             if (!name) { alert("Please enter a valid archer name."); return; }
