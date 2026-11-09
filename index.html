@@ -1340,23 +1340,24 @@
                     </td>
                 </tr>`;
             }).join('');
+        } // <--- ONLY ONE closing bracket here to close renderHistory()!
+
+        // Clean global functions start here cleanly:
+        let activeDeleteId = null;
+
+        function requestDeleteScore(scoreId) {
+            activeDeleteId = String(scoreId).trim();
+            const pinInput = document.getElementById('delete-pin-input');
+            if (pinInput) pinInput.value = '';
+            const modal = document.getElementById('delete-auth-modal');
+            if (modal) modal.classList.add('open');
         }
 
-       let activeDeleteId = null;
-
-function requestDeleteScore(scoreId) {
-    activeDeleteId = String(scoreId).trim();
-    const pinInput = document.getElementById('delete-pin-input');
-    if (pinInput) pinInput.value = '';
-    const modal = document.getElementById('delete-auth-modal');
-    if (modal) modal.classList.add('open');
-}
-
-function closeDeleteAuthModal() {
-    activeDeleteId = null;
-    const modal = document.getElementById('delete-auth-modal');
-    if (modal) modal.classList.remove('open');
-}
+        function closeDeleteAuthModal() {
+            activeDeleteId = null;
+            const modal = document.getElementById('delete-auth-modal');
+            if (modal) modal.classList.remove('open');
+        }
 
 async function confirmDeleteAction() {
             const pinInput = document.getElementById('delete-pin-input');
