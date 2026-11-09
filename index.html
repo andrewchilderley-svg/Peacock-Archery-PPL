@@ -453,7 +453,7 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="closeDeleteAuthModal()">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDeleteAction()">Authorise Deletion</button>
+                <button type="button" class="btn btn-danger" onclick="()">Authorise Deletion</button>
             </div>
         </div>
     </div>
@@ -1353,7 +1353,7 @@
             activeDeleteId = null;
         }
 
-   async function confirmDeleteAction() {
+async function confirmDeleteAction() {
             const pinInput = document.getElementById('delete-pin-input');
             const pin = pinInput ? pinInput.value.trim() : '';
             const scoreId = activeDeleteId;
@@ -1376,18 +1376,18 @@
                 return;
             }
 
-            // Close modal instantly
+            // 1. Close modal instantly
             document.getElementById('delete-auth-modal').classList.remove('open');
             activeDeleteId = null;
 
-            // Remove locally and update UI instantly
+            // 2. Remove locally and update UI instantly
             const targetIdStr = String(scoreId);
             db.history = db.history.filter(h => String(h.id) !== targetIdStr);
             localStorage.setItem('ppl_history', JSON.stringify(db.history));
             renderHistory();
             renderLeaderboard();
 
-            // Cloud Sync
+            // 3. Cloud Sync with explicit error reporting
             if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 try {
                     const res = await fetch(APPS_SCRIPT_URL, {
@@ -1397,17 +1397,18 @@
                     const data = await res.json();
                     
                     if (data.result === 'success') {
-                        // Confirm deletion against refreshed cloud state
+                        // Background sync to ensure sheet matches screen
                         fetchCloudHistory(() => {
                             renderHistory();
                             renderLeaderboard();
                         });
                     } else {
-                        alert("⚠️ Cloud Deletion Failed: " + (data.message || "Unknown server response"));
+                        // Pops up if the sheet couldn't find the ID!
+                        alert("⚠️ Cloud Deletion Error: " + (data.message || "Unknown error"));
                     }
                 } catch(e) {
                     console.error("Cloud delete error:", e);
-                    alert("⚠️ Network Error: Could not reach Google Sheet server.");
+                    alert("⚠️ Network Error: Could not reach Google Sheet server to delete.");
                 }
             }
         }
