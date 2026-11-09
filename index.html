@@ -1347,9 +1347,9 @@
                     </td>
                 </tr>`;
             }).join('');
-        } // <--- ONLY ONE closing bracket here to close renderHistory()!
+        }
 
-        // Clean global functions start here cleanly:
+        // --- SINGLE GLOBAL DECLARATION ---
         let activeDeleteId = null;
 
         function requestDeleteScore(scoreId) {
@@ -1366,44 +1366,35 @@
             if (modal) modal.classList.remove('open');
         }
 
-async function confirmDeleteAction() {
+        async function confirmDeleteAction() {
             const pinInput = document.getElementById('delete-pin-input');
             const pin = pinInput ? pinInput.value.trim() : '';
             const scoreId = activeDeleteId;
-
             if (!scoreId) {
                 document.getElementById('delete-auth-modal').classList.remove('open');
                 return;
             }
-
             if (!db.history) db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
             
             const targetIdStr = String(scoreId).trim();
-            
             const scoreRecord = db.history.find(h => String(h.id).trim() === targetIdStr);
             const archer = scoreRecord ? db.archers.find(a => String(a.id).trim() === String(scoreRecord.archerId).trim()) : null;
-
             const isAdmin = (pin === db.settings.pin);
             const isAuthorizedArcher = (archer && archer.pin && archer.pin !== "0000" && pin === archer.pin);
-
             if (!isAdmin && !isAuthorizedArcher) {
                 alert("❌ Unauthorised PIN. Please enter the Master Admin PIN or the Archer's custom PIN.\n\n(The default 0000 PIN cannot be used for deletions).");
                 return;
             }
-
-            // 1. Close modal instantly
+            
             document.getElementById('delete-auth-modal').classList.remove('open');
             activeDeleteId = null;
-
-            // 2. Wipe from local storage array immediately
+            
             db.history = db.history.filter(h => String(h.id).trim() !== targetIdStr);
             localStorage.setItem('ppl_history', JSON.stringify(db.history));
             
-            // 3. Redraw tables instantly
             renderHistory();
             renderLeaderboard();
-
-            // 4. Send request to Google Apps Script
+            
             if (!APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 try {
                     const res = await fetch(APPS_SCRIPT_URL, {
@@ -1411,17 +1402,13 @@ async function confirmDeleteAction() {
                         body: JSON.stringify({ action: "deleteScore", id: targetIdStr })
                     });
                     const data = await res.json();
-                    
                     if (data.result === 'success') {
-                        // Force a clean fetch from cloud after a short buffer
                         setTimeout(() => {
                             fetchCloudHistory(() => {
                                 renderHistory();
                                 renderLeaderboard();
                             });
                         }, 500);
-                    } else {
-                        alert("⚠️ Cloud Deletion Notice: " + (data.message || "Could not mark row as deleted."));
                     }
                 } catch(e) {
                     console.error("Cloud delete error:", e);
