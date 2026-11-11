@@ -873,7 +873,7 @@ function compressImage(fileOrBase64, maxWidth = 800, quality = 0.6, callback) {
             closeArcherPinModal(); 
         }
 
-        function processManualScore() {
+function processManualScore() {
             const archerId = document.getElementById('up-archer').value;
             if (!archerId) { alert("Please select an archer."); return; }
             const archer = db.archers.find(a => String(a.id) === String(archerId));
@@ -897,19 +897,20 @@ function compressImage(fileOrBase64, maxWidth = 800, quality = 0.6, callback) {
                     date: document.getElementById('up-date').value || new Date().toISOString().split('T')[0],
                     screenshot: ""
                 };
-               const fileInput = document.getElementById('up-screenshot');
-    const file = fileInput && fileInput.files ? fileInput.files[0] : null;
-    
-    if (file) {
-        compressImage(file, 800, 0.6, function(compressedBase64) {
-            record.screenshot = compressedBase64;
-            submitRecord(record);
-        });
-    } else {
-        record.screenshot = "";
-        submitRecord(record);
-    }
+                const fileInput = document.getElementById('up-screenshot');
+                const file = fileInput && fileInput.files ? fileInput.files[0] : null;
+                
+                if (file) {
+                    compressImage(file, 800, 0.6, function(compressedBase64) {
+                        record.screenshot = compressedBase64;
+                        submitRecord(record);
+                    });
+                } else {
+                    record.screenshot = "";
+                    submitRecord(record);
+                }
             });
+        } // 
 
         function saveLiveState() {
             localStorage.setItem('ppl_active_shoot_backup', JSON.stringify({
