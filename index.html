@@ -586,7 +586,6 @@ function compressImage(fileOrBase64, maxWidth = 800, quality = 0.6, callback) {
         let width = img.width;
         let height = img.height;
         
-        // Scale down dimensions if larger than maxWidth
         if (width > maxWidth) {
             height = Math.round((height * maxWidth) / width);
             width = maxWidth;
@@ -598,7 +597,6 @@ function compressImage(fileOrBase64, maxWidth = 800, quality = 0.6, callback) {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Convert back to compressed base64 JPEG string
         const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
         callback(compressedDataUrl);
     };
