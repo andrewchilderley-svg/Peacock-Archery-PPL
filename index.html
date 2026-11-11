@@ -575,43 +575,42 @@
             if (isoMatch) return new Date(parseInt(isoMatch[1], 10), parseInt(isoMatch[2], 10) - 1, parseInt(isoMatch[3], 10));
             let ukMatch = str.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})/);
             if (ukMatch) return new Date(parseInt(ukMatch[3], 10), parseInt(ukMatch[2], 10) - 1, parseInt(ukMatch[1], 10));
-            let d = new Date(str);
-            if (!isNaN(d.getTime())) return d;
-            return null;
-        }
+           let d = new Date(str);
+    if (!isNaN(d.getTime())) return d;
+    return null;
+}
+
+function compressImage(fileOrBase64, maxWidth = 800, quality = 0.6, callback) {
+    const img = new Image();
+    img.onload = function() {
+        let width = img.width;
+        let height = img.height;
+        
+        // Scale down dimensions if larger than maxWidth
+        if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
         }
         
-function compressImage(fileOrBase64, maxWidth = 800, quality = 0.6, callback) {
-            const img = new Image();
-            img.onload = function() {
-                let width = img.width;
-                let height = img.height;
-                
-                // Scale down dimensions if larger than maxWidth
-                if (width > maxWidth) {
-                    height = Math.round((height * maxWidth) / width);
-                    width = maxWidth;
-                }
-                
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                
-                // Convert back to compressed base64 JPEG string
-                const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-                callback(compressedDataUrl);
-            };
-            
-            if (typeof fileOrBase64 === 'string') {
-                img.src = fileOrBase64;
-            } else {
-                const reader = new FileReader();
-                reader.onload = e => { img.src = e.target.result; };
-                reader.readAsDataURL(fileOrBase64);
-            }
-        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert back to compressed base64 JPEG string
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        callback(compressedDataUrl);
+    };
+    
+    if (typeof fileOrBase64 === 'string') {
+        img.src = fileOrBase64;
+    } else {
+        const reader = new FileReader();
+        reader.onload = e => { img.src = e.target.result; };
+        reader.readAsDataURL(fileOrBase64);
+    }
+}
         
         function formatDateISO(dStr) {
             let dateObj = parseToDateObj(dStr);
