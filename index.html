@@ -1179,32 +1179,38 @@
         }
 
 async function fetchCloudHistory(callback) {
-            // Ensure data structures always default safely
-            if (!db.history) db.history = JSON.parse(localStorage.getItem('ppl_history_cache')) || [];
-            if (!db.historicalRecords) db.historicalRecords = JSON.parse(localStorage.getItem('ppl_records_cache')) || [];
-
-            // 1. INSTANT LOAD from local cache
-            const cachedHistory = localStorage.getItem('ppl_history_cache');
-            const cachedRecords = localStorage.getItem('ppl_records_cache');
-            
-            if (cachedHistory) {
-                try { db.history = JSON.parse(cachedHistory); } catch(e) { db.history = []; }
+            // 1. INSTANT LOAD: Pull from memory or lightweight cache first
+            if (!db.history || db.history.length === 0) {
+                try { db.history = JSON.parse(localStorage.getItem('ppl_history_cache')) || []; } catch(e) { db.history = []; }
             }
-            if (cachedRecords) {
-                try { db.historicalRecords = JSON.parse(cachedRecords); } catch(e) { db.historicalRecords = []; }
+            if (!db.historicalRecords || db.historicalRecords.length === 0) {
+                try { db.historicalRecords = JSON.parse(localStorage.getItem('ppl_records_cache')) || []; } catch(e) { db.historicalRecords = []; }
             }
             
+            // Draw tables instantly so the screen is never blank
             if (callback) callback();
 
-            // 2. BACKGROUND SYNC with Google Sheets
+            // 2. BACKGROUND SYNC: Fetch complete data from Google Sheets
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) return;
             
             try {
                 const res = await fetch(APPS_SCRIPT_URL);
                 const cloudData = await res.json();
+                
                 if (Array.isArray(cloudData)) {
-                    db.history = cloudData;
-                    localStorage.setItem('ppl_history_cache', JSON.stringify(db.history));
+                    db.history = cloudData; // Keep full data (with screenshots) in active memory
+                    
+                    // Safe Caching: Strip out giant images to prevent QuotaExceededError crashes
+                    try {
+                        const lightweightHistory = cloudData.map(h => {
+                            let safeH = { ...h };
+                            delete safeH.screenshot; // Removes heavy image data from local cache only
+                            return safeH;
+                        });
+                        localStorage.setItem('ppl_history_cache', JSON.stringify(lightweightHistory));
+                    } catch(cacheErr) {
+                        console.warn("Cache bypassed to save space.");
+                    }
                 }
                 
                 try { 
@@ -1214,9 +1220,11 @@ async function fetchCloudHistory(callback) {
                         db.historicalRecords = recData;
                         localStorage.setItem('ppl_records_cache', JSON.stringify(db.historicalRecords));
                     }
-                } catch(e) { db.historicalRecords = db.historicalRecords || []; }
+                } catch(e) { 
+                    db.historicalRecords = db.historicalRecords || []; 
+                }
                 
-                // Refresh active tab views quietly with fresh cloud data
+                // 3. RE-RENDER: Refresh active tab quietly to add in any missing camera icons or new scores
                 const activeTab = document.querySelector('.tab-content.active');
                 if (activeTab) {
                     if (activeTab.id === 'tab-history') renderHistory();
