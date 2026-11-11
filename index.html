@@ -1177,62 +1177,41 @@
             } catch(e) { console.error("Archer fetch error:", e); }
             if(callback) callback(); // GUARANTEES app continues loading tabs and UI
         }
-
+        
 async function fetchCloudHistory(callback) {
-            // 1. INSTANT LOAD: Pull from memory or lightweight cache first
-            if (!db.history || db.history.length === 0) {
-                try { db.history = JSON.parse(localStorage.getItem('ppl_history_cache')) || []; } catch(e) { db.history = []; }
-            }
-            if (!db.historicalRecords || db.historicalRecords.length === 0) {
-                try { db.historicalRecords = JSON.parse(localStorage.getItem('ppl_records_cache')) || []; } catch(e) { db.historicalRecords = []; }
-            }
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
             
-            // Draw tables instantly so the screen is never blank
-            if (callback) callback();
+            // 1. INSTANT SPEED: If data is already in active RAM, run callback instantly to draw tabs with zero delay
+            const hasDataInRam = (db.history && db.history.length > 0);
+            if (hasDataInRam && callback) {
+                callback(); 
+            }
 
-            // 2. BACKGROUND SYNC: Fetch complete data from Google Sheets
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) return;
-            
+            // 2. BACKGROUND SYNC: Quietly fetch the latest updates from Google Sheets
             try {
                 const res = await fetch(APPS_SCRIPT_URL);
-                const cloudData = await res.json();
-                
-                if (Array.isArray(cloudData)) {
-                    db.history = cloudData; // Keep full data (with screenshots) in active memory
-                    
-                    // Safe Caching: Strip out giant images to prevent QuotaExceededError crashes
-                    try {
-                        const lightweightHistory = cloudData.map(h => {
-                            let safeH = { ...h };
-                            delete safeH.screenshot; // Removes heavy image data from local cache only
-                            return safeH;
-                        });
-                        localStorage.setItem('ppl_history_cache', JSON.stringify(lightweightHistory));
-                    } catch(cacheErr) {
-                        console.warn("Cache bypassed to save space.");
-                    }
-                }
+                db.history = await res.json();
                 
                 try { 
                     const recRes = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
-                    const recData = await recRes.json();
-                    if (Array.isArray(recData)) {
-                        db.historicalRecords = recData;
-                        localStorage.setItem('ppl_records_cache', JSON.stringify(db.historicalRecords));
-                    }
-                } catch(e) { 
-                    db.historicalRecords = db.historicalRecords || []; 
-                }
+                    db.historicalRecords = await recRes.json(); 
+                } catch(e) { db.historicalRecords = []; }
                 
-                // 3. RE-RENDER: Refresh active tab quietly to add in any missing camera icons or new scores
-                const activeTab = document.querySelector('.tab-content.active');
-                if (activeTab) {
-                    if (activeTab.id === 'tab-history') renderHistory();
-                    if (activeTab.id === 'tab-board') renderLeaderboard();
-                    if (activeTab.id === 'tab-records') renderRecords();
+                // 3. SEAMLESS UPDATE: If the tab was drawn instantly, quietly update it with fresh cloud data
+                if (hasDataInRam) {
+                    const activeTab = document.querySelector('.tab-content.active');
+                    if (activeTab) {
+                        if (activeTab.id === 'tab-history') renderHistory();
+                        if (activeTab.id === 'tab-board') renderLeaderboard();
+                        if (activeTab.id === 'tab-records') renderRecords();
+                    }
+                } else if (callback) {
+                    // First time loading the app: trigger callback after fetch finishes
+                    callback();
                 }
             } catch(e) { 
-                console.error("Background sync error:", e);
+                console.error("History fetch error:", e);
+                if (!hasDataInRam && callback) callback(); // Fail-safe to prevent hanging
             }
         }
       
