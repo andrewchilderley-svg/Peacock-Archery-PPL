@@ -1181,15 +1181,28 @@
 async function fetchCloudHistory(callback) {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
             try {
-                const res = await fetch(APPS_SCRIPT_URL);
+                // 1. CACHE BUSTER: Forces the browser to pull live data, never stale cache
+                const noCacheUrl = APPS_SCRIPT_URL + "?v=" + new Date().getTime();
+                const res = await fetch(noCacheUrl);
                 db.history = await res.json();
+                
                 try { 
-                    const recRes = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
+                    const recRes = await fetch(noCacheUrl + "&action=getHistoricalRecords");
                     db.historicalRecords = await recRes.json(); 
                 } catch(e) { db.historicalRecords = []; }
+                
+                // 2. SAFE BACKUP: Keep a lightweight text backup locally (avoids Quota errors)
+                try {
+                    const safeHistory = db.history.map(h => ({...h, screenshot: ""}));
+                    localStorage.setItem('ppl_history_text', JSON.stringify(safeHistory));
+                } catch(e) {}
+                
             } catch(e) { 
                 console.error("History fetch error:", e);
-                if (!db.history) db.history = []; // Safe fallback that prevents storage crashes
+                // 3. FALLBACK: Use safe backup if offline to prevent blank tabs
+                if (!db.history || db.history.length === 0) {
+                    db.history = JSON.parse(localStorage.getItem('ppl_history_text')) || [];
+                }
             }
             
             // Quietly refresh whichever tab is currently open with the new data
@@ -1327,9 +1340,11 @@ async function fetchCloudHistory(callback) {
                 if (bowFilter !== 'All' && h.bow !== bowFilter) return false;
                 return true;
             }).sort((a, b) => {
-                const idA = Number(a.id) || 0; const idB = Number(b.id) || 0;
-                if (idA !== idB && idA > 0 && idB > 0) return idB - idA;
-                return (new Date(formatDateISO(b.date)).getTime() || 0) - (new Date(formatDateISO(a.date)).getTime() || 0);
+                // Strictly sort by Date (most recent first), then fallback to ID
+                const dateA = new Date(formatDateISO(a.date)).getTime() || 0;
+                const dateB = new Date(formatDateISO(b.date)).getTime() || 0;
+                if (dateB !== dateA) return dateB - dateA; 
+                return (Number(b.id) || 0) - (Number(a.id) || 0);
             });
             
             if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No history found matching these filters.</td></tr>`; return; }
