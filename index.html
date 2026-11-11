@@ -1561,11 +1561,32 @@ async function confirmDeleteAction() {
             } catch(e) { alert("Network error saving historical record."); }
         }
 
-        function openAdminModal() { document.getElementById('admin-modal').classList.add('open'); document.getElementById('admin-pin-input').value = ''; }
-        function closeAdminModal() { document.getElementById('admin-modal').classList.remove('open'); }
-        function verifyAdminPin() { if (document.getElementById('admin-pin-input').value === db.settings.pin) { closeAdminModal(); switchTab('admin'); } else alert("Incorrect PIN."); }
-        function viewProof(src) { document.getElementById('proof-image-display').src = src; document.getElementById('proof-modal').classList.add('open'); }
-        function closeProofModal() { document.getElementById('proof-modal').classList.remove('open'); }
-    </script>
+       function openAdminModal() { 
+    document.getElementById('admin-modal').classList.add('open'); 
+    document.getElementById('admin-pin-input').value = ''; 
+}
+
+function closeAdminModal() { 
+    document.getElementById('admin-modal').classList.remove('open'); 
+}
+
+function verifyAdminPin() { 
+    if (document.getElementById('admin-pin-input').value === db.settings.pin) { 
+        closeAdminModal(); 
+        switchTab('admin'); 
+    } else { 
+        alert("Incorrect PIN."); 
+    } 
+}
+
+function viewProof(src) { 
+    document.getElementById('proof-image-display').src = src; 
+    document.getElementById('proof-modal').classList.add('open'); 
+}
+
+function closeProofModal() { 
+    document.getElementById('proof-modal').classList.remove('open'); 
+}
+</script>
 </body>
 </html>
