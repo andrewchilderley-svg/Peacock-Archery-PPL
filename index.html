@@ -648,7 +648,7 @@
             applyBranding();
             fetchCloudArchers(() => {
                 populateDropdowns();
-                fetchCloudHistory(() => {
+                (() => {
                     if (!restoreLiveState()) handleLiveRoundChange();
                     renderLeaderboard();
                 });
@@ -665,7 +665,7 @@
             const map = { 'upload': 0, 'shoot': 1, 'board': 2, 'records': 3, 'history': 4, 'admin': -1 };
             if (map[tabId] !== undefined && buttons[map[tabId]]) buttons[map[tabId]].classList.add('active');
             if (['board', 'records', 'history', 'admin'].includes(tabId)) {
-                fetchCloudHistory(() => {
+                (() => {
                     if (tabId === 'board') renderLeaderboard();
                     if (tabId === 'records') renderRecords();
                     if (tabId === 'history') renderHistory();
@@ -1154,7 +1154,7 @@
                     alert("🏆 Score successfully submitted!"); 
                     clearManualUploadForm(); // Wipes manual fields ONLY on verified PIN!
                     resetLiveRound(true);    // Resets live round ONLY on verified PIN!
-                    fetchCloudHistory(() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
+                    (() => { switchTab(record.round === 'Portsmouth' ? 'board' : 'history'); });
                 } else {
                     alert("❌ " + (responseData.message || "Upload failed. Score retained on screen—please try submitting again with the correct PIN.")); 
                 }
@@ -1178,20 +1178,55 @@
             if(callback) callback(); // GUARANTEES app continues loading tabs and UI
         }
 
-        async function fetchCloudHistory(callback) {
-            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
+       async function fetchCloudHistory(callback) {
+            // 1. INSTANT LOAD: Pull from local storage immediately if available so tabs pop up with zero delay
+            const cachedHistory = localStorage.getItem('ppl_history_cache');
+            const cachedRecords = localStorage.getItem('ppl_records_cache');
+            
+            if (cachedHistory) {
+                try { db.history = JSON.parse(cachedHistory); } catch(e) {}
+            }
+            if (cachedRecords) {
+                try { db.historicalRecords = JSON.parse(cachedRecords); } catch(e) {}
+            }
+            
+            // If we have cached data, execute the callback immediately to draw the tables instantly
+            if (cachedHistory && callback) {
+                callback();
+            }
+
+            // 2. BACKGROUND SYNC: Quietly fetch the latest updates from Google Sheets without blocking the user
+            if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { 
+                if(!cachedHistory && callback) callback(); 
+                return; 
+            }
+            
             try {
                 const res = await fetch(APPS_SCRIPT_URL);
                 db.history = await res.json();
+                localStorage.setItem('ppl_history_cache', JSON.stringify(db.history)); // Save fresh copy to cache
+                
                 try { 
                     const recRes = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
                     db.historicalRecords = await recRes.json(); 
+                    localStorage.setItem('ppl_records_cache', JSON.stringify(db.historicalRecords));
                 } catch(e) { db.historicalRecords = []; }
+                
+                // If tables were already drawn from cache, re-render quietly with fresh cloud data
+                if (cachedHistory) {
+                    const activeTab = document.querySelector('.tab-content.active');
+                    if (activeTab && (activeTab.id === 'tab-history' || activeTab.id === 'tab-board' || activeTab.id === 'tab-records')) {
+                        if (activeTab.id === 'tab-history') renderHistory();
+                        if (activeTab.id === 'tab-board') renderLeaderboard();
+                        if (activeTab.id === 'tab-records') renderRecords();
+                    }
+                } else if (callback) {
+                    callback();
+                }
             } catch(e) { 
-                console.error("History fetch error:", e);
-                db.history = JSON.parse(localStorage.getItem('ppl_history')) || [];
+                console.error("Background sync error:", e);
+                if(!cachedHistory && callback) callback(); 
             }
-            if(callback) callback(); // GUARANTEES app continues loading tabs and UI
         }
       
         async function forceSyncArchersToCloud() {
