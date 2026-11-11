@@ -664,13 +664,13 @@
             const buttons = document.querySelectorAll('.nav-tabs .tab-btn');
             const map = { 'upload': 0, 'shoot': 1, 'board': 2, 'records': 3, 'history': 4, 'admin': -1 };
             if (map[tabId] !== undefined && buttons[map[tabId]]) buttons[map[tabId]].classList.add('active');
+            
+            // INSTANT LOAD: Render tables using the data already stored in active memory
             if (['board', 'records', 'history', 'admin'].includes(tabId)) {
-                (() => {
-                    if (tabId === 'board') renderLeaderboard();
-                    if (tabId === 'records') renderRecords();
-                    if (tabId === 'history') renderHistory();
-                    if (tabId === 'admin') renderAdminTable();
-                });
+                if (tabId === 'board') renderLeaderboard();
+                if (tabId === 'records') renderRecords();
+                if (tabId === 'history') renderHistory();
+                if (tabId === 'admin') renderAdminTable();
             }
         }
 
@@ -1180,39 +1180,28 @@
         
 async function fetchCloudHistory(callback) {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
-            
-            // 1. INSTANT SPEED: If data is already in active RAM, run callback instantly to draw tabs with zero delay
-            const hasDataInRam = (db.history && db.history.length > 0);
-            if (hasDataInRam && callback) {
-                callback(); 
-            }
-
-            // 2. BACKGROUND SYNC: Quietly fetch the latest updates from Google Sheets
             try {
                 const res = await fetch(APPS_SCRIPT_URL);
                 db.history = await res.json();
-                
                 try { 
                     const recRes = await fetch(APPS_SCRIPT_URL + "?action=getHistoricalRecords");
                     db.historicalRecords = await recRes.json(); 
                 } catch(e) { db.historicalRecords = []; }
-                
-                // 3. SEAMLESS UPDATE: If the tab was drawn instantly, quietly update it with fresh cloud data
-                if (hasDataInRam) {
-                    const activeTab = document.querySelector('.tab-content.active');
-                    if (activeTab) {
-                        if (activeTab.id === 'tab-history') renderHistory();
-                        if (activeTab.id === 'tab-board') renderLeaderboard();
-                        if (activeTab.id === 'tab-records') renderRecords();
-                    }
-                } else if (callback) {
-                    // First time loading the app: trigger callback after fetch finishes
-                    callback();
-                }
             } catch(e) { 
                 console.error("History fetch error:", e);
-                if (!hasDataInRam && callback) callback(); // Fail-safe to prevent hanging
+                if (!db.history) db.history = []; // Safe fallback that prevents storage crashes
             }
+            
+            // Quietly refresh whichever tab is currently open with the new data
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) {
+                if (activeTab.id === 'tab-history') renderHistory();
+                if (activeTab.id === 'tab-board') renderLeaderboard();
+                if (activeTab.id === 'tab-records') renderRecords();
+                if (activeTab.id === 'tab-admin') renderAdminTable();
+            }
+            
+            if(callback) callback();
         }
       
         async function forceSyncArchersToCloud() {
