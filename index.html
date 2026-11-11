@@ -670,7 +670,7 @@ function compressImage(fileOrBase64, maxWidth = 800, quality = 0.6, callback) {
         let liveScores = [];
         let activeRoundConfig = getRoundConfig("Portsmouth", "Recurve", "Full Face");
 
-        window.onload = function() {
+       window.onload = function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('up-date').value = today;
             document.getElementById('shoot-date').value = today;
@@ -678,7 +678,7 @@ function compressImage(fileOrBase64, maxWidth = 800, quality = 0.6, callback) {
             applyBranding();
             fetchCloudArchers(() => {
                 populateDropdowns();
-                (() => {
+                fetchCloudHistory(() => { // <--- Added this call to load cloud scores and records
                     if (!restoreLiveState()) handleLiveRoundChange();
                     renderLeaderboard();
                 });
