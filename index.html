@@ -486,7 +486,7 @@
         ];
         let db = {
             archers: JSON.parse(localStorage.getItem('ppl_archers')) || defaultArchers,
-            history: JSON.parse(localStorage.getItem('ppl_history')) || [],
+           history: JSON.parse(localStorage.getItem('ppl_history_text')) || [],
             historicalRecords: [], 
             settings: { pin: localStorage.getItem('ppl_admin_pin') || "1010", logo: localStorage.getItem('ppl_logo') || "" }
         };
@@ -1175,7 +1175,7 @@ function processManualScore() {
         async function syncRecordToCloud(record) {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) {
                 db.history.push(record); 
-                localStorage.setItem('ppl_history', JSON.stringify(db.history));
+                localStorage.setItem('ppl_history_text', JSON.stringify(db.history.map(h => ({...h, screenshot: ""}))));
                 alert("Score saved locally!"); 
                 clearManualUploadForm();
                 resetLiveRound(true); 
