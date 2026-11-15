@@ -1253,12 +1253,16 @@ async function fetchCloudHistory(callback) {
             if(callback) callback();
         }
       
-        async function forceSyncArchersToCloud() {
+       async function forceSyncArchersToCloud() {
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) return;
             try {
-                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "syncArchers", archers: db.archers }) });
-                if ((await res.json()).result === 'success') alert("Archers successfully synced to cloud!");
-            } catch (e) { alert("Network error connecting to cloud."); }
+                await fetch(APPS_SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: "syncArchers", archers: db.archers }) 
+                });
+            } catch (e) { 
+                alert("Network error connecting to cloud."); 
+            }
         }
 
         function populateDropdowns() {
@@ -1485,7 +1489,7 @@ async function confirmDeleteAction() {
             }
         }
         
-        function addNewArcherRegistry() {
+       function addNewArcherRegistry() {
             const name = document.getElementById('new-archer-name').value.trim();
             if (!name) { alert("Please enter a valid archer name."); return; }
             db.archers.push({
@@ -1495,8 +1499,32 @@ async function confirmDeleteAction() {
                 pin: "0000"
             });
             localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
-            document.getElementById('new-archer-name').value = ''; populateDropdowns(); renderAdminTable();
+            document.getElementById('new-archer-name').value = ''; 
+            populateDropdowns(); 
+            renderAdminTable();
+            forceSyncArchersToCloud();
             alert(`Archer "${name}" added successfully!`);
+        }
+
+        function updateArcherField(archerId, field, value) {
+            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            if (archer) { 
+                archer[field] = field === 'startingPB' ? (parseInt(value) || 250) : value; 
+                localStorage.setItem('ppl_archers', JSON.stringify(db.archers)); 
+                populateDropdowns(); 
+                forceSyncArchersToCloud();
+            }
+        }
+
+        function requestDeleteArcher(archerId) {
+            const archer = db.archers.find(a => String(a.id) === String(archerId));
+            if (confirm(`Are you sure you want to delete ${archer ? archer.name : "Archer"}?`)) {
+                db.archers = db.archers.filter(a => String(a.id) !== String(archerId));
+                localStorage.setItem('ppl_archers', JSON.stringify(db.archers)); 
+                populateDropdowns(); 
+                renderAdminTable();
+                forceSyncArchersToCloud();
+            }
         }
 
         function renderAdminTable() {
@@ -1517,16 +1545,23 @@ async function confirmDeleteAction() {
             `).join('');
         }
 
-        function updateArcherField(archerId, field, value) {
+       function updateArcherField(archerId, field, value) {
             const archer = db.archers.find(a => String(a.id) === String(archerId));
-            if (archer) { archer[field] = field === 'startingPB' ? (parseInt(value) || 250) : value; localStorage.setItem('ppl_archers', JSON.stringify(db.archers)); populateDropdowns(); }
+            if (archer) { 
+                archer[field] = field === 'startingPB' ? (parseInt(value) || 250) : value; 
+                localStorage.setItem('ppl_archers', JSON.stringify(db.archers)); 
+                populateDropdowns(); 
+                forceSyncArchersToCloud(); // <--- Syncs PIN/PB/Bow edits to cloud
+            }
         }
-
         function requestDeleteArcher(archerId) {
             const archer = db.archers.find(a => String(a.id) === String(archerId));
             if (confirm(`Are you sure you want to delete ${archer ? archer.name : "Archer"}?`)) {
                 db.archers = db.archers.filter(a => String(a.id) !== String(archerId));
-                localStorage.setItem('ppl_archers', JSON.stringify(db.archers)); populateDropdowns(); renderAdminTable();
+                localStorage.setItem('ppl_archers', JSON.stringify(db.archers)); 
+                populateDropdowns(); 
+                renderAdminTable();
+                forceSyncArchersToCloud(); // <--- Syncs deletion to cloud
             }
         }
 
