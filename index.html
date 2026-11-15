@@ -1199,19 +1199,23 @@ function processManualScore() {
             }
         }
                     
-       async function fetchCloudArchers(callback) {
+      async function fetchCloudArchers(callback) {
             const localArchers = JSON.parse(localStorage.getItem('ppl_archers'));
-            if (localArchers && localArchers.length > 0) db.archers = localArchers;
+            if (localArchers && localArchers.length > 0) {
+                db.archers = localArchers.filter(a => a && a.name && String(a.name).trim() !== "");
+            }
             if (APPS_SCRIPT_URL.includes('YOUR_GOOGLE')) { if(callback) callback(); return; }
             try {
-                const res = await fetch(APPS_SCRIPT_URL + "?action=getArchers");
+                const noCacheUrl = APPS_SCRIPT_URL + "?action=getArchers&v=" + new Date().getTime();
+                const res = await fetch(noCacheUrl);
                 const data = await res.json();
                 if (data && data.length > 0) {
-                    let map = {}; db.archers.forEach(a => map[String(a.id)] = a); data.forEach(a => map[String(a.id)] = a);
-                    db.archers = Object.values(map); localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
+                    // Replace local list with clean cloud list (no merging deleted/blank ghosts)
+                    db.archers = data.filter(a => a && a.name && String(a.name).trim() !== "");
+                    localStorage.setItem('ppl_archers', JSON.stringify(db.archers));
                 }
             } catch(e) { console.error("Archer fetch error:", e); }
-            if(callback) callback(); // GUARANTEES app continues loading tabs and UI
+            if(callback) callback();
         }
         
 async function fetchCloudHistory(callback) {
