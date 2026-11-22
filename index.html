@@ -103,9 +103,9 @@
         <!-- Header -->
         <header>
             <div class="header-title">
-                <div id="header-logo-container">
-                    <div class="header-logo-box"><span class="header-logo-emoji">🎯</span></div>
-                </div>
+               <div id="header-logo-container">
+    <div class="header-logo-box"><img src="logo.png" alt="Peacock Archers Logo"></div>
+</div>
                 <div class="header-text">
                     <h1 id="brand-title">Peacock Portsmouth League (PPL)</h1>
                     <p>Winter League & Indoor Scoring App</p>
@@ -704,11 +704,14 @@ function compressImage(fileOrBase64, maxWidth = 800, quality = 0.6, callback) {
             }
         }
 
-        function applyBranding() {
-            const container = document.getElementById('header-logo-container');
-            if (db.settings.logo) container.innerHTML = `<div class="header-logo-box"><img src="${db.settings.logo}" alt="League Logo"></div>`;
-            else container.innerHTML = `<div class="header-logo-box"><span class="header-logo-emoji">🎯</span></div>`;
-        }
+       function applyBranding() {
+    const container = document.getElementById('header-logo-container');
+    if (db.settings.logo) {
+        container.innerHTML = `<div class="header-logo-box"><img src="${db.settings.logo}" alt="League Logo"></div>`;
+    } else {
+        container.innerHTML = `<div class="header-logo-box"><img src="logo.png" alt="Peacock Archers Logo"></div>`;
+    }
+}
 
         function handleLogoUpload(event) {
             const file = event.target.files[0];
